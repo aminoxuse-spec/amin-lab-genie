@@ -1,5 +1,5 @@
 /* Amin-Lab -Pro🔬 — Service Worker */
-const CACHE = 'amin-lab-genie-v21';
+const CACHE = 'amin-lab-genie-v22';
 const SHELL = [
   '/index.html',
   '/dashboard.html',

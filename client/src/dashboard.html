@@ -83,7 +83,6 @@
           <span>📧 <a href="mailto:aminhadjadj13@gmail.com" dir="ltr">aminhadjadj13@gmail.com</a></span>
           <span>📱 <a href="https://wa.me/213558128160" target="_blank" rel="noopener" dir="ltr">WhatsApp +213 558 128 160</a></span>
           <span>📅 <span id="dashDate"></span></span>
-          <span>🏫 <span id="dashInstitution">C.E.M Chikhi Moussa</span></span>
           <span>✅ البرنامج جاهز للعمل</span>
         </footer>
       </main>
@@ -200,9 +199,7 @@
             loadExtraStats();
 
             document.getElementById('dashDate').textContent = new Date().toLocaleDateString('ar-MA');
-            App.loadInstitution().then(function (inst) {
-              if (inst && inst.name) document.getElementById('dashInstitution').textContent = inst.name;
-            });
+            App.loadInstitution();
             var currentUser = App.user || {};
             document.getElementById('dashUser').textContent = currentUser.full_name || currentUser.username || 'حجاج اول محمد الامين';
             document.getElementById('dashUserRole').textContent =
