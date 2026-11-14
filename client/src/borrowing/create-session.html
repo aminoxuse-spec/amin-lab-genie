@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>إعارة جديدة — Amin-Lab -cem🔬</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/borrowing/borrowing.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/assets/icons/favicon.png" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar"></aside>
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <h1>إعارة جديدة</h1>
+            <p>عملية واحدة تجمع العتاد والمواد الكيميائية مع الكميات والحالة والملاحظات</p>
+          </div>
+          <a class="btn" href="/borrowing/borrowing.html">→ سجل الإعارات</a>
+        </header>
+
+        <form id="sessionForm">
+          <section class="card">
+            <div class="card-head"><h2>معلومات الإعارة</h2></div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="teacherId">اسم الأستاذ</label>
+                <select id="teacherId" required></select>
+              </div>
+              <div class="field"><label for="subject">المادة الدراسية</label><input id="subject" required maxlength="80" placeholder="الفيزياء والكيمياء" /></div>
+              <div class="field"><label for="level">المستوى</label><input id="level" maxlength="60" placeholder="الجذع المشترك العلمي" /></div>
+              <div class="field"><label for="className">القسم</label><input id="className" required maxlength="80" placeholder="1" /></div>
+              <div class="field"><label for="sessionDate">تاريخ الإعارة</label><input id="sessionDate" type="date" required /></div>
+              <div class="field"><label for="startTime">ساعة الإعارة</label><input id="startTime" type="time" required value="08:00" /></div>
+              <div class="field">
+                <label for="roomId">القاعة</label>
+                <select id="roomId"><option value="">بدون قاعة</option></select>
+              </div>
+            </div>
+            <div class="field" style="margin-top: 0.8rem">
+              <label for="notes">ملاحظات الإعارة (اختياري)</label>
+              <textarea id="notes" maxlength="500" placeholder="تجربة التحليل الكهربائي…"></textarea>
+            </div>
+          </section>
+
+          <section class="card" style="margin-top: 1rem">
+            <div class="card-head">
+              <h2>عناصر الإعارة</h2>
+              <div class="row-actions">
+                <button class="btn" type="button" id="addEquipmentBtn">➕ إضافة عتاد</button>
+                <button class="btn" type="button" id="addChemicalBtn">🧪 إضافة مادة كيميائية</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>العنصر</th><th style="width: 110px">الكمية</th><th style="width: 150px">الحالة</th><th>ملاحظات</th><th style="width: 70px"></th></tr>
+                </thead>
+                <tbody id="lines">
+                  <tr id="emptyRow"><td colspan="5" class="empty">لم تُضف أي عنصر بعد — استخدم «إضافة عتاد» أو «إضافة مادة كيميائية»</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="muted" style="margin-top: 0.6rem">
+              حالة «مستهلك» تخص المواد الكيميائية فقط: تُخصم من المخزون ولا تُنتظر إعادتها.
+            </p>
+          </section>
+
+          <div style="display:flex;justify-content:flex-end;gap:.6rem;margin-top:1rem">
+            <a class="btn" href="/borrowing/borrowing.html">إلغاء</a>
+            <button class="btn btn-primary" type="submit" id="submitBtn">💾 حفظ الإعارة</button>
+          </div>
+        </form>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
+    <script src="/borrowing/create-session.js"></script>
+  </body>
+</html>

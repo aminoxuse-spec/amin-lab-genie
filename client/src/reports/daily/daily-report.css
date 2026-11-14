@@ -1,0 +1,12 @@
+.daily-alerts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.6rem; }
+.daily-alert {
+  border: 1px solid var(--line);
+  border-right: 4px solid var(--warn);
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.82rem;
+  background: #fffdf7;
+}
+.daily-alert.danger { border-right-color: var(--danger); background: #fff7f7; }
+.daily-alert strong { display: block; }
+.daily-alert small { color: var(--muted); }

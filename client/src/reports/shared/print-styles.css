@@ -1,0 +1,40 @@
+@page {
+  size: A4;
+  margin: 14mm;
+}
+
+@media print {
+  body {
+    background: #fff;
+    font-size: 11pt;
+    color: #000;
+  }
+
+  .app-shell { display: block; }
+  .sidebar,
+  .topbar .btn,
+  .no-print,
+  .toolbar,
+  .toast-wrap {
+    display: none !important;
+  }
+
+  .content { padding: 0; }
+  .card { border: 1px solid #ddd; box-shadow: none; break-inside: avoid; }
+  .report-section { break-inside: avoid; }
+  .report-session { break-inside: avoid; }
+
+  table { font-size: 10pt; }
+  th, td { padding: 4px 6px; }
+  thead { display: table-header-group; }
+
+  a { color: inherit; text-decoration: none; }
+
+  .report-sheet::after {
+    content: "Amin-lab génie — وثيقة داخلية";
+    display: block;
+    margin-top: 8px;
+    font-size: 8pt;
+    color: #666;
+  }
+}

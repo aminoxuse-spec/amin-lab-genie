@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>استعمال الزمن — Amin-Lab -cem🔬</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/schedule/calendar.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/assets/icons/favicon.png" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar"></aside>
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <h1>استعمال الزمن</h1>
+            <p>حصص المختبر الأسبوعية مع كشف التعارض التلقائي</p>
+          </div>
+          <div id="pageActions"></div>
+        </header>
+
+        <section class="card">
+          <div class="cal-toolbar">
+            <span class="muted">من 08:00 إلى 18:00</span>
+            <div class="row-actions">
+              <span class="badge info" id="countBadge">0 حصة</span>
+            </div>
+          </div>
+          <div class="calendar" id="calendar"><div class="empty">جارٍ التحميل…</div></div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal" id="lessonModal">
+      <div class="modal-box">
+        <h2 id="lessonTitle">حصة جديدة</h2>
+        <form id="lessonForm">
+          <input type="hidden" id="lessonId" />
+          <div class="form-grid">
+            <div class="field"><label for="className">القسم</label><input id="className" required maxlength="80" /></div>
+            <div class="field"><label for="subject">المادة</label><input id="subject" required maxlength="80" /></div>
+            <div class="field">
+              <label for="roomId">القاعة</label>
+              <select id="roomId"><option value="">بدون قاعة</option></select>
+            </div>
+            <div class="field">
+              <label for="day">اليوم</label>
+              <select id="day" required>
+                <option value="1">الاثنين</option>
+                <option value="2">الثلاثاء</option>
+                <option value="3">الأربعاء</option>
+                <option value="4">الخميس</option>
+                <option value="5">الجمعة</option>
+                <option value="6">السبت</option>
+                <option value="0">الأحد</option>
+              </select>
+            </div>
+            <div class="field"><label for="startTime">من</label><input id="startTime" type="time" required value="08:00" /></div>
+            <div class="field"><label for="endTime">إلى</label><input id="endTime" type="time" required value="10:00" /></div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-danger" type="button" id="deleteLessonBtn" hidden>حذف الحصة</button>
+            <button class="btn" type="button" data-close="lessonModal">إلغاء</button>
+            <button class="btn btn-primary" type="submit">حفظ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="/app.js"></script>
+    <script src="/actions.js"></script>
+    <script src="/schedule/calendar.js"></script>
+  </body>
+</html>

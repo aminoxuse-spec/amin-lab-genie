@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ملصقات QR — Amin-Lab -cem🔬</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/labels.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/assets/icons/favicon.png" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar"></aside>
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <h1>ملصقات QR</h1>
+            <p>ملصقات على ورق A4 — 10 أو 21 أو 40 ملصقاً في الصفحة</p>
+          </div>
+          <div class="row-actions">
+            <a class="btn" href="/inventory/inventory.html">→ الجرد</a>
+            <button class="btn btn-primary" type="button" id="printBtn">🖨️ طباعة الملصقات</button>
+          </div>
+        </header>
+
+        <section class="card">
+          <div class="labels-toolbar">
+            <div class="field">
+              <label for="size">حجم الصفحة</label>
+              <select id="size">
+                <option value="10">10 ملصقات (كبيرة)</option>
+                <option value="21" selected>21 ملصقاً (متوسطة)</option>
+                <option value="40">40 ملصقاً (صغيرة)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="category">الفئة</label>
+              <select id="category">
+                <option value="">كل الفئات</option>
+                <option value="apparatus">أجهزة</option>
+                <option value="glassware">زجاجيات</option>
+                <option value="chemical">مواد كيميائية</option>
+              </select>
+            </div>
+            <div class="field" style="flex: 1 1 200px">
+              <label for="search">بحث</label>
+              <input id="search" type="search" placeholder="اسم أو رمز" />
+            </div>
+            <div class="field">
+              <label>العدد</label>
+              <span class="badge info" id="count">0 ملصق</span>
+            </div>
+          </div>
+
+          <p class="muted" id="trialNote" hidden style="color:#dc2626;font-weight:700">
+            نسخة تجريبية — تظهر عبارة «نسخة تجريبية» على الملصقات حتى تفعيل الترخيص من الإعدادات.
+          </p>
+
+          <div class="labels-sheet size-21" id="sheet">
+            <div class="empty">جارٍ التحميل…</div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
+    <script src="/qr.js"></script>
+    <script src="/labels.js"></script>
+  </body>
+</html>

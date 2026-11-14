@@ -1,50 +1,212 @@
-# Study app
+# Amin-Lab -cem🔬 🧪
 
-A flashcard study app in the spirit of Quizlet: a library of decks, three study
-modes (flashcards, multiple-choice learn and a timed match game), per-card
-mastery with a light spaced-repetition schedule, streaks, and a progress page
-with an activity heatmap and accuracy history. Cards can carry an image. It
-runs on Freebuff Sites with Sign in with Freebuff, D1 for data and R2 for
-images, and everything is scoped to the signed-in user.
+نظام متكامل لإدارة مختبر العلوم في المدرسة: الجرد، الإعارة المتعددة الأصناف، استعمال الزمن، فحص الجودة (QC)، والتقارير اليومية والأسبوعية مع طباعة احترافية.
 
-The product name is `BRAND` in `src/shared/types.ts`; change it once.
+> **الحالة:** v1.5.1 — يعمل محلياً على Node.js 22+ (تم اختباره على Node 26) بقاعدة بيانات SQLite مدمجة (`node:sqlite`) بدون أي تبعيات أصلية.
 
-## Run it
+---
 
-```sh
-bun install
-bun run dev        # http://localhost:5173 with local D1 and R2 (Miniflare)
-bun run build      # dist/client (assets) + dist/study/index.js (Worker)
+## ✨ المميزات
+
+| القسم | الوصف |
+|------|--------|
+| **الجرد** | أجهزة / زجاجيات / مواد كيميائية، الكمية المتاحة، الحد الأدنى، تاريخ الصلاحية، بحث وتصفية، و**سلة محذوفات** لاسترجاع أي صنف محذوف أو حذفه نهائياً |
+| **الإعارة** | عملية واحدة تجمع العتاد + المواد الكيميائية (الكمية، الحالة: صالح/مستهلك، ملاحظات)، اسم الأستاذ والمستوى والقسم، خصم تلقائي، إرجاع كلي/جزئي، تسجيل التالف والمفقود، و**وصل إعارة قابل للطباعة** |
+| **استعمال الزمن** | جدول أسبوعي تفاعلي (08:00–18:00) مع **كشف تعارض القاعة** تلقائياً |
+| **فحص الجودة** | تسجيل نتائج الفحص (سليم/منخفض/تالف/منتهي) ومزامنة الكميات مع الجرد |
+| **التقارير والإحصائيات** | يومي، أسبوعي، الأساتذة، العتاد، المواد الكيميائية، والتأخر — مع مؤشرات تلقائية، اختيار الفترة، تصدير **Excel/CSV**، وطباعة **PDF** |
+| **الحسابات** | مدير المختبر (كل الصلاحيات) وأستاذ (يرى بياناته فقط) |
+| **PWA** | قابل للتثبيت على الحاسوب/الهاتف مع Service Worker |
+
+---
+
+## 🧭 الأقسام وشريط الأدوات
+
+الشريط الجانبي يضم: **الرئيسية · التجارب · استعمال الزمن الأساتذة · الإعارة · المواد الكيميائية · الزجاجيات · العتاد · التقارير والإحصائيات · الإعدادات**.
+
+كل قسم يحتوي شريط أدوات موحّداً:
+
+| الزر | الوظيفة |
+|---|---|
+| ⬆️ استيراد | استيراد بيانات من ملف CSV مع تقرير بالنتائج لكل سطر |
+| 🖨️ طباعة | طباعة الصفحة الحالية أو حفظها PDF |
+| ➕ إضافة | إضافة سجل جديد (صنف، إعارة، حصة، فحص، مستخدم…) |
+| ✏️ تعديل | تعديل السجل المحدد في الجدول (أو الحصة بالنقر عليها) |
+
+صيغ الاستيراد: الجرد `code,name,category,quantity,unit,min_quantity,location,expiry_date` · الفحوصات `code,status,quantity_found,check_date,notes` · استعمال الزمن `day,start,end,class,subject,room` · الإعارة `date,start,end,class,subject,code,quantity,condition,notes` · المستخدمون `username,full_name,password,role`.
+
+## 🚀 البدء السريع
+
+```bash
+# 1) المتطلبات: Node.js 22.18+ (يتضمن node:sqlite)
+node -v
+
+# 2) تثبيت التبعيات (الوحيدة: express)
+npm install
+
+# 3) التشغيل
+npm start
+# → http://localhost:3000
 ```
 
-On localhost without a `FREEBUFF_CLIENT_ID`, the app signs you in as a local
-development user so everything works before auth is provisioned. A new
-account is seeded with three sample decks and some history; Settings can
-restore or clear them.
+**الحسابات الافتراضية** (تُنشأ تلقائياً عند أول تشغيل):
 
-## Connect it to Freebuff
+| المستخدم | كلمة المرور | الصلاحية |
+|----------|-------------|----------|
+| `admin` | `admin123` | مدير المختبر |
+| `teacher` | `teacher123` | أستاذ |
 
-1. `sites_create`, then `sites_add_storage` for D1 named `DB` and R2 named `FILES`.
-2. `sites_enable_auth` (pass `http://localhost:5173` as the local origin while
-   developing). Copy the development variables into `.dev.vars` (see
-   `.dev.vars.example`) to use real accounts locally.
-3. `bun run build`, then `sites_deploy` with `deploy.json`.
+> ⚠️ غيّر كلمة المرور الافتراضية قبل أي استعمال حقيقي (انظر `docs/SECURITY.md`).
 
-## Where things are
+---
 
-- `src/worker/` is the Hono API. `db.ts` owns the schema (created on first
-  request) and the streak maths, `seed.ts` the sample decks, `auth.ts` the
-  Freebuff integration and the loopback-only development user,
-  `routes/decks.ts` decks, cards, images and session recording (where mastery
-  and due dates are updated), `routes/account.ts` the profile and stats.
-- `src/app/` is the React app. `pages/Flashcards.tsx`, `Learn.tsx` and
-  `Match.tsx` are the study modes; each ends in `components/Summary.tsx`,
-  which records the session once. `components/ui.tsx` holds the primitives.
-- `src/styles.css` holds the design tokens. Everything rounded is a squircle
-  via `corner-shape`; true circles use the `round` class.
+## 📁 هيكل المشروع
 
-## Security notes
+```
+amin-lab-genie/
+├─ server/src/
+│  ├─ index.ts              نقطة الدخول (seed + listen + نسخ احتياطي يومي)
+│  ├─ app.ts                بناء تطبيق Express وربط المسارات
+│  ├─ db.ts                 اتصال SQLite + المخطط + أدوات الاستعلام
+│  ├─ config.ts             الإعدادات (PORT, DB_PATH, APP_SECRET…)
+│  ├─ seed.ts               البيانات الأولية
+│  ├─ models/               User, Inventory, BorrowingSession, BorrowingItem,
+│  │                        Schedule, LabRoom, QCCheck, associations
+│  ├─ controllers/          auth, inventory, borrowing, schedule, qc, report
+│  ├─ routes/               auth, inventory, borrowing, schedule, qc, reports
+│  ├─ middleware/           auth.ts (JWT/HMAC)، validation.ts
+│  └─ utils/                security.ts، logger.ts، backup.ts
+├─ client/src/              واجهة PWA (HTML/CSS/JS بدون إطار عمل)
+│  ├─ index.html            تسجيل الدخول
+│  ├─ dashboard.html        لوحة التحكم
+│  ├─ inventory/ borrowing/ schedule/ qc/ reports/
+│  ├─ assets/icons/         أيقونات 192/512 + favicon
+│  ├─ manifest.json  sw.js  PWA
+│  └─ style.css  app.js     التصميم والمنطق المشترك
+├─ installer/               Inno Setup + سكربتات Windows
+├─ docs/                    API، النشر، الأمن، سجل التغييرات
+├─ tests/                   unit/ + integration/ (node:test)
+├─ scripts/                 make-icons.mjs، create-package.mjs
+└─ release/                 الحزم الجاهزة للتحميل (ZIP)
+```
 
-Every `/api/*` route requires a signed-in user and scopes queries by
-`owner_sub`. Mutations must be same-origin. Images are addressed by card row,
-never by R2 key. Personalised responses are `Cache-Control: private, no-store`.
+---
+
+## 🧰 الأوامر
+
+| الأمر | الوظيفة |
+|------|---------|
+| `npm start` | تشغيل الخادم مباشرة من TypeScript (Node 22.18+ مع type stripping) |
+| `npm run dev` | تشغيل مع إعادة التحميل التلقائي |
+| `npm run build` | تحويل TypeScript إلى `server/dist` |
+| `npm run serve:dist` | تشغيل نسخة JavaScript المبنية |
+| `npm run typecheck` | فحص الأنواع دون توليد ملفات |
+| `npm test` | 19 اختباراً (وحدة + تكامل) |
+| `npm run icons` | إعادة توليد أيقونات PWA |
+| `npm run package` | إنشاء ملف ZIP للتوزيع في `release/` |
+| `npm run backup` | نسخة احتياطية لقاعدة البيانات |
+
+---
+
+## 🔳 رموز QR والملصقات
+
+- **لكل وسيلة رمز QR**: زر «🔳 QR» في سطر الجرد يعرض البطاقة، مع تنزيل الرمز صورة PNG أو طباعة ملصق.
+- **ملصقات A4**: صفحة [labels.html](client/src/labels.html) تطبع **10 أو 21 أو 40 ملصقاً في الصفحة**
+  على ورق A4 (QR + الرمز + الاسم + اسم المؤسسة)، مع فلترة بالفئة والبحث.
+- **مسح QR**: زر «🔳 مسح QR» في الشريط العلوي يعمل بالكاميرا أو قارئ USB أو صورة أو كتابة رقم الجرد،
+  ويفتح بطاقة الوسيلة للتعديل أو تسجيل حركة. عند تشابه الرمز يعرض الماسح كل المطابقات لتختار.
+- **الترخيص**: عبارة «نسخة تجريبية» الحمراء على الملصقات تختفي بعد التفعيل من **الإعدادات ← الترخيص**.
+
+النظام يعمل **تجربةً مجانية 30 يوماً** تبدأ من أول تشغيل. بعد انتهائها تُقفل واجهات العمل
+(الجرد، الإعارة، الزمن، الفحوصات، التجارب، التقارير) بشاشة قفل، وتبقى صفحة الإعدادات مفتوحة
+حتى يُدخل المدير مفتاحاً صالحاً؛ البيانات لا تُمسّ.
+
+```bash
+npm run license   # يطبع مفتاحاً دائماً مشتقاً من APP_SECRET
+```
+
+> **إلزامي:** اضبط `APP_SECRET` قبل التوزيع (يُشتق منه المفتاح الدائم ويُوقّع به الدخول).
+> بدون ضبطه لا تُقبل المفاتيح المشتقة إطلاقاً، وتبقى المفاتيح المولّدة من «الإعدادات ← الترخيص» صالحة.
+> راجع [.env.example](.env.example).
+
+## 🏫 الشعار والإمضاءات
+
+من **الإعدادات ← عام**:
+
+- **اسم المؤسسة** بالعربية وبالفرنسية.
+- **شعار المؤسسة**: أي صورة (PNG/JPG/SVG) — تُصغَّر تلقائياً إلى 512 بكسل كحد أقصى قبل الحفظ.
+- **إظهار الشعار في الطباعة**: أزل العلامة لإخفائه من الوثائق المطبوعة فقط.
+- **الإمضاءات الثلاث**: الملحق الرئيسي بالمخبر، مستشار(ة) التربية، مدير(ة) المؤسسة
+  (الاسم بالعربية وبالفرنسية لكل منهم) + ختم دائري باسم المؤسسة.
+
+يظهر الشعار في صفحة الدخول والقائمة والصفحة الرئيسية وفي **رأس كل وثيقة مطبوعة**،
+وتظهر الإمضاءات الثلاث في أسفلها (وصل الإعارة، التقارير، الجرد، الإعارة، استعمال الزمن، التجارب).
+
+## 🖼️ الشعار
+
+ضع شعار المدرسة/المختبر في المسار التالي وسيظهر تلقائياً في صفحة الدخول والشريط الجانبي:
+
+```
+client/src/assets/icons/logo.png
+```
+
+- يُستحسن مربّع (1024×1024 أو 512×512) بخلفية شفّافة أو داكنة.
+- إن لم يوجد الملف يبقى الشعار النصّي الاحتياطي «AL» بدون أي خطأ.
+- لتحديث أيقونات PWA بنفس الشعار: استبدل `icon-192.png` و`icon-512.png` بنسختين من الشعار بالحجمين المذكورين ثم `npm run package`.
+
+## ⚙️ متغيّرات البيئة
+
+| المتغيّر | الافتراضي | الوصف |
+|---------|-----------|--------|
+| `PORT` | `3000` | منفذ الخادم |
+| `HOST` | `0.0.0.0` | عنوان الاستماع |
+| `DB_PATH` | `data/amin-lab-genie.sqlite` | ملف قاعدة البيانات |
+| `DATA_DIR` | `data` | مجلد البيانات والنسخ الاحتياطية |
+| `CLIENT_DIR` | `client/src` | مجلد الواجهة |
+| `APP_SECRET` | (قيمة تطوير) | مفتاح توقيع الجلسات واشتقاق الترخيص — **إلزامي في الإنتاج** |
+| `SESSION_TTL` | `28800` | مدة الجلسة بالثواني (8 ساعات) |
+| `BACKUP_RETENTION` | `14` | عدد النسخ الاحتياطية المحفوظة |
+| `TRIAL_DAYS` | `30` | مدة الفترة التجريبية بالأيام |
+
+انسخ [.env.example](.env.example) إلى `.env` واضبط قيمه قبل التوزيع.
+
+---
+
+## 📦 التوزيع والتثبيت على Windows
+
+1. **حزمة ZIP:** `npm run package` → `release/Amin-Lab-Genie-v1.5.1.zip` (+ ملف `.sha256`).
+2. **فك الضغط** ثم `npm install && npm start` (أو `installer\check-environment.cmd` للتحقق).
+3. **بناء مثبت Windows:** `installer\build-setup.cmd` (يتطلب [Inno Setup 6](https://jrsoftware.org/isdl.php) وNode.js 22+) → `installer\output\Amin-Lab-Genie-Setup-1.5.1.exe`.
+4. بديل على Windows: `.\create-complete-package.ps1 -IncludeTests`.
+
+> سكربتات `.cmd` و`.iss` و`.ps1` خاصة بـ Windows ولا يمكن تشغيلها على Linux؛ الحزم تُنشأ على أي نظام عبر `npm run package`.
+
+---
+
+## 🧪 التحقق
+
+```bash
+npm run typecheck   # ✅ 0 أخطاء
+npm test            # ✅ 19/19
+npm run build       # ✅ server/dist
+```
+
+تغطي الاختبارات: تجزئة كلمات المرور والرموز، التحقق من صحة الطلبات، المصادقة، الجرد، الإعارة الكاملة والجزئية (بما فيها رفض الكميات الزائدة)، مزامنة المخزون، QC، تعارض استعمال الزمن، والتقارير وCSV.
+
+---
+
+## 📚 الوثائق
+
+- [docs/API.md](docs/API.md) — واجهات REST كاملة
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — النشر والتثبيت والتحديث
+- [docs/SECURITY.md](docs/SECURITY.md) — الأمن والصلاحيات والنسخ الاحتياطي
+- [docs/CHANGELOG.md](docs/CHANGELOG.md) — سجل الإصدارات
+- [LICENSE.txt](LICENSE.txt) — اتفاقية الترخيص
+
+---
+
+## ⚠️ ملاحظات صريحة
+
+- النظام مصمّم لشبكة محلية/حاسوب واحد؛ لا يوجد نظام أدوار متعدد المدارس ولا مزامنة سحابية.
+- HTTPS غير مضمّن: ضع الخادم خلف وكيل عكسي (Nginx/IIS) عند النشر على الشبكة.
+- الأيقونات موليدة برمجياً (دورق مخبري بسيط)؛ يمكن استبدالها من `client/src/assets/icons/`.

@@ -1,0 +1,46 @@
+.report-sheet {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.6rem 1.8rem;
+  box-shadow: var(--shadow);
+}
+
+.report-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 2px solid var(--brand);
+  padding-bottom: 0.9rem;
+  margin-bottom: 1.1rem;
+  flex-wrap: wrap;
+}
+.report-head h1 { font-size: 1.35rem; margin: 0 0 0.2rem; }
+.report-head .report-brand { font-weight: 700; color: var(--brand); letter-spacing: 0.03em; }
+.report-meta { text-align: left; font-size: 0.8rem; color: var(--muted); line-height: 1.7; }
+
+.report-section { margin-bottom: 1.4rem; }
+.report-section h2 { font-size: 1rem; border-right: 4px solid var(--brand); padding-right: 0.55rem; margin-bottom: 0.7rem; }
+.report-section h3 { font-size: 0.9rem; color: var(--muted); margin: 1rem 0 0.4rem; }
+
+.report-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.6rem; }
+.report-stat { background: #f6f9f8; border: 1px solid var(--line); border-radius: 10px; padding: 0.6rem 0.7rem; }
+.report-stat span { display: block; font-size: 0.72rem; color: var(--muted); }
+.report-stat strong { font-size: 1.25rem; }
+
+.report-session { border: 1px solid var(--line); border-radius: 10px; padding: 0.75rem 0.85rem; margin-bottom: 0.75rem; }
+.report-session header { display: flex; justify-content: space-between; gap: 0.6rem; font-size: 0.85rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+.report-session header strong { font-size: 0.92rem; }
+
+.day-chart { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; align-items: end; min-height: 180px; }
+.day-chart .day { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
+.day-chart .day-bars { display: flex; align-items: flex-end; gap: 3px; height: 130px; }
+.day-chart .day-bars b { display: block; width: 12px; background: var(--brand); border-radius: 4px 4px 0 0; }
+.day-chart .day-bars b.returned { background: #94a3b8; }
+.day-chart .day span { font-size: 0.7rem; color: var(--muted); }
+
+.report-footer { border-top: 1px solid var(--line); margin-top: 1.2rem; padding-top: 0.6rem; font-size: 0.72rem; color: var(--muted); display: flex; justify-content: space-between; }
+
+@media print {
+  .report-sheet { border: 0; box-shadow: none; padding: 0; }
+}

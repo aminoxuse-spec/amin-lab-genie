@@ -1,0 +1,72 @@
+.labels-toolbar {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+
+.labels-sheet {
+  display: grid;
+  gap: 2mm;
+  background: #fff;
+  padding: 2mm;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.labels-sheet.size-10 { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 52mm; }
+.labels-sheet.size-21 { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 38mm; }
+.labels-sheet.size-40 { grid-template-columns: repeat(4, 1fr); grid-auto-rows: 26mm; }
+
+.label {
+  border: 1px dashed #cbd5d1;
+  border-radius: 4mm;
+  padding: 1.6mm;
+  display: flex;
+  align-items: center;
+  gap: 1.6mm;
+  overflow: hidden;
+  position: relative;
+  background: #fff;
+  break-inside: avoid;
+}
+
+.label img { width: 22mm; height: 22mm; flex: 0 0 auto; }
+.label-text { display: flex; flex-direction: column; gap: 0.4mm; min-width: 0; }
+.label-text strong { font-size: 3.2mm; letter-spacing: 0.02em; }
+.label-text span { font-size: 2.9mm; color: #0f766e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.label-text small { font-size: 2.3mm; color: #64748b; }
+
+.size-10 .label img { width: 26mm; height: 26mm; }
+.size-10 .label-text strong { font-size: 3.6mm; }
+.size-21 .label img { width: 20mm; height: 20mm; }
+.size-40 .label { padding: 1mm; gap: 1mm; }
+.size-40 .label img { width: 15mm; height: 15mm; }
+.size-40 .label-text strong { font-size: 2.6mm; }
+.size-40 .label-text span { font-size: 2.3mm; }
+.size-40 .label-text small { font-size: 1.9mm; }
+
+.label .trial {
+  position: absolute;
+  bottom: 1mm;
+  inset-inline-end: 1.4mm;
+  color: #dc2626;
+  font-size: 2mm;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.size-40 .label .trial { font-size: 1.7mm; }
+
+@media print {
+  @page { size: A4; margin: 5mm; }
+  .labels-sheet {
+    border: 0;
+    padding: 0;
+    gap: 1.6mm;
+    border-radius: 0;
+  }
+  .label { border-color: #bbb; }
+  .topbar, .sidebar { display: none !important; }
+}

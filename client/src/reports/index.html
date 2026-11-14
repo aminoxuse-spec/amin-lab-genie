@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>التقارير والإحصائيات — Amin-Lab -cem🔬</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/reports/shared/report-styles.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/assets/icons/favicon.png" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar"></aside>
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <h1>التقارير والإحصائيات</h1>
+            <p>ستة تقارير جاهزة للطباعة (PDF) والتصدير إلى Excel أو CSV</p>
+          </div>
+          <div class="row-actions">
+            <a class="btn" href="/reports/daily/daily-report.html">📄 التفصيل اليومي</a>
+            <a class="btn" href="/reports/weekly/weekly-report.html">📈 التفصيل الأسبوعي</a>
+          </div>
+        </header>
+
+        <section class="grid cols-4" id="stats" style="margin-bottom: 1rem"></section>
+
+        <section class="grid cols-2">
+          <a class="card report-card" href="/reports/daily/daily-report.html">
+            <h2>📄 التقرير اليومي</h2>
+            <p>جميع عمليات الإعارة والإرجاع خلال اليوم مع تفاصيل العناصر.</p>
+            <span class="badge info">اختيار التاريخ · طباعة · Excel</span>
+          </a>
+          <a class="card report-card" href="/reports/weekly/weekly-report.html">
+            <h2>📈 التقرير الأسبوعي</h2>
+            <p>مجموع العمليات خلال أسبوع: الحركة اليومية وأكثر العناصر استعمالاً.</p>
+            <span class="badge info">اختيار الأسبوع · طباعة · Excel</span>
+          </a>
+          <a class="card report-card" href="/reports/teachers.html">
+            <h2>🧑‍🏫 تقرير الأساتذة</h2>
+            <p>إعارات كل أستاذ: عدد العمليات، الوحدات المعارة والمستهلكة والمتبقية.</p>
+            <span class="badge info">فترة مخصصة · Excel</span>
+          </a>
+          <a class="card report-card" href="/reports/equipment.html">
+            <h2>🔬 تقرير العتاد</h2>
+            <p>العتاد المستعار والمتبقي في المخزون مع التالف والمفقود.</p>
+            <span class="badge info">فترة مخصصة · Excel</span>
+          </a>
+          <a class="card report-card" href="/reports/chemicals.html">
+            <h2>🧪 تقرير المواد الكيميائية</h2>
+            <p>الكميات المستهلكة والمتبقية ونسب الاستعمال لكل مادة.</p>
+            <span class="badge info">فترة مخصصة · Excel</span>
+          </a>
+          <a class="card report-card" href="/reports/late.html">
+            <h2>⏰ تقرير التأخر</h2>
+            <p>الإعارات التي لم تُرجع في موعدها مع مدة التأخر والكميات المتبقية.</p>
+            <span class="badge info">تحديث تلقائي · Excel</span>
+          </a>
+        </section>
+
+        <section class="card" style="margin-top: 1rem">
+          <div class="card-head"><h2>ملاحظات</h2></div>
+          <ul class="muted" style="line-height: 1.9; padding-inline-start: 1.2rem">
+            <li>الطباعة PDF: من نافذة الطباعة اختر «حفظ كـ PDF».</li>
+            <li>تصدير Excel ينتج ملف <code>.xls</code> (SpreadsheetML) يفتح مباشرة في Excel.</li>
+            <li>التقرير الأسبوعي يبدأ من التاريخ الذي تختاره ويغطي 7 أيام.</li>
+          </ul>
+        </section>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
+    <script>
+      (function () {
+        if (!App.mount('reports')) return;
+
+        Promise.all([App.api('/inventory/summary'), App.api('/reports/late'), App.api('/reports/daily')])
+          .then(function (results) {
+            var summary = results[0].summary;
+            var late = results[1];
+            var today = results[2];
+            document.getElementById('stats').innerHTML =
+              '<div class="stat"><span>أصناف الجرد</span><strong>' + summary.total + '</strong></div>' +
+              '<div class="stat ' + (today.totals.openSessions ? 'warn' : 'ok') + '"><span>إعارات غير مكتملة</span><strong>' + today.totals.openSessions + '</strong></div>' +
+              '<div class="stat ' + (late.rows.length ? 'danger' : 'ok') + '"><span>إعارات متأخرة</span><strong>' + late.rows.length + '</strong></div>' +
+              '<div class="stat"><span>وحدات لم تُرجع</span><strong>' + late.summary[1].value + '</strong></div>';
+          })
+          .catch(function (error) { App.toast(error.message, 'error'); });
+      })();
+    </script>
+  </body>
+</html>

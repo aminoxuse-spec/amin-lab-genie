@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>الإعارة — Amin-Lab -cem🔬</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/borrowing/borrowing.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/assets/icons/favicon.png" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar"></aside>
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <h1>الإعارة والإرجاع</h1>
+            <p>جلسات إعارة متعددة الأصناف في نفس الحصة</p>
+          </div>
+          <div id="pageActions"></div>
+        </header>
+
+        <section class="card">
+          <div class="toolbar" style="margin-bottom: 1rem">
+            <div class="field">
+              <label for="status">الحالة</label>
+              <select id="status">
+                <option value="">الكل</option>
+                <option value="open">قيد الإعارة</option>
+                <option value="partial">إرجاع جزئي</option>
+                <option value="returned">مُرجعة</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="date">التاريخ</label>
+              <input id="date" type="date" />
+            </div>
+            <button class="btn" type="button" id="resetBtn">إعادة تعيين</button>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th><th>التاريخ</th><th>التوقيت</th><th>القسم</th><th>المادة</th>
+                  <th>الأستاذ</th><th>القاعة</th><th>الأصناف</th><th>المُرجع</th><th>الحالة</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="rows"><tr><td colspan="11" class="empty">جارٍ التحميل…</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal" id="returnModal">
+      <div class="modal-box">
+        <h2>إرجاع الأصناف</h2>
+        <p id="returnInfo" class="muted"></p>
+        <form id="returnForm">
+          <div class="row-actions" style="justify-content:flex-end;margin-bottom:.5rem">
+            <button class="btn btn-sm" type="button" id="fillAllBtn">إرجاع الكل</button>
+          </div>
+          <div id="returnRows"></div>
+          <div class="modal-actions">
+            <button class="btn" type="button" data-close="returnModal">إلغاء</button>
+            <button class="btn btn-primary" type="submit">تأكيد الإرجاع</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="sessionModal">
+      <div class="modal-box">
+        <h2>تعديل بيانات الإعارة</h2>
+        <form id="sessionForm">
+          <input type="hidden" id="sessionId" />
+          <div class="form-grid">
+            <div class="field"><label for="editLevel">المستوى</label><input id="editLevel" maxlength="60" /></div>
+            <div class="field"><label for="editClass">القسم</label><input id="editClass" required maxlength="80" /></div>
+            <div class="field"><label for="editSubject">المادة</label><input id="editSubject" required maxlength="80" /></div>
+            <div class="field"><label for="editDate">التاريخ</label><input id="editDate" type="date" required /></div>
+            <div class="field"><label for="editStart">من</label><input id="editStart" type="time" required /></div>
+            <div class="field"><label for="editEnd">إلى</label><input id="editEnd" type="time" required /></div>
+            <div class="field"><label for="editRoom">القاعة</label><select id="editRoom"><option value="">بدون قاعة</option></select></div>
+          </div>
+          <div class="field" style="margin-top:.7rem"><label for="editNotes">ملاحظات</label><textarea id="editNotes" maxlength="500"></textarea></div>
+          <p class="muted" style="margin-top:.5rem">الكميات تُعدّل عبر الإرجاع أو بإعارة جديدة.</p>
+          <div class="modal-actions">
+            <button class="btn" type="button" data-close="sessionModal">إلغاء</button>
+            <button class="btn btn-primary" type="submit">حفظ التعديل</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="detailModal">
+      <div class="modal-box">
+        <h2>تفاصيل الجلسة</h2>
+        <div id="detailBody"></div>
+        <div class="modal-actions">
+          <button class="btn" type="button" data-close="detailModal">إغلاق</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/app.js"></script>
+    <script src="/actions.js"></script>
+    <script src="/borrowing/borrowing.js"></script>
+  </body>
+</html>

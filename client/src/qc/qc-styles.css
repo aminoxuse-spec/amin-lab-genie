@@ -1,0 +1,30 @@
+.bar-row {
+  display: grid;
+  grid-template-columns: 130px 1fr 48px;
+  gap: 0.6rem;
+  align-items: center;
+  margin-bottom: 0.55rem;
+  font-size: 0.85rem;
+}
+.bar-track { background: #eef2f1; border-radius: 999px; height: 12px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 999px; background: var(--brand); }
+.bar-fill.low { background: #f59e0b; }
+.bar-fill.expired { background: #b91c1c; }
+.bar-fill.damaged { background: #ea580c; }
+.bar-fill.ok { background: #15803d; }
+
+.trend {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(34px, 1fr));
+  gap: 0.4rem;
+  align-items: end;
+  min-height: 170px;
+}
+.trend-day { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
+.trend-bars { display: flex; align-items: flex-end; gap: 3px; height: 130px; }
+.trend-bars i { display: block; width: 9px; border-radius: 3px 3px 0 0; background: #15803d; }
+.trend-bars i.issues { background: #f59e0b; }
+.trend-day span { font-size: 0.65rem; color: var(--muted); }
+
+.legend { display: flex; gap: 1rem; font-size: 0.75rem; color: var(--muted); margin-top: 0.6rem; flex-wrap: wrap; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-inline-end: 0.3rem; }

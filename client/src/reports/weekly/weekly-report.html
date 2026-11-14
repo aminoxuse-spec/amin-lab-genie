@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>التقرير الأسبوعي — Amin-Lab -cem🔬</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/reports/shared/report-styles.css" />
+    <link rel="stylesheet" href="/reports/shared/print-styles.css" />
+    <link rel="stylesheet" href="/reports/weekly/weekly-report.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/assets/icons/favicon.png" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar"></aside>
+      <main class="content">
+        <header class="topbar no-print">
+          <div>
+            <h1>التقرير الأسبوعي</h1>
+            <p>تحليل نشاط المختبر على مدى سبعة أيام</p>
+          </div>
+          <div class="row-actions">
+            <div class="field" style="min-width: 160px">
+              <label for="start">بداية الأسبوع</label>
+              <input id="start" type="date" />
+            </div>
+            <button class="btn" type="button" id="csvBtn">⬇️ CSV</button>
+            <button class="btn" type="button" id="xlsBtn">📊 Excel</button>
+            <button class="btn btn-primary" type="button" id="printBtn">🖨️ طباعة</button>
+          </div>
+        </header>
+
+        <article class="report-sheet" id="report">
+          <div class="empty">جارٍ تحميل التقرير…</div>
+        </article>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
+    <script src="/reports/shared/report-templates.js"></script>
+    <script src="/reports/weekly/weekly-report.js"></script>
+  </body>
+</html>

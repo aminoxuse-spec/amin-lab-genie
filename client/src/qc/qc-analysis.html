@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>تحليل المخزون — Amin-Lab -cem🔬</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/qc/qc-styles.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/assets/icons/favicon.png" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar"></aside>
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <h1>تحليل المخزون</h1>
+            <p>مؤشرات الجودة، الاتجاه اليومي، والأصناف التي تحتاج تدخلاً</p>
+          </div>
+          <div class="row-actions no-print">
+            <a class="btn" href="/qc/qc-dashboard.html">→ تسجيل فحص</a>
+            <button class="btn" type="button" id="printBtn">🖨️ طباعة</button>
+          </div>
+        </header>
+
+        <section class="grid cols-4" id="stats" style="margin-bottom: 1rem"></section>
+
+        <div class="grid cols-2" style="margin-bottom: 1rem">
+          <section class="card">
+            <div class="card-head">
+              <h2>تنبيهات تستدعي انتباهك</h2>
+              <span class="badge warn" id="attentionCount">0</span>
+            </div>
+            <div id="attention"><div class="empty">جارٍ التحميل…</div></div>
+          </section>
+
+          <section class="card">
+            <div class="card-head"><h2>توزيع الجرد حسب النوع</h2></div>
+            <div id="distribution"><div class="empty">جارٍ التحميل…</div></div>
+          </section>
+        </div>
+
+        <div class="grid cols-2">
+          <section class="card">
+            <div class="card-head"><h2>اتجاه الفحوصات (14 يوماً)</h2></div>
+            <div id="trend" class="trend"></div>
+          </section>
+
+          <section class="card">
+            <div class="card-head"><h2>توزيع نتائج الفحص</h2></div>
+            <div id="breakdown"></div>
+          </section>
+        </div>
+
+        <section class="card" style="margin-top: 1rem">
+          <div class="card-head"><h2>أصناف تحت الحد الأدنى</h2></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>الرمز</th><th>الصنف</th><th>الفئة</th><th>المتوفر</th><th>الحد الأدنى</th></tr></thead>
+              <tbody id="lowStockBody"><tr><td colspan="5" class="empty">لا توجد أصناف</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" style="margin-top: 1rem">
+          <div class="card-head"><h2>صلاحية قريبة الانتهاء (60 يوماً)</h2></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>الرمز</th><th>الصنف</th><th>تاريخ الصلاحية</th><th>الكمية</th></tr></thead>
+              <tbody id="expiringBody"><tr><td colspan="4" class="empty">لا توجد مواد قاربت الصلاحية</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
+    <script src="/qc/qc-report.js"></script>
+    <script>
+      (function () {
+        if (!App.token) return;
+        var attention = document.getElementById('attention');
+        var distribution = document.getElementById('distribution');
+
+        function alertRow(tone, title, note, href) {
+          var body =
+            '<span class="dot"></span><div class="alert-main"><strong>' + App.escape(title) + '</strong>' +
+            '<small>' + App.escape(note) + '</small></div>';
+          return href
+            ? '<a class="alert-item ' + tone + '" style="color:inherit" href="' + href + '">' + body + '</a>'
+            : '<div class="alert-item ' + tone + '">' + body + '</div>';
+        }
+
+        App.api('/qc/analysis')
+          .then(function (data) {
+            var rows = [];
+            (data.expiring || []).forEach(function (item) {
+              rows.push(
+                alertRow('danger', item.name, 'تنتهي الصلاحية في ' + App.fmtDate(item.expiry_date), '/inventory/inventory.html?category=chemical')
+              );
+            });
+            (data.lowStock || []).forEach(function (item) {
+              rows.push(
+                alertRow(
+                  item.available_quantity === 0 ? 'danger' : 'warn',
+                  item.name,
+                  'الكمية ' + item.available_quantity + ' أقل من الحد الأدنى ' + item.min_quantity,
+                  '/inventory/inventory.html?category=' + item.category
+                )
+              );
+            });
+            document.getElementById('attentionCount').textContent = rows.length;
+            attention.innerHTML = rows.length ? rows.join('') : '<div class="empty">لا توجد تنبيهات — المخزون في حالة جيدة</div>';
+          })
+          .catch(function (error) {
+            attention.innerHTML = '<div class="empty">' + App.escape(error.message) + '</div>';
+          });
+
+        var types = [
+          { label: 'أجهزة', category: 'apparatus' },
+          { label: 'زجاجيات', category: 'glassware' },
+          { label: 'مواد كيميائية', category: 'chemical' }
+        ];
+        Promise.all(
+          types.map(function (type) {
+            return App.api('/inventory?category=' + type.category).then(function (data) {
+              return { label: type.label, count: (data.items || []).length };
+            });
+          })
+        )
+          .then(function (rows) {
+            var max = rows.reduce(function (top, row) { return Math.max(top, row.count); }, 1);
+            distribution.innerHTML = rows
+              .map(function (row) {
+                return (
+                  '<div class="dist-row"><span class="dist-label">' + row.label + '</span>' +
+                  '<span class="dist-bar"><i style="width:' + Math.round((row.count / max) * 100) + '%"></i></span>' +
+                  '<span class="dist-value">' + row.count + '</span></div>'
+                );
+              })
+              .join('');
+          })
+          .catch(function () {
+            distribution.innerHTML = '<div class="empty">تعذّر تحميل التوزيع</div>';
+          });
+      })();
+    </script>
+  </body>
+</html>

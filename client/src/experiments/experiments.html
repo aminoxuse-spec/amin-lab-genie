@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>برنامج التجارب التطبيقية — Amin-Lab -cem🔬</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/assets/icons/favicon.png" />
+    <style>
+      @media print {
+        body.printing-middle #secondarySection,
+        body.printing-secondary #middleSection {
+          display: none !important;
+        }
+        .no-print {
+          display: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar"></aside>
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <h1>برنامج التجارب التطبيقية</h1>
+            <p>التجارب التطبيقية لكل مستويات التعليم المتوسط والثانوي</p>
+          </div>
+          <div class="row-actions no-print">
+            <div id="pageActions"></div>
+          </div>
+        </header>
+
+        <section class="card" id="middleSection" style="margin-bottom: 1rem">
+          <div class="card-head">
+            <h2>التعليم المتوسط</h2>
+            <span class="badge info" id="middleCount">0 تجربة</span>
+          </div>
+          <div class="toolbar no-print" style="margin-bottom: .8rem">
+            <div class="field" style="flex: 1 1 220px">
+              <label for="middleSearch">بحث</label>
+              <input id="middleSearch" type="search" placeholder="عنوان التجربة، المستوى، المادة…" />
+            </div>
+            <div class="field">
+              <label for="middleLevel">المستوى</label>
+              <select id="middleLevel"><option value="">كل المستويات</option></select>
+            </div>
+            <div class="field">
+              <label for="middleSubject">المادة</label>
+              <select id="middleSubject"><option value="">كل المواد</option></select>
+            </div>
+            <div class="field" style="flex: 0 0 auto; align-items: flex-start">
+              <label>النتائج</label>
+              <span class="badge info" id="middleResultCount">0</span>
+            </div>
+          </div>
+          <div id="middleActions" class="no-print" style="margin-bottom:.8rem"></div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>المستوى</th>
+                  <th>المادة</th>
+                  <th>عنوان التجربة</th>
+                  <th>الهدف</th>
+                  <th>الأجهزة والمواد</th>
+                  <th>المدة</th>
+                  <th>ملاحظات</th>
+                  <th class="no-print">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="middleBody"><tr><td colspan="8" class="empty">جارٍ التحميل…</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="secondarySection">
+          <div class="card-head">
+            <h2>التعليم الثانوي</h2>
+            <span class="badge info" id="secondaryCount">0 تجربة</span>
+          </div>
+          <div class="toolbar no-print" style="margin-bottom: .8rem">
+            <div class="field" style="flex: 1 1 220px">
+              <label for="secondarySearch">بحث</label>
+              <input id="secondarySearch" type="search" placeholder="عنوان التجربة، المستوى، المادة…" />
+            </div>
+            <div class="field">
+              <label for="secondaryLevel">المستوى</label>
+              <select id="secondaryLevel"><option value="">كل المستويات</option></select>
+            </div>
+            <div class="field">
+              <label for="secondarySubject">المادة</label>
+              <select id="secondarySubject"><option value="">كل المواد</option></select>
+            </div>
+            <div class="field" style="flex: 0 0 auto; align-items: flex-start">
+              <label>النتائج</label>
+              <span class="badge info" id="secondaryResultCount">0</span>
+            </div>
+          </div>
+          <div id="secondaryActions" class="no-print" style="margin-bottom:.8rem"></div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>المستوى</th>
+                  <th>المادة</th>
+                  <th>عنوان التجربة</th>
+                  <th>الهدف</th>
+                  <th>الأجهزة والمواد</th>
+                  <th>المدة</th>
+                  <th>ملاحظات</th>
+                  <th class="no-print">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="secondaryBody"><tr><td colspan="8" class="empty">جارٍ التحميل…</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal" id="experimentModal">
+      <div class="modal-box" style="max-width: 760px">
+        <h2 id="experimentModalTitle">تجربة جديدة</h2>
+        <form id="experimentForm">
+          <input type="hidden" id="experimentId" />
+          <input type="hidden" id="experimentStage" />
+          <div class="form-grid">
+            <div class="field">
+              <label for="experimentLevel">المستوى</label>
+              <input id="experimentLevel" required maxlength="80" placeholder="السنة الأولى متوسط" />
+            </div>
+            <div class="field">
+              <label for="experimentSubject">المادة</label>
+              <input id="experimentSubject" maxlength="80" placeholder="الفيزياء والكيمياء" />
+            </div>
+            <div class="field" style="grid-column: 1 / -1">
+              <label for="experimentTitle">عنوان التجربة</label>
+              <input id="experimentTitle" required maxlength="200" placeholder="قياس الكثافة…" />
+            </div>
+            <div class="field" style="grid-column: 1 / -1">
+              <label for="experimentObjective">هدف التجربة</label>
+              <textarea id="experimentObjective" maxlength="1000" placeholder="ما الذي تهدف إلى إثباته أو قياسه…"></textarea>
+            </div>
+            <div class="field" style="grid-column: 1 / -1">
+              <label for="experimentMaterials">الأجهزة والمواد</label>
+              <textarea id="experimentMaterials" maxlength="1000" placeholder="مجهر، كؤوس، محاليل…"></textarea>
+            </div>
+            <div class="field">
+              <label for="experimentDuration">المدة (دقائق)</label>
+              <input id="experimentDuration" type="number" min="0" max="1000" step="1" />
+            </div>
+            <div class="field" style="grid-column: 1 / -1">
+              <label for="experimentNotes">ملاحظات</label>
+              <textarea id="experimentNotes" maxlength="1000"></textarea>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn" type="button" data-close="experimentModal">إلغاء</button>
+            <button class="btn btn-primary" type="submit">حفظ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="/app.js"></script>
+    <script src="/actions.js"></script>
+    <script src="/experiments/experiments.js"></script>
+  </body>
+</html>

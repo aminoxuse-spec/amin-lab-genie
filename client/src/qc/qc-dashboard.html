@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>فحص الجودة — Amin-Lab -cem🔬</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/qc/qc-styles.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/assets/icons/favicon.png" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar"></aside>
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <h1>فحص الجودة (QC)</h1>
+            <p>تسجيل نتائج الفحص الدوري للمخزون ومتابعة الحالة</p>
+          </div>
+          <div class="row-actions">
+            <a class="btn" href="/qc/qc-analysis.html">📈 التحليل الكامل</a>
+            <div id="pageActions"></div>
+          </div>
+        </header>
+
+        <section class="grid cols-4" id="stats" style="margin-bottom: 1rem"></section>
+
+        <div class="grid cols-2">
+          <section class="card">
+            <div class="card-head"><h2>تسجيل فحص جديد</h2></div>
+            <form id="checkForm">
+              <div class="field" style="margin-bottom: 0.7rem">
+                <label for="inventoryId">الصنف</label>
+                <select id="inventoryId" required></select>
+              </div>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="status">النتيجة</label>
+                  <select id="status" required>
+                    <option value="ok">سليم</option>
+                    <option value="low">كمية منخفضة</option>
+                    <option value="damaged">تالف</option>
+                    <option value="expired">منتهي الصلاحية</option>
+                  </select>
+                </div>
+                <div class="field"><label for="quantityFound">الكمية الموجودة</label><input id="quantityFound" type="number" min="0" step="1" required value="0" /></div>
+                <div class="field"><label for="checkDate">تاريخ الفحص</label><input id="checkDate" type="date" required /></div>
+              </div>
+              <div class="field" style="margin-top: 0.7rem">
+                <label for="notes">ملاحظات</label>
+                <textarea id="notes" maxlength="500" placeholder="ملاحظات حول حالة الصنف…"></textarea>
+              </div>
+              <div style="display:flex;justify-content:flex-end;margin-top:.8rem">
+                <button class="btn btn-primary" type="submit">حفظ الفحص</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="card">
+            <div class="card-head"><h2>توزيع النتائج</h2></div>
+            <div id="breakdown"></div>
+          </section>
+        </div>
+
+        <section class="card" style="margin-top: 1rem">
+          <div class="card-head">
+            <h2>آخر الفحوصات</h2>
+            <span class="badge info" id="checksCount">0</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>التاريخ</th><th>الصنف</th><th>الرمز</th><th>النتيجة</th><th>الكمية</th><th>ملاحظات</th></tr></thead>
+              <tbody id="checksBody"><tr><td colspan="6" class="empty">جارٍ التحميل…</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal" id="checkModal">
+      <div class="modal-box">
+        <h2>تعديل سجل الفحص</h2>
+        <p class="muted" id="checkItemName"></p>
+        <form id="checkEditForm">
+          <input type="hidden" id="checkId" />
+          <div class="form-grid">
+            <div class="field">
+              <label for="editStatus">النتيجة</label>
+              <select id="editStatus" required>
+                <option value="ok">سليم</option>
+                <option value="low">كمية منخفضة</option>
+                <option value="damaged">تالف</option>
+                <option value="expired">منتهي الصلاحية</option>
+              </select>
+            </div>
+            <div class="field"><label for="editQuantity">الكمية الموجودة</label><input id="editQuantity" type="number" min="0" step="1" required /></div>
+            <div class="field"><label for="editCheckDate">تاريخ الفحص</label><input id="editCheckDate" type="date" required /></div>
+          </div>
+          <div class="field" style="margin-top:.7rem"><label for="editCheckNotes">ملاحظات</label><textarea id="editCheckNotes" maxlength="500"></textarea></div>
+          <div class="modal-actions">
+            <button class="btn" type="button" data-close="checkModal">إلغاء</button>
+            <button class="btn btn-primary" type="submit">حفظ التعديل</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="/app.js"></script>
+    <script src="/actions.js"></script>
+    <script src="/qc/qc-report.js"></script>
+  </body>
+</html>

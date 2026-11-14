@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>وصل الإعارة — Amin-Lab -cem🔬</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/reports/shared/report-styles.css" />
+    <link rel="stylesheet" href="/reports/shared/print-styles.css" />
+    <link rel="stylesheet" href="/borrowing/borrowing.css" />
+    <style>
+      .receipt-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.6rem; margin-bottom: 1rem; }
+      .receipt-info div { border: 1px solid var(--line); border-radius: 10px; padding: 0.5rem 0.7rem; font-size: 0.85rem; }
+      .receipt-info span { display: block; color: var(--muted); font-size: 0.72rem; margin-bottom: 0.15rem; }
+      .receipt-sign { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2.2rem; font-size: 0.85rem; }
+      .receipt-sign div { flex: 1; text-align: center; border-top: 1px dashed #94a3b8; padding-top: 0.5rem; }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar"></aside>
+      <main class="content">
+        <header class="topbar no-print">
+          <div>
+            <h1>وصل الإعارة</h1>
+            <p>نسخة قابلة للطباعة أو الحفظ كـ PDF عبر مربع الطباعة</p>
+          </div>
+          <div class="row-actions">
+            <a class="btn" href="/borrowing/borrowing.html">→ السجل</a>
+            <button class="btn btn-primary" type="button" id="printBtn">🖨️ طباعة الوصل</button>
+          </div>
+        </header>
+
+        <article class="report-sheet" id="receipt">
+          <div class="empty">جارٍ تحميل الوصل…</div>
+        </article>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
+    <script src="/reports/shared/report-templates.js"></script>
+    <script src="/borrowing/receipt.js"></script>
+  </body>
+</html>

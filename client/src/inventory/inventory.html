@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>الجرد — Amin-Lab -cem🔬</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/assets/icons/favicon.png" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar"></aside>
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <h1 id="pageTitle">الجرد العام</h1>
+            <p id="pageSubtitle">الأجهزة والزجاجيات والمواد الكيميائية المتوفرة في المختبر</p>
+          </div>
+          <div class="row-actions">
+            <a class="btn" href="/labels.html">🏷️ ملصقات QR</a>
+            <button class="btn" type="button" id="trashBtn" hidden>🗑️ سلة المحذوفات <span class="badge" id="trashCount">0</span></button>
+            <div id="pageActions"></div>
+          </div>
+        </header>
+
+        <nav class="section-tabs no-print" id="sectionTabs"></nav>
+
+        <section class="card">
+          <div class="toolbar no-print" style="margin-bottom: 1rem">
+            <div class="field" style="flex: 1 1 220px">
+              <label for="search">بحث</label>
+              <input id="search" type="search" placeholder="اسم الصنف، الرمز أو المكان" />
+            </div>
+            <div class="field">
+              <label for="category">الفئة</label>
+              <select id="category">
+                <option value="">كل الفئات</option>
+                <option value="apparatus">أجهزة</option>
+                <option value="glassware">زجاجيات</option>
+                <option value="chemical">مواد كيميائية</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="status">الحالة</label>
+              <select id="status">
+                <option value="">كل الحالات</option>
+                <option value="low">تحت الحد الأدنى</option>
+                <option value="out">نافد</option>
+              </select>
+            </div>
+            <div class="field" style="flex: 0 0 auto; align-items: flex-start">
+              <label>النتائج</label>
+              <span class="badge info" id="resultCount">0 عنصر</span>
+            </div>
+          </div>
+
+          <div class="grid cols-4" id="summary" style="margin-bottom: 1rem"></div>
+
+          <div class="inv-grid" id="rows"><div class="empty">جارٍ التحميل…</div></div>
+          <p class="muted" style="margin-top:.6rem">
+            اختر بطاقة صنف ثم اضغط «تعديل» لفتح نموذج تعديله.
+          </p>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal" id="trashModal">
+      <div class="modal-box">
+        <h2>سلة المحذوفات</h2>
+        <p class="muted">الأصناف المحذوفة تبقى هنا ويمكن استرجاعها في أي وقت، أو حذفها نهائياً.</p>
+        <div id="trashBody" class="table-wrap"><div class="empty">جارٍ التحميل…</div></div>
+        <div class="modal-actions">
+          <button class="btn" type="button" data-close="trashModal">إغلاق</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="itemModal">
+      <div class="modal-box">
+        <h2 id="modalTitle">صنف جديد</h2>
+        <form id="itemForm">
+          <input type="hidden" id="itemId" />
+          <div class="form-grid">
+            <div class="field"><label for="code">الرمز</label><input id="code" required maxlength="40" placeholder="APP-010" /></div>
+            <div class="field"><label for="name">اسم الصنف</label><input id="name" required maxlength="120" /></div>
+            <div class="field">
+              <label for="itemCategory">الفئة</label>
+              <select id="itemCategory" required>
+                <option value="apparatus">أجهزة</option>
+                <option value="glassware">زجاجيات</option>
+                <option value="chemical">مواد كيميائية</option>
+              </select>
+            </div>
+            <div class="field"><label for="quantity">الكمية الإجمالية</label><input id="quantity" type="number" min="0" step="1" required /></div>
+            <div class="field"><label for="unit">الوحدة</label><input id="unit" maxlength="20" placeholder="قطعة" /></div>
+            <div class="field"><label for="minQuantity">الحد الأدنى</label><input id="minQuantity" type="number" min="0" step="1" /></div>
+            <div class="field"><label for="location">المكان</label><input id="location" maxlength="80" placeholder="خزانة A" /></div>
+            <div class="field"><label for="expiry">تاريخ الصلاحية</label><input id="expiry" type="date" /></div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn" type="button" data-close="itemModal">إلغاء</button>
+            <button class="btn btn-primary" type="submit">حفظ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="/app.js"></script>
+    <script src="/actions.js"></script>
+    <script src="/inventory/inventory.js"></script>
+  </body>
+</html>
