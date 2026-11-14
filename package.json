@@ -20,7 +20,8 @@
     "backup": "node --input-type=module -e \"import('./server/src/utils/backup.ts').then(m => console.log(m.createBackup()))\"",
     "icons": "node scripts/make-icons.mjs",
     "license": "node scripts/make-license.mjs",
-    "package": "node scripts/create-package.mjs"
+    "package": "node scripts/create-package.mjs",
+    "set-password": "node scripts/set-password.mjs"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",

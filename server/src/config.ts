@@ -1,5 +1,12 @@
 import { resolve } from 'node:path';
 
+// تحميل .env إن وُجد (Node 22.18+) قبل قراءة أي متغير.
+try {
+  process.loadEnvFile();
+} catch {
+  /* لا يوجد .env — نعتمد على متغيرات البيئة مباشرة */
+}
+
 /** اسم التطبيق النهائي */
 export const APP_NAME = 'Amin-Lab -Pro🔬';
 export const APP_VERSION = '1.5.1';

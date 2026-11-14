@@ -20,7 +20,7 @@
 
 ### `POST /auth/login`
 ```json
-{ "username": "admin", "password": "admin123" }
+{ "username": "admin", "password": "<كلمة المرور المضبوطة>" }
 ```
 **200**
 ```json

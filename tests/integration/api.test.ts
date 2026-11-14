@@ -10,6 +10,8 @@ process.env.DATA_DIR = dataDir;
 process.env.BACKUP_DIR = join(dataDir, 'backups');
 process.env.DB_PATH = join(dataDir, 'test.sqlite');
 process.env.APP_SECRET = 'test-secret';
+process.env.ADMIN_PASSWORD = 'test-admin-pass';
+process.env.TEACHER_PASSWORD = 'test-teacher-pass';
 
 const { createApp } = await import('../../server/src/app.ts');
 const { seed } = await import('../../server/src/seed.ts');
@@ -68,7 +70,7 @@ test('تسجيل الدخول يرفض بيانات خاطئة ويقبل الص
   const good = await call('/api/auth/login', {
     method: 'POST',
     auth: '',
-    body: { username: 'admin', password: 'admin123' },
+    body: { username: 'admin', password: 'test-admin-pass' },
   });
   assert.equal(good.status, 200);
   assert.equal(good.data.user.role, 'admin');

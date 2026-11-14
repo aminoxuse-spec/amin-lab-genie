@@ -1,3 +1,7 @@
+import { randomBytes } from 'node:crypto';
+import { chmodSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { DATA_DIR } from './config.ts';
 import { countUsers, createUser, findByUsername } from './models/User.ts';
 import { countRooms, listRooms, createRoom } from './models/LabRoom.ts';
 import { createInventory, listInventory } from './models/Inventory.ts';
@@ -5,25 +9,56 @@ import { createSchedule, listSchedule } from './models/Schedule.ts';
 import { hashPassword } from './utils/security.ts';
 import { logger } from './utils/logger.ts';
 
+/** كلمة مرور قوية عشوائية (24 حرفاً) تُولَّد عند أول تشغيل إن لم تُضبط بالبيئة. */
+function strongPassword(): string {
+  return randomBytes(18).toString('base64url');
+}
+
 /**
  * تعبئة أولية: تُنفَّذ مرة واحدة فقط على قاعدة بيانات فارغة.
- * كلمات المرور الافتراضية موثّقة في docs/SECURITY.md ويجب تغييرها بعد التثبيت.
+ * كلمات المرور تُؤخذ من ADMIN_PASSWORD / TEACHER_PASSWORD، وإلا تُولَّد عشوائياً
+ * وتُكتب في data/first-run-credentials.txt بصلاحيات 600 فقط (لا تُطبع في السجل).
  */
 export function seed(): void {
   if (countUsers() === 0) {
+    const generated: Array<[string, string]> = [];
+
+    const adminFromEnv = (process.env.ADMIN_PASSWORD ?? '').trim();
+    const adminPassword = adminFromEnv || strongPassword();
+    if (!adminFromEnv) generated.push(['admin', adminPassword]);
+
+    const teacherFromEnv = (process.env.TEACHER_PASSWORD ?? '').trim();
+    const teacherPassword = teacherFromEnv || strongPassword();
+    if (!teacherFromEnv) generated.push(['teacher', teacherPassword]);
+
     createUser({
       username: 'admin',
       full_name: 'مدير المختبر',
       role: 'admin',
-      password_hash: hashPassword('admin123'),
+      password_hash: hashPassword(adminPassword),
     });
     createUser({
       username: 'teacher',
       full_name: 'الأستاذ أمين',
       role: 'teacher',
-      password_hash: hashPassword('teacher123'),
+      password_hash: hashPassword(teacherPassword),
     });
-    logger.info('تم إنشاء الحسابات الافتراضية (admin / teacher)');
+
+    if (generated.length > 0) {
+      const file = join(DATA_DIR, 'first-run-credentials.txt');
+      const lines = [
+        '# بيانات الدخول الأولى — انقلها إلى مدير كلمات المرور ثم احذف هذا الملف.',
+        ...generated.map(([username, password]) => `${username}\t${password}`),
+      ];
+      writeFileSync(file, `${lines.join('\n')}\n`, { mode: 0o600 });
+      try {
+        chmodSync(file, 0o600);
+      } catch {
+        /* على Windows قد لا تُدعم الصلاحيات — الملف يبقى داخل data المحمي */
+      }
+      logger.warn('تم توليد كلمات مرور قوية للحسابات الأولى', { file });
+    }
+    logger.info('تم إنشاء الحسابات الأولية (admin / teacher)');
   }
 
   if (countRooms() === 0) {
