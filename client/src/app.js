@@ -141,6 +141,120 @@
     }
   };
 
+  /* ---- ترجمة محتوى الصفحات تلقائياً حسب اللغة المختارة ---- */
+  var ARABIC_RE = /[\u0600-\u06FF]/;
+  var CONTENT_ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+  var SKIP_TAGS = /^(SCRIPT|STYLE|NOSCRIPT|CODE|PRE|TEXTAREA)$/;
+  var contentObserver = null;
+  var contentStarted = false;
+
+  function contentDictionary() {
+    var table = window.APP_CONTENT_I18N;
+    if (!table) return null;
+    return table[App.lang] || null;
+  }
+
+  function translateAttributes(element, dict) {
+    for (var index = 0; index < CONTENT_ATTRS.length; index += 1) {
+      var name = CONTENT_ATTRS[index];
+      var value = element.getAttribute(name);
+      if (!value || !ARABIC_RE.test(value)) continue;
+      var key = value.trim();
+      if (dict[key]) element.setAttribute(name, dict[key]);
+    }
+  }
+
+  /** ترجمة نص واحد: مطابقة تامة ثم أنماط الأرقام والتواريخ والأجزاء. */
+  function translateString(value, dict) {
+    var key = value.trim();
+    if (!key) return null;
+    if (dict[key]) return dict[key];
+
+    if (key.indexOf('·') !== -1) {
+      var parts = key.split(/\s*·\s*/);
+      var pieces = [];
+      var changed = false;
+      for (var index = 0; index < parts.length; index += 1) {
+        var piece = translateString(parts[index], dict);
+        if (piece) {
+          pieces.push(piece);
+          changed = true;
+        } else {
+          pieces.push(parts[index].trim());
+        }
+      }
+      if (changed) return pieces.join(' · ');
+    }
+
+    if (/\d{4}/.test(key)) {
+      var dated = key;
+      for (var word in dict) {
+        if (word.indexOf(' ') === -1 && dated.indexOf(word) !== -1) {
+          dated = dated.split(word).join(dict[word]);
+        }
+      }
+      dated = dated.replace(/،/g, ',');
+      if (dated !== key) return dated;
+    }
+
+    var leading = key.match(/^([\d.,٪%]+)\s+(.+)$/);
+    if (leading && dict[leading[2]]) return leading[1] + ' ' + dict[leading[2]];
+
+    var trailing = key.match(/^(.+?)\s+([\d.,٪%]+)$/);
+    if (trailing && dict[trailing[1]]) return dict[trailing[1]] + ' ' + trailing[2];
+
+    var prefix = '';
+    for (var candidate in dict) {
+      if (
+        candidate.length >= 5 &&
+        candidate.length > prefix.length &&
+        candidate.indexOf(' ') !== -1 &&
+        key.indexOf(candidate) === 0
+      ) {
+        prefix = candidate;
+      }
+    }
+    if (prefix) return dict[prefix] + key.slice(prefix.length);
+
+    return null;
+  }
+
+  function translateSubtree(root, dict) {
+    if (!root) return;
+
+    var elements = [];
+    if (root.nodeType === 1) elements.push(root);
+    if (root.querySelectorAll) elements = elements.concat(Array.prototype.slice.call(root.querySelectorAll('*')));
+    elements.forEach(function (element) {
+      if (SKIP_TAGS.test(element.tagName)) return;
+      if (element.hasAttribute('data-no-i18n')) return;
+      translateAttributes(element, dict);
+    });
+
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (node) {
+        var parent = node.parentElement;
+        if (!parent) return NodeFilter.FILTER_REJECT;
+        if (parent.closest('script, style, noscript, code, pre, textarea, [data-no-i18n]')) {
+          return NodeFilter.FILTER_REJECT;
+        }
+        return ARABIC_RE.test(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+      }
+    });
+
+    var node = walker.nextNode();
+    while (node) {
+      var raw = node.nodeValue;
+      var key = raw.trim();
+      var translated = translateString(key, dict);
+      if (translated && translated !== key) {
+        var start = raw.indexOf(key);
+        node.nodeValue = raw.slice(0, start) + translated + raw.slice(start + key.length);
+      }
+      node = walker.nextNode();
+    }
+  }
+
   var App = {
     get token() {
       return localStorage.getItem(TOKEN_KEY) || '';
@@ -486,8 +600,8 @@
       } catch (error) {
         // تجاهل
       }
-      // الواجهة عربية الاتجاه دائماً: تغيير اللغة يترجم التسميات فقط
-      document.documentElement.lang = lang;
+      // إعادة تحميل الصفحة يضمن ترجمة كل المحتوى دون بقايا نص قديم
+      location.reload();
     },
     toggleDrawer: function () {
       var shell = document.querySelector('.app-shell');
@@ -604,6 +718,34 @@
       });
     },
 
+    /** ترجمة محتوى الصفحة الحالية (لا شيء عند العربية). */
+    translateContent: function (root) {
+      var dict = contentDictionary();
+      if (!dict) return;
+      translateSubtree(root || document.body, dict);
+    },
+
+    /** ترجمة المحتوى مرة واحدة ثم مراقبة أي محتوى يُضاف لاحقاً (جداول، بطاقات…). */
+    startContentTranslation: function () {
+      var dict = contentDictionary();
+      if (!dict || contentStarted) return;
+      contentStarted = true;
+      App.translateContent(document.body);
+      var title = (document.title || '').trim();
+      if (title && dict[title]) document.title = dict[title];
+      if (typeof MutationObserver === 'undefined') return;
+      contentObserver = new MutationObserver(function (records) {
+        if (!contentDictionary()) return;
+        records.forEach(function (record) {
+          Array.prototype.forEach.call(record.addedNodes, function (node) {
+            if (node.nodeType === 1) App.translateContent(node);
+            else if (node.nodeType === 3 && ARABIC_RE.test(node.nodeValue)) App.translateContent(node.parentNode);
+          });
+        });
+      });
+      contentObserver.observe(document.body, { childList: true, subtree: true });
+    },
+
     /** بناء الهيكل الجانبي وحماية الصفحة. */
     mount: function (activeKey) {
       if (!App.token) {
@@ -665,6 +807,7 @@
       App.mountTools();
 
       App.loadScript('/qr.js');
+      App.startContentTranslation();
 
       return true;
     },
@@ -689,6 +832,12 @@
   };
 
   window.App = App;
+
+  // صفحات لا تستدعي Mount (مثل الدخول) تحتاج الترجمة أيضاً
+  document.addEventListener('DOMContentLoaded', function () {
+    App.startContentTranslation();
+  });
+
   window.addEventListener('online', function () { App.toast('تم استعادة الاتصال', 'ok'); });
   window.addEventListener('offline', function () { App.toast('أنت غير متصل بالشبكة', 'error'); });
 })();

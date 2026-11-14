@@ -1,5 +1,5 @@
 #define MyAppName "Amin-Lab -Pro🔬 (Sale)"
-#define MyAppVersion "1.5.1"
+#define MyAppVersion "1.5.2"
 #define MyAppPublisher "Amin-Lab"
 #define MyAppURL "http://localhost:3000"
 #define MyAppExeName "Amin-Lab-Genie-Sale.cmd"

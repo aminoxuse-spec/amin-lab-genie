@@ -1,10 +1,11 @@
 /* Amin-Lab -Pro🔬 — Service Worker */
-const CACHE = 'amin-lab-genie-v22';
+const CACHE = 'amin-lab-genie-v24';
 const SHELL = [
   '/index.html',
   '/dashboard.html',
   '/style.css',
   '/app.js',
+  '/i18n.js',
   '/manifest.json',
   '/assets/icons/icon-192.png',
   '/assets/icons/icon-512.png'
