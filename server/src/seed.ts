@@ -33,7 +33,7 @@ export function seed(): void {
 
     createUser({
       username: 'admin',
-      full_name: 'مدير المختبر',
+      full_name: 'حجاج اول محمد الامين',
       role: 'admin',
       password_hash: hashPassword(adminPassword),
     });

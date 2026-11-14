@@ -79,7 +79,9 @@
         </section>
 
         <footer class="dash-footer" id="dashFooter">
-          <span>👤 <span id="dashUser">مدير المؤسسة</span></span>
+          <span>👤 <span id="dashUser">حجاج اول محمد الامين</span> — <span id="dashUserRole">ملحق رئيس بالمخبر</span></span>
+          <span>📧 <a href="mailto:aminhadjadj13@gmail.com" dir="ltr">aminhadjadj13@gmail.com</a></span>
+          <span>📱 <a href="https://wa.me/213558128160" target="_blank" rel="noopener" dir="ltr">WhatsApp +213 558 128 160</a></span>
           <span>📅 <span id="dashDate"></span></span>
           <span>🏫 <span id="dashInstitution">C.E.M Chikhi Moussa</span></span>
           <span>✅ البرنامج جاهز للعمل</span>
@@ -202,7 +204,9 @@
               if (inst && inst.name) document.getElementById('dashInstitution').textContent = inst.name;
             });
             var currentUser = App.user || {};
-            document.getElementById('dashUser').textContent = currentUser.full_name || currentUser.username || 'مدير المؤسسة';
+            document.getElementById('dashUser').textContent = currentUser.full_name || currentUser.username || 'حجاج اول محمد الامين';
+            document.getElementById('dashUserRole').textContent =
+              currentUser.role === 'admin' ? 'ملحق رئيس بالمخبر' : 'أستاذ';
 
             document.getElementById('sessionCount').textContent = report.sessions.length + ' حصة';
             var body = document.getElementById('sessionsBody');
