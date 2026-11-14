@@ -1,4 +1,4 @@
-#define MyAppName "Amin-Lab -cem🔬 (Sale)"
+#define MyAppName "Amin-Lab -Pro🔬 (Sale)"
 #define MyAppVersion "1.5.1"
 #define MyAppPublisher "Amin-Lab"
 #define MyAppURL "http://localhost:3000"

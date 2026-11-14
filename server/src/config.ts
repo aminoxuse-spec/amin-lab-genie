@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
 
 /** اسم التطبيق النهائي */
-export const APP_NAME = 'Amin-Lab -cem🔬';
+export const APP_NAME = 'Amin-Lab -Pro🔬';
 export const APP_VERSION = '1.5.1';
 
 export const PORT = Number(process.env.PORT ?? 3000);

@@ -166,7 +166,7 @@ const checksum = createHash('sha256').update(archive).digest('hex');
 writeFileSync(`${outputPath}.sha256`, `${checksum}  ${NAME}.zip\n`);
 
 const totalBytes = entries.reduce((sum, entry) => sum + entry.size, 0);
-console.log('=== Amin-Lab -cem🔬 — حزمة التوزيع ===');
+console.log('=== Amin-Lab -Pro🔬 — حزمة التوزيع ===');
 console.log(`✔ الملف: ${OUTPUT}`);
 console.log(`✔ عدد الملفات: ${entries.length}`);
 console.log(`✔ حجم المصدر: ${(totalBytes / 1024).toFixed(1)} KB`);

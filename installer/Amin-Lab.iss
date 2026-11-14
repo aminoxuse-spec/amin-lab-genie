@@ -1,9 +1,9 @@
 ; ============================================================
-;  Amin-Lab -cem🔬 — سكربت التثبيت (Inno Setup 6)
+;  Amin-Lab -Pro🔬 — سكربت التثبيت (Inno Setup 6)
 ;  الاستخدام: installer\build-setup.cmd
 ; ============================================================
 
-#define MyAppName "Amin-Lab -cem🔬"
+#define MyAppName "Amin-Lab -Pro🔬"
 #define MyAppVersion "1.5.1"
 #define MyAppPublisher "Amin-Lab"
 #define MyAppURL "http://localhost:3000"

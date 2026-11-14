@@ -23,7 +23,7 @@
   var fetchSelected = null;
 
   if (section) {
-    document.title = section.title + ' — Amin-Lab -cem🔬';
+    document.title = section.title + ' — Amin-Lab -Pro🔬';
     document.getElementById('pageTitle').textContent = section.title;
     document.getElementById('pageSubtitle').textContent = section.subtitle;
     categorySelect.value = categoryParam;

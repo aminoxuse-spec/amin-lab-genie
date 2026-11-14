@@ -2,7 +2,7 @@
   "name": "@amin-lab/genie-server",
   "version": "1.5.0",
   "private": true,
-  "description": "Amin-Lab -cem🔬 — واجهة الخلفية (Node.js + TypeScript + SQLite)",
+  "description": "Amin-Lab -Pro🔬 — واجهة الخلفية (Node.js + TypeScript + SQLite)",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {

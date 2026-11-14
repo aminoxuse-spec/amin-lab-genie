@@ -1,4 +1,4 @@
-# سجل التغييرات — Amin-Lab -cem🔬
+# سجل التغييرات — Amin-Lab -Pro🔬
 
 كل التغييرات المهمة تُوثَّق هنا. التنسيق مبني على [Keep a Changelog](https://keepachangelog.com/ar/1.1.0/)
 والنظام يتبع [Semantic Versioning](https://semver.org/lang/ar/).

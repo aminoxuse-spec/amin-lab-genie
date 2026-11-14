@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 setlocal enabledelayedexpansion
-title فحص بيئة Amin-Lab -cem🔬
+title فحص بيئة Amin-Lab -Pro🔬
 
 set "FAILED=0"
 
@@ -49,5 +49,5 @@ if "!FAILED!"=="1" (
 )
 
 echo.
-echo ✅ البيئة جاهزة لبناء وتشغيل Amin-Lab -cem🔬.
+echo ✅ البيئة جاهزة لبناء وتشغيل Amin-Lab -Pro🔬.
 exit /b 0

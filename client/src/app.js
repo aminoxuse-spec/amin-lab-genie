@@ -1,4 +1,4 @@
-/* Amin-Lab -cem🔬 — منطق التحكم المشترك بين الصفحات */
+/* Amin-Lab -Pro🔬 — منطق التحكم المشترك بين الصفحات */
 (function () {
   'use strict';
 
@@ -343,7 +343,7 @@
         if (logo) {
           document.querySelectorAll('[data-brand]').forEach(function (element) {
             element.classList.add('has-logo');
-            element.innerHTML = '<img src="' + logo + '" alt="' + App.escape(inst.name || 'Amin-Lab -cem🔬') + '" />';
+            element.innerHTML = '<img src="' + logo + '" alt="' + App.escape(inst.name || 'Amin-Lab -Pro🔬') + '" />';
           });
         }
         if (inst && inst.name) {

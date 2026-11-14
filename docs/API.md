@@ -1,4 +1,4 @@
-# واجهات API — Amin-Lab -cem🔬 v1.3.0
+# واجهات API — Amin-Lab -Pro🔬 v1.3.0
 
 - **Base URL:** `http://localhost:3000/api`
 - **التنسيق:** JSON (UTF-8)
@@ -213,7 +213,7 @@ DELETE /auth/users/:id                                          (admin)
 
 ## 7) الصحة
 
-`GET /health` → `{ "ok": true, "app": "Amin-Lab -cem🔬", "version": "1.0.0", "time": "..." }`
+`GET /health` → `{ "ok": true, "app": "Amin-Lab -Pro🔬", "version": "1.0.0", "time": "..." }`
 
 ---
 

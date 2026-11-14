@@ -73,7 +73,7 @@
         '</section>' +
         (session.notes ? '<p class="muted">ملاحظات: ' + App.escape(session.notes) + '</p>' : '') +
         '<div class="receipt-sign"><div>توقيع الأستاذ</div><div>توقيع مسؤول المختبر</div></div>' +
-        ReportKit.footer('وصل إعارة — Amin-Lab -cem🔬');
+        ReportKit.footer('وصل إعارة — Amin-Lab -Pro🔬');
 
       App.decorateDocument(host, 'وصل إعارة').then(function () {
         if (params.get('print') === '1') {

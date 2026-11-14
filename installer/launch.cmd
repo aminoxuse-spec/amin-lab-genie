@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-title Amin-Lab -cem🔬
+title Amin-Lab -Pro🔬
 cd /d "%~dp0"
 
 where node >nul 2>nul
@@ -11,7 +11,7 @@ if errorlevel 1 (
   exit /b 1
 )
 
-echo بدء Amin-Lab -cem🔬 على http://localhost:3000 ...
+echo بدء Amin-Lab -Pro🔬 على http://localhost:3000 ...
 start "" http://localhost:3000
 node server\dist\index.js
 pause

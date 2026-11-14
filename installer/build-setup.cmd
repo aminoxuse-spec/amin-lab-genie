@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 setlocal
-title بناء مثبت Amin-Lab -cem🔬
+title بناء مثبت Amin-Lab -Pro🔬
 
 echo === 1/4 فحص البيئة ===
 call "%~dp0check-environment.cmd"

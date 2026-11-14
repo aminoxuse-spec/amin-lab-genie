@@ -374,7 +374,7 @@ export function toXls(title: string, headers: string[], rows: (string | number)[
   <Worksheet ss:Name="${xmlEscape(title).slice(0, 28)}">
     <Table>
       <Row><Cell ss:StyleID="title"><Data ss:Type="String">${xmlEscape(title)}</Data></Cell></Row>
-      <Row><Cell><Data ss:Type="String">Amin-Lab -cem🔬 — ${xmlEscape(new Date().toLocaleString('ar-MA'))}</Data></Cell></Row>
+      <Row><Cell><Data ss:Type="String">Amin-Lab -Pro🔬 — ${xmlEscape(new Date().toLocaleString('ar-MA'))}</Data></Cell></Row>
       <Row></Row>
       <Row>${header}</Row>
 ${body}

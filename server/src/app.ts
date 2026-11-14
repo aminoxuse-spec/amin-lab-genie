@@ -67,7 +67,7 @@ export function createApp(): express.Express {
 
   app.use((_req, res) => {
     res.status(404).type('html').send(
-      '<!doctype html><meta charset="utf-8"><title>404 — Amin-Lab -cem🔬</title>' +
+      '<!doctype html><meta charset="utf-8"><title>404 — Amin-Lab -Pro🔬</title>' +
         '<body style="font-family:system-ui;direction:rtl;text-align:center;padding:4rem">' +
         '<h1>404</h1><p>الصفحة غير موجودة.</p><p><a href="/">تسجيل الدخول</a></p>',
     );

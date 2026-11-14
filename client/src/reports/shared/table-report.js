@@ -51,7 +51,7 @@
       ReportKit.table(report.columns.map(function (column) { return column.label; }), rows, 'لا توجد بيانات في هذه الفترة') +
       (report.note ? '<p class="muted" style="margin-top:.6rem">' + App.escape(report.note) + '</p>' : '') +
       '</section>' +
-      ReportKit.footer('Amin-Lab -cem🔬 — ' + report.title);
+      ReportKit.footer('Amin-Lab -Pro🔬 — ' + report.title);
 
     App.decorateDocument(host, report.title);
   }

@@ -10,7 +10,7 @@
     header: function (options) {
       return (
         '<header class="report-head"><div>' +
-        '<div class="report-brand">Amin-Lab -cem🔬</div>' +
+        '<div class="report-brand">Amin-Lab -Pro🔬</div>' +
         '<h1>' + escape(options.title) + '</h1>' +
         '<div class="muted">' + escape(options.subtitle || 'نظام إدارة مختبر العلوم') + '</div>' +
         '</div><div class="report-meta">' +
@@ -78,7 +78,7 @@
     },
 
     footer: function (note) {
-      return '<footer class="report-footer"><span>' + escape(note || 'Amin-Lab -cem🔬 — تقرير آلي') + '</span><span>صفحة 1</span></footer>';
+      return '<footer class="report-footer"><span>' + escape(note || 'Amin-Lab -Pro🔬 — تقرير آلي') + '</span><span>صفحة 1</span></footer>';
     }
   };
 

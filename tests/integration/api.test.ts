@@ -49,7 +49,7 @@ test('health يعمل بدون مصادقة', async () => {
   const response = await call('/api/health', { auth: '' });
   assert.equal(response.status, 200);
   assert.equal(response.data.ok, true);
-  assert.equal(response.data.app, 'Amin-Lab -cem🔬');
+  assert.equal(response.data.app, 'Amin-Lab -Pro🔬');
 });
 
 test('المسارات المحمية ترفض الطلبات بدون رمز', async () => {
@@ -372,7 +372,7 @@ test('التقارير اليومية والأسبوعية وملفات CSV', as
 test('الإعدادات وإدارة المستخدمين وتغيير كلمة المرور', async () => {
   const info = await call('/api/settings');
   assert.equal(info.status, 200);
-  assert.equal(info.data.app, 'Amin-Lab -cem🔬');
+  assert.equal(info.data.app, 'Amin-Lab -Pro🔬');
   assert.ok(info.data.counts.users >= 2);
   assert.ok(info.data.users.length >= 2);
   assert.ok(info.data.rooms.length >= 1);
