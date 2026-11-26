@@ -14,6 +14,9 @@
 - **`.gitattributes`:** تخزين LF في المستودع وCRLF لسكربتات Windows
   (`.cmd`/`.bat`/`.ps1`/`.iss`)، وإنهاء تحذيرات LF/CRLF المتكررة أثناء `git add`.
 - **`.githooks/pre-commit`:** يرفض إيداع `keys/` و`.env` و`keystore` والمفاتيح الخاصة.
+  التفعيل مرة واحدة لكل نسخة: `git config core.hooksPath .githooks`، والتحقق
+  بـ `git config --get core.hooksPath` (يجب أن يطبع `.githooks`). الإعداد محلي
+  لا يُدفع، فيُكرَّر بعد كل `git clone` — موثَّق في `README.md`.
 
 ### تغيّر
 - رفع الإصدار إلى **1.5.3** في `package.json` و`package-lock.json` و`installer/*.iss`
@@ -28,6 +31,9 @@
 ### تحقّق
 - تثبيت فعلي صامت للمثبت ثم `installer\verify-install.cmd` على النسخة المثبتة:
   runtime و`node_modules` و`server\dist` موجودة، والخادم يقلع والصفحات ترجع 200.
+- نفس التحقق أُجري على مثبت البيع: ثُبِّت `1.5.3` في `C:\Program Files\Amin-Lab Genie Sale`
+  (AppId مستقل، بلا مساس بنسخة المكتب)، و`verify-install.cmd` انتهى بالرمز 0
+  مع `runtime` يحوي `node.exe` وحده.
 
 ## [1.5.2] — 2026-11-14
 

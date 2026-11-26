@@ -63,6 +63,24 @@ npm start
 
 > ⚠️ لا توجد كلمات مرور افتراضية معروفة. راجع `docs/SECURITY.md` و`docs/DEPLOYMENT.md` قبل النشر على الإنترنت.
 
+**حماية الأسرار قبل الإيداع (`pre-commit`) — مرة واحدة لكل نسخة:**
+
+```bash
+# التفعيل: يجعل Git يستخدم hooks المستودع بدل .git/hooks
+git config core.hooksPath .githooks
+
+# التحقق من التفعيل
+git config --get core.hooksPath   # يجب أن يطبع: .githooks
+```
+
+بعد التفعيل يرفض `.githooks/pre-commit` أي إيداع يضم `keys/` أو `.env`
+أو `keystore.properties` أو ملفات `*.pfx`/`*.jks`/`*.p12` أو مفاتيح خاصة،
+ويشرح كيف تُخرجها من التجهيز (`git restore --staged <file>`).
+
+> `core.hooksPath` إعداد **محلي** لا يُدفع مع الفرع؛ كرّر الأمر بعد كل `git clone`.
+> الاختبار السريع: جهّز `installer/.env.production` ثم `git commit` — يجب أن ينتهي
+> بالرمز 1 ورسالة «رُفض الإيداع»، وبعدها `git restore --staged installer/.env.production`.
+
 ---
 
 ## 📁 هيكل المشروع
@@ -106,7 +124,7 @@ amin-lab-genie/
 | `npm run build` | تحويل TypeScript إلى `server/dist` |
 | `npm run serve:dist` | تشغيل نسخة JavaScript المبنية |
 | `npm run typecheck` | فحص الأنواع دون توليد ملفات |
-| `npm test` | 19 اختباراً (وحدة + تكامل) |
+| `npm test` | 50 اختباراً (وحدة + تكامل) — تُشغَّل تلقائياً قبل بناء المثبت |
 | `npm run icons` | إعادة توليد أيقونات PWA |
 | `npm run package` | إنشاء ملف ZIP للتوزيع في `release/` |
 | `npm run backup` | نسخة احتياطية لقاعدة البيانات |
