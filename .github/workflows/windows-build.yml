@@ -1,0 +1,84 @@
+name: Windows build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Typecheck, tests, installers
+    runs-on: windows-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install Inno Setup 6
+        run: choco install innosetup --yes --no-progress
+
+      # يثبّت الاعتماديات من package-lock.json (prepare يفعّل .githooks تلقائياً)
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      # نفس مسار البناء المحلي: typecheck → test → build → stage-runtime → ISCC
+      # (يعني كوداً مكسوراً لا يُنتج مثبتاً — بوّابة الجودة داخل السكربت نفسه)
+      - name: Build installers
+        shell: cmd
+        run: installer\build-setup.cmd
+
+      # تحقق حقيقي: يشغّل الخادم من الشجرة المجهّزة ويتأكد من الصفحات و/‌api/health
+      - name: Verify staged app runs
+        shell: cmd
+        run: installer\verify-install.cmd < nul
+
+      - name: Upload installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: amin-lab-genie-installers
+          path: installer/output/*.exe
+          if-no-files-found: error
+          retention-days: 14
+
+  release-assets:
+    name: Attach installers to release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: windows-latest
+
+    steps:
+      - name: Download installers
+        uses: actions/download-artifact@v4
+        with:
+          name: amin-lab-genie-installers
+          path: installers
+
+      - name: Publish to the tag release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view "$env:GITHUB_REF_NAME" --repo "$env:GITHUB_REPOSITORY"
+          if ($LASTEXITCODE -ne 0) {
+            gh release create "$env:GITHUB_REF_NAME" --repo "$env:GITHUB_REPOSITORY" `
+              --title "$env:GITHUB_REF_NAME" --generate-notes
+          }
+          Get-ChildItem installers\*.exe | ForEach-Object {
+            gh release upload "$env:GITHUB_REF_NAME" $_.FullName --repo "$env:GITHUB_REPOSITORY" --clobber
+          }
