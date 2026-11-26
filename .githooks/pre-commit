@@ -1,0 +1,27 @@
+#!/bin/sh
+# يمنع إدراج الأسرار ومواد التوقيع في Git.
+# التفعيل (مرة واحدة لكل نسخة): git config core.hooksPath .githooks
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+[ -z "$staged" ] && exit 0
+
+blocked=$(printf '%s\n' "$staged" | grep -Ei \
+  -e '(^|/)keys/' \
+  -e '(^|/)\.env\.production$' \
+  -e '(^|/)\.env$' \
+  -e '(^|/)\.env\.(local|development|test|prod|production)$' \
+  -e 'keystore\.properties$' \
+  -e '\.(jks|keystore|p12|pfx)$' \
+  -e 'private[._-]?key|id_rsa|id_ed25519' \
+  -e 'first-run-credentials\.txt$')
+
+if [ -n "$blocked" ]; then
+  echo "✗ رُفض الإيداع: ملفات أسرار/توقيع لا يجوز إضافتها إلى المستودع:" >&2
+  printf '  - %s\n' $blocked >&2
+  echo "" >&2
+  echo "أخرجها من التجهيز:  git restore --staged <file>" >&2
+  echo "أو أضِفها إلى .gitignore إن كانت مولّدة." >&2
+  exit 1
+fi
+
+exit 0

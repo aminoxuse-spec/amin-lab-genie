@@ -1,0 +1,31 @@
+# تنسيق نهايات الأسطر — يمنع تحذيرات LF/CRLF المتكررة أثناء git add
+#
+# القاعدة: يُخزَّن كل نص في المستودع بـ LF، وتُحوَّل سكربتات Windows إلى CRLF
+# عند الخروج إلى القرص (لأن cmd.exe وPowerShell يتوقعانها).
+
+* text=auto eol=lf
+
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+*.iss text eol=crlf
+
+# ملفات ثنائية — لا تحويل ولا دمج نصي
+*.exe binary
+*.dll binary
+*.ico binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.pdf binary
+*.zip binary
+*.apk binary
+*.deb binary
+*.db binary
+*.sqlite binary
+*.jks binary
+*.keystore binary
+*.pfx binary
+*.p12 binary
