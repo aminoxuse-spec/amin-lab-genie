@@ -184,7 +184,7 @@ server {
 ```cmd
 installer\check-environment.cmd
 installer\build-setup.cmd
-installer\output\Amin-Lab-Genie-Setup-1.5.1.exe
+installer\output\Amin-Lab-Genie-Setup-1.5.2.exe
 ```
 
 المثبت ينسخ `server/dist` و`client/src` و`docs`، وينشئ `data` بصلاحيات كتابة،

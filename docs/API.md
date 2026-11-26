@@ -253,6 +253,7 @@ POST   /settings/licenses         { type, duration_days? }  (admin) — تولي
 POST   /settings/licenses/revoke  { key }  (admin)
 ```
 - **الفترة التجريبية:** 30 يوماً (`TRIAL_DAYS`) تبدأ من أول تشغيل وتُحفظ في `license.trial_started_at`.
+- **خزنة ربط الجهاز:** يُخزَّن ربط كل مفتاح في ملف خارج مجلد التطبيق (`%PROGRAMDATA%\Amin-Lab Genie\license-bindings.json` ثم `%APPDATA%`)، ويُشترط وجود سجل موثوق فيه قبل أي ربط تلقائي — لذا لا يفيد حذف صفوف الربط من قاعدة بيانات منسوخة.
 - **البوابة:** عند انتهاء التجربة والترخيص معاً تُرجع واجهات العمل
   (`/inventory`, `/borrowing`, `/schedule`, `/rooms`, `/qc`, `/experiments`, `/reports`)
   **403** بالشكل `{ error, code: "TRIAL_EXPIRED" | "LICENSE_EXPIRED" }`، وتبقى `/auth` و`/settings` مفتوحة.
