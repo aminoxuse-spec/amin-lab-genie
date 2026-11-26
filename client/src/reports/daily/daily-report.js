@@ -10,13 +10,13 @@
     var cards = [];
     alerts.lowStock.forEach(function (item) {
       cards.push(
-        '<div class="daily-alert"><strong>' + App.escape(item.name) + '</strong>' +
+        '<div class="daily-alert"><strong>' + App.escape(item.name_ar || item.name) + '</strong>' +
         '<small>المتوفر ' + item.available_quantity + ' — الحد الأدنى ' + item.min_quantity + '</small></div>'
       );
     });
     alerts.expiring.forEach(function (item) {
       cards.push(
-        '<div class="daily-alert danger"><strong>' + App.escape(item.name) + '</strong>' +
+        '<div class="daily-alert danger"><strong>' + App.escape(item.name_ar || item.name) + '</strong>' +
         '<small>تنتهي الصلاحية في ' + App.fmtDate(item.expiry_date) + '</small></div>'
       );
     });

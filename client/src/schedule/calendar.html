@@ -7,7 +7,9 @@
     <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="/schedule/calendar.css" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" href="/assets/icons/favicon.png" />
+    <link rel="icon" type="image/x-icon" href="/assets/icons/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
   </head>
   <body>
     <div class="app-shell">
@@ -16,19 +18,32 @@
         <header class="topbar">
           <div>
             <h1>استعمال الزمن</h1>
-            <p>حصص المختبر الأسبوعية مع كشف التعارض التلقائي</p>
+            <p>جدول الحصص المخبرية للأسبوع الدراسي من الأحد إلى الخميس — اضغط على خانة فارغة لحجزها، أو فعّل التكرار الأسبوعي لتثبيت استعمال الزمن.</p>
           </div>
           <div id="pageActions"></div>
         </header>
 
         <section class="card">
+          <div class="cal-print-title" id="calPrintTitle"></div>
           <div class="cal-toolbar">
-            <span class="muted">من 08:00 إلى 18:00</span>
             <div class="row-actions">
+              <button class="btn btn-sm" type="button" id="prevWeek" title="الأسبوع السابق">‹</button>
+              <span class="badge info" id="weekLabel">—</span>
+              <button class="btn btn-sm" type="button" id="nextWeek" title="الأسبوع التالي">›</button>
+              <button class="btn btn-sm" type="button" id="thisWeek">هذا الأسبوع</button>
+            </div>
+            <div class="row-actions">
+              <span class="muted">من 08:00 إلى 18:00</span>
+              <span class="badge danger" id="conflictBadge" hidden>0 تعارض</span>
               <span class="badge info" id="countBadge">0 حصة</span>
+              <button class="btn btn-sm btn-danger" type="button" id="clearScheduleBtn">تفريغ</button>
             </div>
           </div>
+          <div class="teacher-legend" id="teacherLegend"></div>
+          <div class="room-tabs" id="roomTabs"></div>
+          <div class="cal-list" id="calendarList"><div class="empty">جارٍ التحميل…</div></div>
           <div class="calendar" id="calendar"><div class="empty">جارٍ التحميل…</div></div>
+          <div class="cal-status-legend"><span><i class="scheduled"></i>مبرمجة</span><span><i class="done"></i>منجزة</span><span><i class="cancelled"></i>ملغاة</span></div>
         </section>
       </main>
     </div>
@@ -41,6 +56,7 @@
           <div class="form-grid">
             <div class="field"><label for="className">القسم</label><input id="className" required maxlength="80" /></div>
             <div class="field"><label for="subject">المادة</label><input id="subject" required maxlength="80" /></div>
+            <div class="field" id="teacherField"><label for="teacherId">الأستاذ</label><select id="teacherId"><option value="">أنا</option></select></div>
             <div class="field">
               <label for="roomId">القاعة</label>
               <select id="roomId"><option value="">بدون قاعة</option></select>
@@ -59,6 +75,7 @@
             </div>
             <div class="field"><label for="startTime">من</label><input id="startTime" type="time" required value="08:00" /></div>
             <div class="field"><label for="endTime">إلى</label><input id="endTime" type="time" required value="10:00" /></div>
+            <div class="field"><label for="lessonStatus">الحالة</label><select id="lessonStatus"><option value="scheduled">مبرمجة</option><option value="done">منجزة</option><option value="cancelled">ملغاة</option></select></div>
           </div>
           <div class="modal-actions">
             <button class="btn btn-danger" type="button" id="deleteLessonBtn" hidden>حذف الحصة</button>
@@ -66,6 +83,46 @@
             <button class="btn btn-primary" type="submit">حفظ</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <div class="modal" id="scheduleImportModal">
+      <div class="modal-box schedule-import-box">
+        <button class="modal-x" type="button" data-close="scheduleImportModal" aria-label="إغلاق">×</button>
+        <h2>استيراد استعمال الزمن من ملف Excel</h2>
+        <p class="muted">يتم فحص الملف أولاً وعرض النتيجة قبل أي حفظ. لن يُضاف شيء إلا بعد تأكيدك.</p>
+
+        <div class="import-step">
+          <h3>1. حمّل النموذج الجاهز واملأه</h3>
+          <p class="muted">يمكنك أيضاً استعمال ملفك الخاص بشرط أن يحتوي السطر الأول على أسماء الأعمدة.</p>
+          <button class="btn" type="button" id="downloadScheduleTemplateBtn">📄 تحميل النموذج</button>
+        </div>
+
+        <div class="import-columns">
+          <span>الأعمدة:</span>
+          <span class="import-col required">التاريخ *</span>
+          <span class="import-col required">الحصة *</span>
+          <span class="import-col required">الأستاذ *</span>
+          <span class="import-col required">القسم *</span>
+          <span class="import-col">المخبر</span>
+          <span class="import-col">التجربة</span>
+          <span class="import-col">ملاحظات</span>
+        </div>
+
+        <h3 class="import-pick-title">2. اختر الملف</h3>
+        <label class="import-drop" id="scheduleImportDrop">
+          <input id="scheduleImportFile" type="file" accept=".csv,text/csv" hidden />
+          <span class="import-drop-ico">📄</span>
+          <strong>اضغط لاختيار ملف أو اسحبه إلى هنا</strong>
+          <small>CSV (يُفتح في Excel)</small>
+        </label>
+
+        <div id="scheduleImportPreview" class="import-preview" hidden></div>
+
+        <div class="modal-actions import-actions">
+          <button class="btn" type="button" data-close="scheduleImportModal">إلغاء</button>
+          <button class="btn btn-primary" type="button" id="scheduleImportSubmitBtn" disabled>استيراد</button>
+        </div>
       </div>
     </div>
 

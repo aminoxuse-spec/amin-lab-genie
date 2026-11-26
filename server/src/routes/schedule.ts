@@ -35,6 +35,7 @@ router.put(
   controller.update,
 );
 router.delete('/:id', requireAuth, controller.remove);
+router.post('/clear', requireAuth, requireAdmin, controller.clearAll);
 
 export const roomsRouter = Router();
 roomsRouter.get('/', requireAuth, controller.rooms);
@@ -49,5 +50,17 @@ roomsRouter.post(
   }),
   controller.addRoom,
 );
+roomsRouter.put(
+  '/:id',
+  requireAuth,
+  requireAdmin,
+  validateBody({
+    name: { type: 'string', required: true, minLength: 2, maxLength: 80 },
+    capacity: { type: 'int', min: 1, max: 500 },
+    location: { type: 'string', maxLength: 80 },
+  }),
+  controller.editRoom,
+);
+roomsRouter.delete('/:id', requireAuth, requireAdmin, controller.removeRoom);
 
 export default router;

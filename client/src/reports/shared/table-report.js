@@ -49,7 +49,7 @@
       '</section>' +
       '<section class="report-section"><h2>' + App.escape(report.title) + '</h2>' +
       ReportKit.table(report.columns.map(function (column) { return column.label; }), rows, 'لا توجد بيانات في هذه الفترة') +
-      (report.note ? '<p class="muted" style="margin-top:.6rem">' + App.escape(report.note) + '</p>' : '') +
+      (report.note ? '<p class="muted u-margin-top-6rem">' + App.escape(report.note) + '</p>' : '') +
       '</section>' +
       ReportKit.footer('Amin-Lab -Pro🔬 — ' + report.title);
 

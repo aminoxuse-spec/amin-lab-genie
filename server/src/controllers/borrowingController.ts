@@ -19,7 +19,7 @@ import {
 import { adjustAvailable, getInventory } from '../models/Inventory.ts';
 import { getRoom } from '../models/LabRoom.ts';
 import { findById } from '../models/User.ts';
-import { transaction } from '../db.ts';
+import { run, transaction } from '../db.ts';
 import { canAccessTeacher, type AuthedRequest } from '../middleware/auth.ts';
 import { HttpError, parseId } from '../middleware/validation.ts';
 import { logger } from '../utils/logger.ts';
@@ -288,6 +288,8 @@ export function remove(req: Request, res: Response): void {
   }
 
   transaction(() => {
+    // فكّ ربط طلبات الأساتذة بهذه الجلسة قبل حذفها (المفتاح الأجنبي يمنع الحذف).
+    run('UPDATE material_requests SET session_id = NULL WHERE session_id = ?', id);
     for (const item of itemsBySession(id)) {
       const outstanding = isConsumed(item) ? 0 : item.quantity_out - item.quantity_returned;
       if (outstanding > 0) adjustAvailable(item.inventory_id, outstanding);

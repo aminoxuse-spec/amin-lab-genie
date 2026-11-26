@@ -18,14 +18,18 @@
 
   var NAV = [
     { key: 'dashboard', href: '/dashboard.html', icon: 'home', emoji: '🏠', t: 'nav.dashboard' },
+    { key: 'settings', href: '/settings.html', icon: 'settings', emoji: '⚙️', t: 'nav.settings' },
     { key: 'experiments', href: '/experiments/experiments.html', icon: 'flask', emoji: '🔬', t: 'nav.experiments' },
     { key: 'schedule', href: '/schedule/calendar.html', icon: 'calendar', emoji: '📅', t: 'nav.schedule' },
+    { key: 'teachers', href: '/teachers.html', icon: 'users', emoji: '🧑‍🏫', t: 'nav.teachers' },
+    { key: 'requests', href: '/requests/index.html', icon: 'check', emoji: '✅', t: 'طلبات الأساتذة' },
     { key: 'borrowing', href: '/borrowing/borrowing.html', icon: 'repeat', emoji: '🔄', t: 'nav.borrowing', badge: 'borrowing' },
     { key: 'chemicals', href: '/inventory/inventory.html?category=chemical', icon: 'chemical', emoji: '🧪', t: 'nav.chemicals', badge: 'chemical' },
     { key: 'glassware', href: '/inventory/inventory.html?category=glassware', icon: 'beaker', emoji: '🧫', t: 'nav.glassware', badge: 'glassware' },
     { key: 'apparatus', href: '/inventory/inventory.html?category=apparatus', icon: 'boxes', emoji: '🔧', t: 'nav.apparatus', badge: 'apparatus' },
     { key: 'reports', href: '/reports/index.html', icon: 'chart', emoji: '📊', t: 'nav.reports', group: 'extra' },
-    { key: 'settings', href: '/settings.html', icon: 'settings', emoji: '⚙️', t: 'nav.settings', group: 'extra' }
+    { key: 'movements', href: '/movements.html', icon: 'history', emoji: '🕘', t: 'nav.movements', group: 'extra' },
+    { key: 'safety', href: '/safety.html', icon: 'shield', emoji: '🛡️', t: 'nav.safety', group: 'extra' }
   ];
 
   /** أيقونات خطية موحّدة (SVG) بدل الرموز التعبيرية. */
@@ -40,6 +44,8 @@
     beaker: '<path d="M6 4h12v9a6 6 0 0 1-12 0V4z"/><path d="M6 9h12"/>',
     boxes: '<path d="M12 3 3 7.5v9L12 21l9-4.5v-9L12 3z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/>',
     chart: '<path d="M4 20h16"/><path d="M7 20v-6M12 20V9M17 20V5"/>',
+    history: '<path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3 4.5v4h4"/><path d="M12 7.5V12l3 1.8"/>',
+    shield: '<path d="M12 3 5 6v5.5c0 4.4 3 7.7 7 9.5 4-1.8 7-5.1 7-9.5V6l-7-3z"/><path d="M9.2 11.8l2 2 3.6-3.8"/>',
     settings: '<circle cx="12" cy="12" r="3.1"/><path d="M12 2.6v2.6M12 18.8v2.6M2.6 12h2.6M18.8 12h2.6M5.3 5.3l1.9 1.9M16.8 16.8l1.9 1.9M5.3 18.7l1.9-1.9M16.8 7.2l1.9-1.9"/>',
     menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
     moon: '<path d="M20.5 13.4A8.6 8.6 0 0 1 10.6 3.5a8.6 8.6 0 1 0 9.9 9.9z"/>',
@@ -66,12 +72,15 @@
       'nav.extra': 'أدوات إضافية',
       'nav.dashboard': 'الرئيسية',
       'nav.experiments': 'التجارب',
-      'nav.schedule': 'استعمال الزمن الأساتذة',
+      'nav.schedule': 'استعمال الزمن',
+      'nav.teachers': 'الأساتذة',
       'nav.borrowing': 'الإعارة',
       'nav.chemicals': 'المواد الكيميائية',
       'nav.glassware': 'الزجاجيات',
       'nav.apparatus': 'العتاد',
       'nav.reports': 'التقارير والإحصائيات',
+      'nav.movements': 'سجل الحركات',
+      'nav.safety': 'دليل السلامة',
       'nav.settings': 'الإعدادات',
       'shell.menu': 'القائمة',
       'shell.theme': 'الوضع الليلي',
@@ -94,11 +103,14 @@
       'nav.dashboard': 'Accueil',
       'nav.experiments': 'Expériences',
       'nav.schedule': 'Emploi du temps',
+      'nav.teachers': 'Enseignants',
       'nav.borrowing': 'Prêts',
       'nav.chemicals': 'Produits chimiques',
       'nav.glassware': 'Verrerie',
       'nav.apparatus': 'Matériel',
       'nav.reports': 'Rapports',
+      'nav.movements': 'Journal des mouvements',
+      'nav.safety': 'Guide de sécurité',
       'nav.settings': 'Paramètres',
       'shell.menu': 'Menu',
       'shell.theme': 'Mode sombre',
@@ -121,11 +133,14 @@
       'nav.dashboard': 'Home',
       'nav.experiments': 'Experiments',
       'nav.schedule': 'Teacher timetable',
+      'nav.teachers': 'Teachers',
       'nav.borrowing': 'Loans',
       'nav.chemicals': 'Chemicals',
       'nav.glassware': 'Glassware',
       'nav.apparatus': 'Equipment',
       'nav.reports': 'Reports',
+      'nav.movements': 'Movement log',
+      'nav.safety': 'Safety guide',
       'nav.settings': 'Settings',
       'shell.menu': 'Menu',
       'shell.theme': 'Dark mode',
@@ -166,10 +181,25 @@
 
   /** ترجمة نص واحد: مطابقة تامة ثم أنماط الأرقام والتواريخ والأجزاء. */
   function translateString(value, dict) {
-    var key = value.trim();
+    var raw = value == null ? '' : String(value);
+    var key = raw.trim();
     if (!key) return null;
     if (dict[key]) return dict[key];
 
+    // إزالة بادئة رموز/إيموجي غير عربية ومحاولة ترجمة المتبقي (مثال: "🗂️ عام")
+    var lead = key.match(/^([^\u0600-\u06FF]+)([\u0600-\u06FF].*)$/);
+    if (lead) {
+      var inner = translateString(lead[2], dict);
+      if (inner) return lead[1] + inner.replace(/،/g, ',');
+    }
+    // إزالة لاحقة رموز غير عربية ومحاولة ترجمة المتبقي
+    var tail = key.match(/^([\u0600-\u06FF].*?)([^\u0600-\u06FF]+)$/);
+    if (tail) {
+      var innerTail = translateString(tail[1], dict);
+      if (innerTail) return innerTail.replace(/،/g, ',') + tail[2];
+    }
+
+    // فصل على · وترجمة كل جزء
     if (key.indexOf('·') !== -1) {
       var parts = key.split(/\s*·\s*/);
       var pieces = [];
@@ -186,6 +216,18 @@
       if (changed) return pieces.join(' · ');
     }
 
+    // فصل على أسطر
+    if (/[\n]/.test(key)) {
+      var lines = key.split(/\n+/);
+      var outL = [];
+      var chL = false;
+      for (var li = 0; li < lines.length; li += 1) {
+        var lp = translateString(lines[li], dict);
+        if (lp) { outL.push(lp); chL = true; } else { outL.push(lines[li].trim()); }
+      }
+      if (chL) return outL.join('\n');
+    }
+
     if (/\d{4}/.test(key)) {
       var dated = key;
       for (var word in dict) {
@@ -194,27 +236,77 @@
         }
       }
       dated = dated.replace(/،/g, ',');
-      if (dated !== key) return dated;
+      if (dated !== key && !ARABIC_RE.test(dated)) return dated;
     }
 
-    var leading = key.match(/^([\d.,٪%]+)\s+(.+)$/);
-    if (leading && dict[leading[2]]) return leading[1] + ' ' + dict[leading[2]];
+    // عدد في البداية أو النهاية
+    var leadingNum = key.match(/^([\d.,٪%]+)\s+(.+)$/);
+    if (leadingNum) {
+      var ln = translateString(leadingNum[2], dict);
+      if (ln) return leadingNum[1] + ' ' + ln;
+      if (dict[leadingNum[2]]) return leadingNum[1] + ' ' + dict[leadingNum[2]];
+    }
+    var trailingNum = key.match(/^(.+?)\s+([\d.,٪%]+)$/);
+    if (trailingNum) {
+      var tn = translateString(trailingNum[1], dict);
+      if (tn) return tn + ' ' + trailingNum[2];
+      if (dict[trailingNum[1]]) return dict[trailingNum[1]] + ' ' + trailingNum[2];
+    }
 
-    var trailing = key.match(/^(.+?)\s+([\d.,٪%]+)$/);
-    if (trailing && dict[trailing[1]]) return dict[trailing[1]] + ' ' + trailing[2];
-
+    // بادئة مطابقة (عبارة طويلة)
     var prefix = '';
     for (var candidate in dict) {
       if (
-        candidate.length >= 5 &&
+        candidate.length >= 4 &&
         candidate.length > prefix.length &&
-        candidate.indexOf(' ') !== -1 &&
         key.indexOf(candidate) === 0
       ) {
         prefix = candidate;
       }
     }
-    if (prefix) return dict[prefix] + key.slice(prefix.length);
+    if (prefix) {
+      var rest = key.slice(prefix.length);
+      var gap = rest.match(/^\s*/)[0];
+      var restT = rest.trim() ? translateString(rest, dict) : null;
+      if (restT !== null) return dict[prefix] + gap + restT;
+      if (!ARABIC_RE.test(rest)) return dict[prefix] + rest;
+    }
+
+    // لاحقة مطابقة
+    var suffix = '';
+    for (var cand in dict) {
+      if (
+        cand.length >= 4 &&
+        cand.length > suffix.length &&
+        key.slice(key.length - cand.length) === cand
+      ) {
+        suffix = cand;
+      }
+    }
+    if (suffix) {
+      var head = key.slice(0, key.length - suffix.length);
+      var headGap = head.match(/\s*$/)[0];
+      var headT = head.trim() ? translateString(head, dict) : null;
+      if (headT !== null) return headT + headGap + dict[suffix];
+      if (!ARABIC_RE.test(head)) return head + dict[suffix];
+    }
+
+    // استبدال كل المفاتيح الأطول أولاً داخل النص (للجُمل المركبة)
+    var keys = Object.keys(dict).filter(function (k) { return k.length >= 3 && key.indexOf(k) !== -1; });
+    if (keys.length) {
+      keys.sort(function (a, b) { return b.length - a.length; });
+      var replaced = key;
+      var did = false;
+      for (var ki = 0; ki < keys.length; ki += 1) {
+        var kk = keys[ki];
+        if (replaced.indexOf(kk) !== -1) {
+          replaced = replaced.split(kk).join(dict[kk]);
+          did = true;
+        }
+      }
+      replaced = replaced.replace(/،/g, ',');
+      if (did && replaced !== key && !ARABIC_RE.test(replaced)) return replaced;
+    }
 
     return null;
   }
@@ -438,6 +530,7 @@
         .then(function (response) { return response.json(); })
         .then(function (data) {
           App.institution = (data && data.institution) || {};
+          App.applyBranding(App.institution);
           return App.institution;
         })
         .catch(function () {
@@ -445,6 +538,22 @@
           return App.institution;
         });
       return App._institutionPromise;
+    },
+
+    /** تطبيق اسم البرنامج واللون الرئيسي المحفوظين في الإعدادات. */
+    applyBranding: function (inst) {
+      inst = inst || App.institution || {};
+      var color = inst.primary_color;
+      if (color && /^#[0-9a-fA-F]{6}$/.test(color)) {
+        var root = document.documentElement.style;
+        root.setProperty('--primary', color);
+        root.setProperty('--primary-strong', 'color-mix(in srgb, ' + color + ' 82%, black)');
+        root.setProperty('--primary-soft', 'color-mix(in srgb, ' + color + ' 14%, white)');
+      }
+      var appName = (inst.app_name || '').trim() || App.t('app.name');
+      document.querySelectorAll('[data-app-name]').forEach(function (element) {
+        element.textContent = appName;
+      });
     },
 
     /**
@@ -643,7 +752,7 @@
         brandWrap.className = 'topbar-brand';
         brandWrap.innerHTML =
           '<button class="icon-btn menu-btn" type="button" id="menuBtn" aria-label="' + App.escape(App.t('shell.menu')) + '">' + App.icon('menu') + '</button>' +
-          '<span class="app-mark" data-brand style="width:40px;height:40px;flex:0 0 40px;border-radius:13px">' + App.icon('logo') + '</span>';
+          '<span class="app-mark" data-brand class="u-width-40px-height-40px-flex-0-0-40px-border-radius-13px">' + App.icon('logo') + '</span>';
         topbar.insertBefore(brandWrap, topbar.firstChild);
       }
 
@@ -698,7 +807,6 @@
       langMenu.querySelectorAll('[data-lang]').forEach(function (button) {
         button.addEventListener('click', function () {
           App.setLang(button.dataset.lang);
-          location.reload();
         });
       });
       document.addEventListener('click', function (event) {
@@ -737,13 +845,18 @@
       contentObserver = new MutationObserver(function (records) {
         if (!contentDictionary()) return;
         records.forEach(function (record) {
+          if (record.type === 'characterData') {
+            var parent = record.target && record.target.parentNode;
+            if (parent) App.translateContent(parent);
+            return;
+          }
           Array.prototype.forEach.call(record.addedNodes, function (node) {
             if (node.nodeType === 1) App.translateContent(node);
             else if (node.nodeType === 3 && ARABIC_RE.test(node.nodeValue)) App.translateContent(node.parentNode);
           });
         });
       });
-      contentObserver.observe(document.body, { childList: true, subtree: true });
+      contentObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
     },
 
     /** بناء الهيكل الجانبي وحماية الصفحة. */
@@ -780,7 +893,7 @@
         var extraLinks = NAV.filter(function (item) { return item.group === 'extra'; }).map(navLink).join('');
         sidebar.innerHTML =
           '<div class="brand"><div class="app-mark" data-brand>' + App.icon('logo') + '</div>' +
-          '<div class="brand-text"><strong>' + App.escape(App.t('app.name')) + '</strong>' +
+          '<div class="brand-text"><strong data-app-name>' + App.escape(App.t('app.name')) + '</strong>' +
           '<span data-institution-subtitle>' + App.escape(App.t('app.subtitle')) + '</span></div></div>' +
           '<nav class="nav"><div class="nav-group">' + App.escape(App.t('nav.sections')) + '</div>' + mainLinks +
           '<div class="nav-group">' + App.escape(App.t('nav.extra')) + '</div>' + extraLinks + '</nav>' +
@@ -829,6 +942,148 @@
       var modal = document.getElementById(id);
       if (modal) modal.classList.remove('open');
     }
+  };
+
+  /* ---------- مكوّنات الجداول المشتركة (فرز · صفحات · CSV) ---------- */
+
+  /** رؤوس أعمدة قابلة للفرز بالفأرة ولوحة المفاتيح مع aria-sort. */
+  App.sortHead = function (columns, sortKey, sortDir) {
+    return columns
+      .map(function (column) {
+        var active = sortKey === column.key;
+        var arrow = active ? (sortDir === 'desc' ? '▼' : '▲') : '↕';
+        var aria = active ? (sortDir === 'desc' ? 'descending' : 'ascending') : 'none';
+        return (
+          '<th class="sortable' + (active ? ' active' : '') + '" data-sort="' + column.key + '"' +
+          ' tabindex="0" role="button" aria-sort="' + aria + '">' +
+          column.label + ' <span class="sort-ind" aria-hidden="true">' + arrow + '</span></th>'
+        );
+      })
+      .join('');
+  };
+
+  /** يربط النقر و Enter/Space على رؤوس الفرز داخل نطاق. */
+  App.bindSort = function (scope, onSort) {
+    if (!scope) return;
+    scope.querySelectorAll('[data-sort]').forEach(function (th) {
+      function trigger() { onSort(th.dataset.sort); }
+      th.addEventListener('click', trigger);
+      th.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          trigger();
+        }
+      });
+    });
+  };
+
+  /** يقلب اتجاه الفرز على العمود المطلوب ويعيد إلى الصفحة الأولى. */
+  App.toggleSort = function (view, key) {
+    if (view.sortKey === key) view.sortDir = view.sortDir === 'asc' ? 'desc' : 'asc';
+    else {
+      view.sortKey = key;
+      view.sortDir = 'asc';
+    }
+    view.page = 1;
+  };
+
+  /** فرز مستقر: أرقام رقمياً ونصوص عربياً. */
+  App.sortBy = function (list, pick, dir) {
+    if (typeof pick !== 'function') return list;
+    return list.slice().sort(function (a, b) {
+      var va = pick(a);
+      var vb = pick(b);
+      var result = typeof va === 'number' && typeof vb === 'number'
+        ? va - vb
+        : String(va).localeCompare(String(vb), 'ar');
+      return dir === 'desc' ? -result : result;
+    });
+  };
+
+  /** شريط حجم الصفحة والتنقّل — واحد لكل الجداول. */
+  App.pageFoot = function (view, total, from, to, pages) {
+    var sizes = [25, 50, 100, 0].map(function (size) {
+      return '<option value="' + size + '"' + (view.pageSize === size ? ' selected' : '') + '>' +
+        (size ? size + ' / صفحة' : 'الكل') + '</option>';
+    }).join('');
+    return (
+      '<div class="inv-foot no-print">' +
+      '<div class="inv-foot-info">إظهار <select data-page-size aria-label="حجم الصفحة">' + sizes + '</select>' +
+      '<span class="muted">' + from + '–' + to + ' من ' + total + '</span></div>' +
+      '<div class="inv-pager">' +
+      '<button class="btn btn-sm" type="button" data-page="prev"' + (view.page <= 1 ? ' disabled' : '') + '>السابق</button>' +
+      '<span class="badge info">' + view.page + ' / ' + pages + '</span>' +
+      '<button class="btn btn-sm" type="button" data-page="next"' + (view.page >= pages ? ' disabled' : '') + '>التالي</button>' +
+      '</div></div>'
+    );
+  };
+
+  /** يربط أزرار الصفحات ومحدّد الحجم داخل نطاق. */
+  App.bindPager = function (scope, view, rerender) {
+    if (!scope) return;
+    scope.querySelectorAll('[data-page]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        if (button.disabled) return;
+        view.page += button.dataset.page === 'next' ? 1 : -1;
+        rerender();
+      });
+    });
+    var sizeSelect = scope.querySelector('[data-page-size]');
+    if (sizeSelect) {
+      sizeSelect.addEventListener('change', function () {
+        view.pageSize = Number(sizeSelect.value) || 0;
+        view.page = 1;
+        rerender();
+      });
+    }
+  };
+
+  /* ---------- تفضيلات العرض المحفوظة (الفرز وحجم الصفحة) ---------- */
+
+  var VIEW_PREFIX = 'amin_view_';
+
+  /** يقرأ تفضيلات جدول لكل مستخدم/متصفح مع التحقق من القيم المقبولة. */
+  App.loadView = function (key, defaults, options) {
+    var view = {
+      sortKey: defaults.sortKey,
+      sortDir: defaults.sortDir,
+      pageSize: defaults.pageSize,
+      page: 1
+    };
+    options = options || {};
+    try {
+      var saved = JSON.parse(localStorage.getItem(VIEW_PREFIX + key) || 'null');
+      if (saved && typeof saved === 'object') {
+        if (saved.sortKey && (!options.sortKeys || options.sortKeys.indexOf(saved.sortKey) !== -1)) {
+          view.sortKey = saved.sortKey;
+        }
+        if (saved.sortDir === 'asc' || saved.sortDir === 'desc') view.sortDir = saved.sortDir;
+        if (typeof saved.pageSize === 'number' && (!options.pageSizes || options.pageSizes.indexOf(saved.pageSize) !== -1)) {
+          view.pageSize = saved.pageSize;
+        }
+      }
+    } catch (error) {
+      /* تفضيلات تالفة أو تخزين محجوب: نكمل بالقيم الافتراضية */
+    }
+    return view;
+  };
+
+  /** يحفظ الفرز وحجم الصفحة بعد أي تغيير. */
+  App.saveView = function (key, view) {
+    try {
+      localStorage.setItem(
+        VIEW_PREFIX + key,
+        JSON.stringify({ sortKey: view.sortKey, sortDir: view.sortDir, pageSize: view.pageSize }),
+      );
+    } catch (error) {
+      /* المتصفح قد يمنع التخزين (وضع خاص مثلاً) */
+    }
+  };
+
+  /** خلية CSV آمنة (فواصل وأسطر داخلية). */
+  App.csvCell = function (value) {
+    var text = String(value === undefined || value === null ? '' : value);
+    return /[",\n]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
   };
 
   window.App = App;

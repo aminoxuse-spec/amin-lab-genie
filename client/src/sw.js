@@ -1,5 +1,5 @@
 /* Amin-Lab -Pro🔬 — Service Worker */
-const CACHE = 'amin-lab-genie-v24';
+const CACHE = 'amin-lab-genie-v68';
 const SHELL = [
   '/index.html',
   '/dashboard.html',
@@ -39,6 +39,24 @@ self.addEventListener('fetch', (event) => {
 
   // بيانات الـ API دائماً من الشبكة (لا تخزين مؤقت لبيانات حساسة)
   if (url.pathname.startsWith('/api/')) return;
+
+  // صفحات HTML: الشبكة أولاً حتى تظهر التحديثات فوراً، والكاش احتياطياً دون اتصال.
+  const isNavigation =
+    request.mode === 'navigate' || String(request.headers.get('accept') || '').includes('text/html');
+  if (isNavigation) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE).then((cache) => cache.put(request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request).then((cached) => cached || caches.match('/index.html'))),
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(request).then((cached) => {

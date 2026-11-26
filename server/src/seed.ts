@@ -5,7 +5,6 @@ import { DATA_DIR } from './config.ts';
 import { countUsers, createUser, findByUsername } from './models/User.ts';
 import { countRooms, listRooms, createRoom } from './models/LabRoom.ts';
 import { createInventory, listInventory } from './models/Inventory.ts';
-import { createSchedule, listSchedule } from './models/Schedule.ts';
 import { hashPassword } from './utils/security.ts';
 import { logger } from './utils/logger.ts';
 
@@ -62,9 +61,10 @@ export function seed(): void {
   }
 
   if (countRooms() === 0) {
-    createRoom({ name: 'مختبر الفيزياء', capacity: 24, location: 'الطابق الأول' });
-    createRoom({ name: 'مختبر الكيمياء', capacity: 24, location: 'الطابق الأول' });
-    createRoom({ name: 'مختبر علوم الحياة', capacity: 30, location: 'الطابق الثاني' });
+    createRoom({ name: 'مخبر العلوم الفيزيائية', capacity: 24, location: 'الطابق الأول' });
+    createRoom({ name: 'مخبر العلوم الفزيائية 2', capacity: 24, location: 'الطابق الأول' });
+    createRoom({ name: 'مخبر العلوم الطبيعية', capacity: 30, location: 'الطابق الثاني' });
+    createRoom({ name: 'مخبر العلوم الطبيعية 2', capacity: 30, location: 'الطابق الثاني' });
     logger.info('تم إنشاء قاعات المختبر');
   }
 
@@ -91,29 +91,6 @@ export function seed(): void {
     logger.info('تم إنشاء جرد تجريبي', { items: items.length });
   }
 
-  if (listSchedule().length === 0) {
-    const rooms = listRooms();
-    const room = rooms[0]?.id ?? null;
-    const teacher = findByUsername('teacher') ?? findByUsername('admin');
-    if (!teacher) return;
-    createSchedule({
-      teacher_id: teacher.id,
-      room_id: room,
-      class_name: 'الجذع المشترك العلمي 1',
-      subject: 'الفيزياء والكيمياء',
-      day_of_week: 1,
-      start_time: '08:00',
-      end_time: '10:00',
-    });
-    createSchedule({
-      teacher_id: teacher.id,
-      room_id: rooms[1]?.id ?? null,
-      class_name: 'السنة الأولى باك علوم',
-      subject: 'علوم الحياة والأرض',
-      day_of_week: 3,
-      start_time: '10:00',
-      end_time: '12:00',
-    });
-    logger.info('تم إنشاء استعمال الزمن التجريبي');
-  }
+  // استعمال الزمن يبدأ فارغاً — لا بيانات تجريبية.
 }
+

@@ -7,7 +7,9 @@
     <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="/borrowing/borrowing.css" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" href="/assets/icons/favicon.png" />
+    <link rel="icon" type="image/x-icon" href="/assets/icons/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
   </head>
   <body>
     <div class="app-shell">
@@ -39,13 +41,13 @@
                 <select id="roomId"><option value="">بدون قاعة</option></select>
               </div>
             </div>
-            <div class="field" style="margin-top: 0.8rem">
+            <div class="field u-margin-top-0-8rem">
               <label for="notes">ملاحظات الإعارة (اختياري)</label>
               <textarea id="notes" maxlength="500" placeholder="تجربة التحليل الكهربائي…"></textarea>
             </div>
           </section>
 
-          <section class="card" style="margin-top: 1rem">
+          <section class="card u-margin-top-1rem">
             <div class="card-head">
               <h2>عناصر الإعارة</h2>
               <div class="row-actions">
@@ -56,19 +58,19 @@
             <div class="table-wrap">
               <table>
                 <thead>
-                  <tr><th>العنصر</th><th style="width: 110px">الكمية</th><th style="width: 150px">الحالة</th><th>ملاحظات</th><th style="width: 70px"></th></tr>
+                  <tr><th>العنصر</th><th class="u-width-110px">الكمية</th><th class="u-width-150px">الحالة</th><th>ملاحظات</th><th class="u-width-70px"></th></tr>
                 </thead>
                 <tbody id="lines">
                   <tr id="emptyRow"><td colspan="5" class="empty">لم تُضف أي عنصر بعد — استخدم «إضافة عتاد» أو «إضافة مادة كيميائية»</td></tr>
                 </tbody>
               </table>
             </div>
-            <p class="muted" style="margin-top: 0.6rem">
+            <p class="muted u-margin-top-0-6rem">
               حالة «مستهلك» تخص المواد الكيميائية فقط: تُخصم من المخزون ولا تُنتظر إعادتها.
             </p>
           </section>
 
-          <div style="display:flex;justify-content:flex-end;gap:.6rem;margin-top:1rem">
+          <div class="u-display-flex-justify-content-flex-end-gap-6rem-margin-top-1r">
             <a class="btn" href="/borrowing/borrowing.html">إلغاء</a>
             <button class="btn btn-primary" type="submit" id="submitBtn">💾 حفظ الإعارة</button>
           </div>

@@ -9,6 +9,7 @@ export type Schedule = {
   day_of_week: number;
   start_time: string;
   end_time: string;
+  status: 'scheduled' | 'done' | 'cancelled';
   created_at: string;
 };
 
@@ -43,10 +44,11 @@ export function createSchedule(data: {
   day_of_week: number;
   start_time: string;
   end_time: string;
+  status?: 'scheduled' | 'done' | 'cancelled';
 }): number {
   const { lastInsertRowid } = run(
-    `INSERT INTO schedules (teacher_id, room_id, class_name, subject, day_of_week, start_time, end_time)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO schedules (teacher_id, room_id, class_name, subject, day_of_week, start_time, end_time, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     data.teacher_id,
     data.room_id,
     data.class_name.trim(),
@@ -54,8 +56,27 @@ export function createSchedule(data: {
     data.day_of_week,
     data.start_time,
     data.end_time,
+    data.status ?? 'scheduled',
   );
   return lastInsertRowid;
+}
+
+export function findTeacherConflict(
+  teacherId: number,
+  dayOfWeek: number,
+  startTime: string,
+  endTime: string,
+  excludeId?: number,
+): Schedule | undefined {
+  return oneRow<Schedule>(
+    `SELECT * FROM schedules WHERE teacher_id = ? AND day_of_week = ?
+     AND start_time < ? AND end_time > ? AND id != ?`,
+    teacherId,
+    dayOfWeek,
+    endTime,
+    startTime,
+    excludeId ?? -1,
+  );
 }
 
 export function findConflict(
@@ -91,12 +112,13 @@ export function updateSchedule(
     start_time: string;
     end_time: string;
     teacher_id?: number;
+    status?: 'scheduled' | 'done' | 'cancelled';
   },
 ): boolean {
   return (
     run(
       `UPDATE schedules SET room_id = ?, class_name = ?, subject = ?, day_of_week = ?,
-         start_time = ?, end_time = ?, teacher_id = COALESCE(?, teacher_id) WHERE id = ?`,
+         start_time = ?, end_time = ?, teacher_id = COALESCE(?, teacher_id), status = COALESCE(?, status) WHERE id = ?`,
       data.room_id,
       data.class_name.trim(),
       data.subject.trim(),
@@ -104,6 +126,7 @@ export function updateSchedule(
       data.start_time,
       data.end_time,
       data.teacher_id ?? null,
+      data.status ?? null,
       id,
     ).changes > 0
   );
@@ -111,6 +134,10 @@ export function updateSchedule(
 
 export function deleteSchedule(id: number): boolean {
   return run('DELETE FROM schedules WHERE id = ?', id).changes > 0;
+}
+
+export function clearSchedule(): number {
+  return run('DELETE FROM schedules').changes;
 }
 
 export function scheduleById(id: number): ScheduleRow | undefined {

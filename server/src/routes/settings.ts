@@ -3,13 +3,22 @@ import { requireAdmin, requireAuth } from '../middleware/auth.ts';
 import { validateBody } from '../middleware/validation.ts';
 import {
   activate,
+  activity,
+  backups,
+  clearLog,
   deactivate,
+  downloadBackup,
+  makeBackup,
+  resetDemo,
+  wipeData,
   generateLicenseKey,
   info,
   institution,
   license,
   listLicenseKeys,
   revokeLicenseKey,
+  importLicenseKey,
+  exportLicenseKey,
   updateInstitutionInfo,
 } from '../controllers/settingsController.ts';
 
@@ -30,6 +39,15 @@ router.put(
 );
 router.delete('/license', requireAuth, requireAdmin, deactivate);
 
+router.get('/activity', requireAuth, requireAdmin, activity);
+router.delete('/activity', requireAuth, requireAdmin, clearLog);
+router.post('/reset-demo', requireAuth, requireAdmin, resetDemo);
+router.post('/wipe', requireAuth, requireAdmin, wipeData);
+
+router.get('/backups', requireAuth, requireAdmin, backups);
+router.post('/backups', requireAuth, requireAdmin, makeBackup);
+router.get('/backups/:file', requireAuth, requireAdmin, downloadBackup);
+
 router.get('/licenses', requireAuth, requireAdmin, listLicenseKeys);
 router.post(
   '/licenses',
@@ -45,6 +63,8 @@ router.post(
   validateBody({ key: { type: 'string', required: true, minLength: 4, maxLength: 40 } }),
   revokeLicenseKey,
 );
+router.post('/licenses/import', requireAuth, requireAdmin, importLicenseKey);
+router.get('/licenses/:key/export', requireAuth, requireAdmin, exportLicenseKey);
 
 // متاح قبل تسجيل الدخول: تحتاجه صفحة الدخول لعرض شعار المؤسسة
 router.get('/institution', institution);
@@ -64,6 +84,9 @@ router.put(
     signature_counselor_fr: { type: 'string', maxLength: 120, allowEmpty: true },
     signature_director: { type: 'string', maxLength: 120, allowEmpty: true },
     signature_director_fr: { type: 'string', maxLength: 120, allowEmpty: true },
+    app_name: { type: 'string', maxLength: 60, allowEmpty: true },
+    language: { type: 'string', maxLength: 5 },
+    primary_color: { type: 'string', maxLength: 9 },
   }),
   updateInstitutionInfo,
 );

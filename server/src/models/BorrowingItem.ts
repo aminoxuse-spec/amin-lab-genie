@@ -23,6 +23,7 @@ export type BorrowingItem = {
 export type BorrowingItemView = BorrowingItem & {
   name: string;
   code: string;
+  owner_no: string | null;
   unit: string;
   category: string;
 };
@@ -48,7 +49,7 @@ export function createItem(data: {
 
 export function itemsBySession(sessionId: number): BorrowingItemView[] {
   return allRows<BorrowingItemView>(
-    `SELECT i.*, inv.name, inv.code, inv.unit, inv.category
+    `SELECT i.*, inv.name, inv.code, inv.owner_no, inv.unit, inv.category
      FROM borrowing_items i JOIN inventory inv ON inv.id = i.inventory_id
      WHERE i.session_id = ? ORDER BY i.id`,
     sessionId,
@@ -88,7 +89,7 @@ export function outstandingOf(item: { condition_out: string; quantity_out: numbe
 /** العناصر التي لم تُرجع بعد (لتقارير المتأخرات). */
 export function outstandingItems(sinceDate: string): BorrowingItemView[] {
   return allRows<BorrowingItemView>(
-    `SELECT i.*, inv.name, inv.code, inv.unit, inv.category
+    `SELECT i.*, inv.name, inv.code, inv.owner_no, inv.unit, inv.category
      FROM borrowing_items i
      JOIN borrowing_sessions s ON s.id = i.session_id
      JOIN inventory inv ON inv.id = i.inventory_id

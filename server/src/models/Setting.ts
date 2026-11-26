@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { allRows, run, transaction } from '../db.ts';
 
 /** مفاتيح إعدادات المؤسسة والعلامة البصرية. */
@@ -14,6 +15,10 @@ export const INSTITUTION_KEYS = {
   signatureCounselorFr: 'institution.signature.counselor_fr',
   signatureDirector: 'institution.signature.director',
   signatureDirectorFr: 'institution.signature.director_fr',
+  appName: 'app.name',
+  language: 'app.language',
+  primaryColor: 'app.primary_color',
+  installId: 'app.install_id',
 } as const;
 
 export type Institution = {
@@ -31,6 +36,10 @@ export type Institution = {
     director: string;
     director_fr: string;
   };
+  app_name: string;
+  language: string;
+  primary_color: string;
+  install_id: string;
 };
 
 export function allSettings(): Record<string, string> {
@@ -53,6 +62,16 @@ export function setSettings(entries: Record<string, string>): void {
   });
 }
 
+export function ensureInstallId(): string {
+  const settings = allSettings();
+  const existing = settings[INSTITUTION_KEYS.installId];
+  if (existing) return existing;
+  const hex = randomBytes(8).toString('hex').toUpperCase();
+  const id = [hex.slice(0, 4), hex.slice(4, 8), hex.slice(8, 12), hex.slice(12, 16)].join('-');
+  setSettings({ [INSTITUTION_KEYS.installId]: id });
+  return id;
+}
+
 export function getInstitution(): Institution {
   const settings = allSettings();
   const read = (key: string) => settings[key] ?? '';
@@ -71,6 +90,10 @@ export function getInstitution(): Institution {
       director: read(INSTITUTION_KEYS.signatureDirector),
       director_fr: read(INSTITUTION_KEYS.signatureDirectorFr),
     },
+    app_name: read(INSTITUTION_KEYS.appName),
+    language: read(INSTITUTION_KEYS.language) || 'ar',
+    primary_color: read(INSTITUTION_KEYS.primaryColor) || '#16a34a',
+    install_id: read(INSTITUTION_KEYS.installId),
   };
 }
 
@@ -82,6 +105,9 @@ export function updateInstitution(input: {
   logo?: string;
   logo_in_print?: boolean;
   signature?: Partial<Institution['signature']>;
+  app_name?: string;
+  language?: string;
+  primary_color?: string;
 }): Institution {
   const entries: Record<string, string> = {};
   if (input.name !== undefined) entries[INSTITUTION_KEYS.name] = input.name;
@@ -92,6 +118,9 @@ export function updateInstitution(input: {
   if (input.logo_in_print !== undefined) {
     entries[INSTITUTION_KEYS.logoInPrint] = input.logo_in_print ? '1' : '0';
   }
+  if (input.app_name !== undefined) entries[INSTITUTION_KEYS.appName] = input.app_name;
+  if (input.language !== undefined) entries[INSTITUTION_KEYS.language] = input.language;
+  if (input.primary_color !== undefined) entries[INSTITUTION_KEYS.primaryColor] = input.primary_color;
 
   const signature = input.signature ?? {};
   if (signature.lab !== undefined) entries[INSTITUTION_KEYS.signatureLab] = signature.lab;

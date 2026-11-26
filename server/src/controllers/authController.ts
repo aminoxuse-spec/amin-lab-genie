@@ -24,6 +24,7 @@ export function login(req: Request, res: Response): void {
       username: account.username,
       full_name: account.full_name,
       role: account.role,
+      specialty: account.specialty,
     },
   });
 }
@@ -66,9 +67,14 @@ export function update(req: Request, res: Response): void {
     res.status(404).json({ error: 'المستخدم غير موجود' });
     return;
   }
-  const body = req.body as { full_name: string; role: UserRole; password?: string };
+  const body = req.body as { full_name: string; role: UserRole; phone?: string; specialty?: string; password?: string };
   if (body.password) updatePassword(id, hashPassword(body.password));
-  const user = updateUser(id, { full_name: body.full_name, role: body.role });
+  const user = updateUser(id, {
+    full_name: body.full_name,
+    role: body.role,
+    phone: body.phone ?? null,
+    specialty: body.specialty ?? null,
+  });
   logger.info('تعديل مستخدم', { id });
   res.json({ user });
 }
@@ -104,6 +110,8 @@ export function create(req: Request, res: Response): void {
     username?: string;
     full_name?: string;
     role?: UserRole;
+    phone?: string;
+    specialty?: string;
     password?: string;
   };
   if (findByUsername(body.username ?? '')) {
@@ -114,6 +122,8 @@ export function create(req: Request, res: Response): void {
     username: body.username as string,
     full_name: body.full_name as string,
     role: body.role ?? 'teacher',
+    phone: body.phone ?? null,
+    specialty: body.specialty ?? null,
     password_hash: hashPassword(body.password as string),
   });
   res.status(201).json({ user });

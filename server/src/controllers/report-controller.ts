@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import {
   countOpenSessions,
+  coverageRows,
   lateSessions,
   listSessions,
   sessionsBetween,
@@ -274,6 +275,14 @@ function lateReport(_from: string, _to: string): Omit<TableReport, 'app' | 'vers
   const rows = sessions.map((session) => {
     const items = itemsBySession(session.id);
     const remaining = items.reduce((sum, item) => sum + outstandingOf(item), 0);
+    const owners = [
+      ...new Set(
+        items
+          .filter((item) => outstandingOf(item) > 0 && item.owner_no)
+          .map((item) => String(item.owner_no)),
+      ),
+    ];
+    const owner_no = owners.length ? owners.join('، ') : '—';
     const dueDate = session.due_date ?? session.session_date;
     const due = new Date(`${dueDate}T${session.end_time}:00`);
     const hours = Math.max(0, Math.round((now - due.getTime()) / 3_600_000));
@@ -284,6 +293,7 @@ function lateReport(_from: string, _to: string): Omit<TableReport, 'app' | 'vers
       level: session.level ?? '—',
       class_name: session.class_name,
       subject: session.subject,
+      owner_no,
       remaining,
       due: `${dueDate} ${session.end_time}`,
       delay: hours >= 24 ? `${Math.floor(hours / 24)} يوم` : `${hours} ساعة`,
@@ -300,6 +310,7 @@ function lateReport(_from: string, _to: string): Omit<TableReport, 'app' | 'vers
       { key: 'level', label: 'المستوى' },
       { key: 'class_name', label: 'القسم' },
       { key: 'subject', label: 'المادة' },
+      { key: 'owner_no', label: 'جرد خاص' },
       { key: 'remaining', label: 'وحدات غير مُرجعة', numeric: true },
       { key: 'due', label: 'أجل الإرجاع' },
       { key: 'delay', label: 'مدة التأخر' },
@@ -439,6 +450,77 @@ export function tableReportXls(type: TableReportType) {
       toXls(`${report.title} (${from} → ${to})`, report.columns.map((column) => column.label), reportRows(report)),
     );
   };
+}
+
+/* ------------------------------------------------------------------ */
+/* تغطية التقارير الأسبوعية                                             */
+/* ------------------------------------------------------------------ */
+
+export function coverage(req: Request, res: Response): void {
+  const requested = Number(req.query.weeks ?? 8);
+  const weekCount = Math.min(52, Math.max(4, Number.isFinite(requested) ? requested : 8));
+  const todayIso = today();
+  const currentStart = addDays(todayIso, -new Date(`${todayIso}T00:00:00Z`).getUTCDay());
+  const firstStart = addDays(currentStart, -7 * (weekCount - 1));
+  const lastEnd = addDays(currentStart, 6);
+
+  const buckets = new Map<
+    string,
+    { start: string; end: string; sessions: number; teachers: Set<number>; units: number; consumed: number; reports: Set<string> }
+  >();
+  for (let index = 0; index < weekCount; index += 1) {
+    const start = addDays(firstStart, index * 7);
+    buckets.set(start, { start, end: addDays(start, 6), sessions: 0, teachers: new Set(), units: 0, consumed: 0, reports: new Set() });
+  }
+
+  const rows = coverageRows(firstStart, lastEnd);
+  const teacherWeeks = new Map<number, { name: string; weeks: Set<string> }>();
+
+  for (const row of rows) {
+    const start = addDays(row.session_date, -new Date(`${row.session_date}T00:00:00Z`).getUTCDay());
+    const bucket = buckets.get(start);
+    if (!bucket) continue;
+    bucket.sessions += 1;
+    bucket.teachers.add(row.teacher_id);
+    bucket.units += row.units_out;
+    bucket.consumed += row.consumed;
+    if (row.report_no) bucket.reports.add(row.report_no);
+
+    const entry = teacherWeeks.get(row.teacher_id) ?? { name: row.teacher_name, weeks: new Set<string>() };
+    entry.weeks.add(start);
+    teacherWeeks.set(row.teacher_id, entry);
+  }
+
+  const weeks = [...buckets.values()].map((bucket) => ({
+    start: bucket.start,
+    end: bucket.end,
+    sessions: bucket.sessions,
+    teachers: bucket.teachers.size,
+    units: bucket.units,
+    consumed: bucket.consumed,
+    report_no: [...bucket.reports].sort().join(' · ') || null,
+  }));
+  const covered = weeks.filter((week) => week.sessions > 0).length;
+
+  res.json({
+    app: APP_NAME,
+    version: APP_VERSION,
+    from: firstStart,
+    to: lastEnd,
+    weeks,
+    missing: weeks.filter((week) => week.sessions === 0),
+    teachers: [...teacherWeeks.values()]
+      .map((entry) => ({ name: entry.name, weeks: entry.weeks.size }))
+      .sort((a, b) => b.weeks - a.weeks || a.name.localeCompare(b.name, 'ar')),
+    summary: {
+      weeks: weeks.length,
+      covered,
+      missing: weeks.length - covered,
+      coverage: Math.round((covered / weeks.length) * 100),
+      sessions: rows.length,
+    },
+    generatedAt: new Date().toISOString(),
+  });
 }
 
 export function daily(req: Request, res: Response): void {

@@ -43,11 +43,12 @@
         var percent = Math.round((count / total) * 100);
         return (
           '<div class="bar-row"><span>' + App.conditionLabel(status) + '</span>' +
-          '<div class="bar-track"><div class="bar-fill ' + status + '" style="width:' + percent + '%"></div></div>' +
+          '<div class="bar-track"><div class="bar-fill ' + status + '" data-w="' + percent + '"></div></div>' +
           '<span>' + count + '</span></div>'
         );
       })
       .join('');
+    host.querySelectorAll('[data-w]').forEach(function (el) { el.style.width = el.dataset.w + '%'; });
   }
 
   function renderTrend(trend) {
@@ -66,13 +67,13 @@
           return (
             '<div class="trend-day" title="' + day.check_date + '">' +
             '<div class="trend-bars">' +
-            '<i style="height:' + Math.max(2, okHeight) + 'px"></i>' +
-            '<i class="issues" style="height:' + Math.max(2, issueHeight) + 'px"></i>' +
+            '<i data-h="' + Math.max(2, okHeight) + '"></i>' +
+            '<i class="issues" data-h="' + Math.max(2, issueHeight) + '"></i>' +
             '</div><span>' + day.check_date.slice(5) + '</span></div>'
           );
         })
         .join('') +
-      '<div class="legend" style="grid-column:1/-1"><span><i style="background:#15803d"></i>سليم</span><span><i style="background:#f59e0b"></i>مشاكل</span></div>';
+      '<div class="legend u-grid-column-1-1"><span><i class="u-background-15803d"></i>سليم</span><span><i class="u-background-f59e0b"></i>مشاكل</span></div>';
   }
 
   function renderLists(lowStock, expiring) {
@@ -118,27 +119,120 @@
       .catch(function (error) { App.toast(error.message, 'error'); });
   }
 
-  function loadChecks() {
+  var checksSearch = document.getElementById('checkSearch');
+  var checksStatus = document.getElementById('checkStatus');
+
+  var qcView = App.loadView(
+    'qc',
+    { sortKey: 'check_date', sortDir: 'desc', pageSize: 25 },
+    { sortKeys: ['check_date', 'name', 'code', 'status', 'quantity_found', 'notes'], pageSizes: [0, 25, 50, 100] },
+  );
+
+  var QC_COLUMNS = [
+    { key: 'check_date', label: 'التاريخ' },
+    { key: 'name', label: 'الصنف' },
+    { key: 'code', label: 'الرمز' },
+    { key: 'status', label: 'النتيجة' },
+    { key: 'quantity_found', label: 'الكمية' },
+    { key: 'notes', label: 'ملاحظات' }
+  ];
+
+  var QC_SORT = {
+    check_date: function (check) { return check.check_date || ''; },
+    name: function (check) { return check.name || ''; },
+    code: function (check) { return check.code || ''; },
+    status: function (check) { return App.conditionLabel(check.status) || ''; },
+    quantity_found: function (check) { return Number(check.quantity_found) || 0; },
+    notes: function (check) { return check.notes || ''; }
+  };
+
+  function filteredChecks() {
+    var term = (checksSearch ? checksSearch.value : '').trim().toLowerCase();
+    var wanted = checksStatus ? checksStatus.value : '';
+    var list = checksCache.filter(function (check) {
+      if (wanted && check.status !== wanted) return false;
+      if (!term) return true;
+      return (String(check.name) + ' ' + String(check.code)).toLowerCase().indexOf(term) !== -1;
+    });
+    return App.sortBy(list, QC_SORT[qcView.sortKey], qcView.sortDir);
+  }
+
+  function renderChecks() {
     var body = document.getElementById('checksBody');
     if (!body) return;
+    var list = filteredChecks();
+    var pageSize = qcView.pageSize > 0 ? qcView.pageSize : Math.max(list.length, 1);
+    var pages = Math.max(1, Math.ceil(list.length / pageSize));
+    qcView.page = Math.min(Math.max(1, qcView.page), pages);
+    var start = (qcView.page - 1) * pageSize;
+    var pageRows = qcView.pageSize > 0 ? list.slice(start, start + pageSize) : list;
+
+    var counter = document.getElementById('checksCount');
+    if (counter) counter.textContent = list.length + ' فحص';
+
+    var headRow = document.getElementById('checksHeadRow');
+    if (headRow) headRow.innerHTML = App.sortHead(QC_COLUMNS, qcView.sortKey, qcView.sortDir);
+
+    body.innerHTML = pageRows.length
+      ? pageRows
+          .map(function (check) {
+            return (
+              '<tr data-id="' + check.id + '"><td>' + App.fmtDate(check.check_date) + '</td><td>' + App.escape(check.name) + '</td>' +
+              '<td><code>' + App.escape(check.code) + '</code></td><td>' + statusBadge(check.status) + '</td>' +
+              '<td>' + check.quantity_found + '</td><td class="wrap">' + App.escape(check.notes || '—') + '</td></tr>'
+            );
+          })
+          .join('')
+      : '<tr><td colspan="6" class="empty">' +
+        (checksCache.length ? 'لا توجد فحوصات مطابقة' : 'لم تُسجَّل أي فحوصات بعد') +
+        '</td></tr>';
+
+    var host = body.closest('.table-wrap');
+    if (host) {
+      var old = host.parentNode.querySelector('.inv-foot');
+      if (old) old.remove();
+      if (list.length) {
+        host.insertAdjacentHTML(
+          'afterend',
+          App.pageFoot(qcView, list.length, start + 1, Math.min(start + pageSize, list.length), pages),
+        );
+      }
+    }
+
+    var scope = host ? host.parentNode : document;
+    App.bindSort(scope, function (key) {
+      App.toggleSort(qcView, key);
+      App.saveView('qc', qcView);
+      renderChecks();
+    });
+    App.bindPager(scope, qcView, function () {
+      App.saveView('qc', qcView);
+      renderChecks();
+    });
+  }
+
+  if (checksSearch) {
+    checksSearch.addEventListener('input', function () {
+      qcView.page = 1;
+      renderChecks();
+    });
+  }
+  if (checksStatus) {
+    checksStatus.addEventListener('change', function () {
+      qcView.page = 1;
+      renderChecks();
+    });
+  }
+
+  function loadChecks() {
     App.api('/qc')
       .then(function (data) {
         checksCache = data.checks;
-        document.getElementById('checksCount').textContent = data.checks.length + ' فحص';
-        body.innerHTML = data.checks.length
-          ? data.checks
-              .map(function (check) {
-                return (
-                  '<tr data-id="' + check.id + '"><td>' + App.fmtDate(check.check_date) + '</td><td>' + App.escape(check.name) + '</td>' +
-                  '<td>' + App.escape(check.code) + '</td><td>' + statusBadge(check.status) + '</td>' +
-                  '<td>' + check.quantity_found + '</td><td class="wrap">' + App.escape(check.notes || '—') + '</td></tr>'
-                );
-              })
-              .join('')
-          : '<tr><td colspan="6" class="empty">لم تُسجَّل أي فحوصات بعد</td></tr>';
+        renderChecks();
       })
       .catch(function (error) {
-        body.innerHTML = '<tr><td colspan="6" class="empty">' + App.escape(error.message) + '</td></tr>';
+        var body = document.getElementById('checksBody');
+        if (body) body.innerHTML = '<tr><td colspan="6" class="empty">' + App.escape(error.message) + '</td></tr>';
       });
   }
 
@@ -188,6 +282,8 @@
     document.getElementById('checkDate').value = App.today();
 
     Actions.bar(document.getElementById('pageActions'), {
+      // مراقبة الجودة متاحة لكل مستخدم مُسجَّل
+      allow: { import: true, add: true, edit: true, print: true },
       onPrint: function () { window.print(); },
       onAdd: function () {
         document.getElementById('inventoryId').focus();
@@ -264,6 +360,40 @@
         })
         .catch(function (error) { App.toast(error.message, 'error'); });
     });
+
+    function exportChecksCsv() {
+      var list = filteredChecks();
+      if (!list.length) {
+        App.toast('لا توجد فحوصات لتصديرها', 'error');
+        return;
+      }
+      var headers = ['check_date', 'code', 'name', 'status', 'quantity_found', 'notes'];
+      var lines = list.map(function (check) {
+        return [
+          check.check_date,
+          check.code,
+          check.name,
+          App.conditionLabel(check.status),
+          check.quantity_found,
+          check.notes || ''
+        ];
+      });
+      var csv = '\ufeff' + [headers].concat(lines)
+        .map(function (row) { return row.map(App.csvCell).join(','); })
+        .join('\r\n') + '\r\n';
+      var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+      var link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'فحوصات-الجودة-' + new Date().toISOString().slice(0, 10) + '.csv';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(function () { URL.revokeObjectURL(link.href); }, 1000);
+      App.toast('تم تصدير ' + list.length + ' فحصاً (بالترتيب الحالي)', 'ok');
+    }
+
+    var qcCsvBtn = document.getElementById('qcCsvBtn');
+    if (qcCsvBtn) qcCsvBtn.addEventListener('click', exportChecksCsv);
 
     loadChecks();
   }

@@ -75,6 +75,16 @@
     return node;
   }
 
+  /** اسم ملف آمن: يزال * (غير مسموح في Windows) وأي رموز ممنوعة. */
+  function fileSafe(value) {
+    return String(value === null || value === undefined ? '' : value)
+      .replace(/\*/g, '')
+      .replace(/[<>:"/\\|?\u0000-\u001f]+/g, '-')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
   function categoryLabel(category) {
     return { apparatus: 'أجهزة', glassware: 'زجاجيات', chemical: 'مواد كيميائية' }[category] || category;
   }
@@ -85,15 +95,17 @@
       var node = modal(
         'qrItemModal',
         '<h2>بطاقة الوسيلة</h2>' +
-          '<div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-start">' +
-          '<img src="' + dataUrl + '" alt="QR ' + App.escape(item.code) + '" style="width:170px;height:170px;border:1px solid var(--line);border-radius:12px;padding:6px;background:#fff" />' +
-          '<div style="flex:1;min-width:200px">' +
-          '<h3 style="margin-bottom:.2rem">' + App.escape(item.name) + '</h3>' +
-          '<p class="muted" style="margin-bottom:.4rem"><code>' + App.escape(item.code) + '</code> — ' + categoryLabel(item.category) + '</p>' +
+          '<div class="u-display-flex-gap-1rem-flex-wrap-wrap-align-items-flex-start">' +
+          '<img src="' + dataUrl + '" alt="QR ' + App.escape(item.code) + '" class="u-width-170px-height-170px-border-1px-solid-var-line-border-ra" />' +
+          '<div class="u-flex-1-min-width-200px">' +
+          '<h3 class="u-margin-bottom-2rem">' + App.escape(item.name_ar || item.name) + '</h3>' +
+          '<p class="muted u-margin-bottom-4rem"><code>' + App.escape(item.code) + '</code>' +
+          (item.owner_no ? ' · <code>' + App.escape(item.owner_no) + '</code>' : '') +
+          ' — ' + categoryLabel(item.category) + '</p>' +
           '<div class="muted">المتوفر: <strong>' + item.available_quantity + ' / ' + item.quantity + ' ' + App.escape(item.unit) + '</strong></div>' +
           '<div class="muted">المكان: ' + App.escape(item.location || '—') + '</div>' +
           '<div class="muted">الصلاحية: ' + (item.expiry_date ? App.fmtDate(item.expiry_date) : '—') + '</div>' +
-          '<div class="row-actions" style="margin-top:.8rem;flex-wrap:wrap">' +
+          '<div class="row-actions u-margin-top-8rem-flex-wrap-wrap">' +
           '<button class="btn btn-sm" data-qr-download>⬇️ تنزيل الرمز</button>' +
           '<a class="btn btn-sm" href="/labels.html?ids=' + item.id + '">🏷️ ملصق</a>' +
           '<a class="btn btn-sm" href="/inventory/inventory.html?edit=' + item.id + '">✏️ تعديل</a>' +
@@ -105,7 +117,8 @@
       node.querySelector('[data-qr-download]').addEventListener('click', function () {
         var link = document.createElement('a');
         link.href = dataUrl;
-        link.download = item.code + '-qr.png';
+        var ownerPart = fileSafe(item.owner_no);
+        link.download = fileSafe(item.code) + (ownerPart ? '-' + ownerPart : '') + '-qr.png';
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -119,15 +132,16 @@
       return;
     }
     host.innerHTML =
-      '<p class="muted" style="margin-bottom:.4rem">' +
+      '<p class="muted u-margin-bottom-4rem">' +
       (items.length > 1 ? items.length + ' وسيلة مطابقة — اختر واحدة:' : 'نتيجة واحدة:') +
       '</p>' +
-      '<div style="display:flex;flex-direction:column;gap:.35rem">' +
+      '<div class="u-display-flex-flex-direction-column-gap-35rem">' +
       items
         .map(function (item, index) {
           return (
-            '<button class="btn" type="button" data-pick="' + index + '" style="justify-content:space-between;text-align:right">' +
-            '<span>' + App.escape(item.name) + ' <small class="muted">— ' + App.escape(item.code) + '</small></span>' +
+            '<button class="btn" type="button" data-pick="' + index + '" class="u-justify-content-space-between-text-align-right">' +
+            '<span>' + App.escape(item.name_ar || item.name) + ' <small class="muted">— ' + App.escape(item.code) +
+            (item.owner_no ? ' · ' + App.escape(item.owner_no) : '') + '</small></span>' +
             '<span class="badge">' + item.available_quantity + ' / ' + item.quantity + '</span></button>'
           );
         })
@@ -147,16 +161,16 @@
       'qrScannerModal',
       '<h2>مسح QR</h2>' +
         '<p class="muted">امسح بالكاميرا، أو استعمل قارئ USB، أو ارفع صورة، أو اكتب رقم الجرد.</p>' +
-        '<form id="qrScanForm" style="display:flex;gap:.4rem">' +
-        '<input id="qrScanInput" placeholder="AMIN:APP-001 أو APP-001" autocomplete="off" style="flex:1" />' +
+        '<form id="qrScanForm" class="u-display-flex-gap-4rem">' +
+        '<input id="qrScanInput" placeholder="AMIN:APP-001 أو APP-001" autocomplete="off" class="u-flex-1" />' +
         '<button class="btn btn-primary" type="submit">بحث</button>' +
         '</form>' +
-        '<div class="row-actions" style="margin-top:.6rem">' +
+        '<div class="row-actions u-margin-top-6rem">' +
         '<button class="btn btn-sm" type="button" id="qrCameraBtn">📷 تشغيل الكاميرا</button>' +
-        '<label class="btn btn-sm" style="margin:0">🖼️ من صورة<input type="file" accept="image/*" id="qrImageInput" hidden /></label>' +
+        '<label class="btn btn-sm u-margin-0">🖼️ من صورة<input type="file" accept="image/*" id="qrImageInput" hidden /></label>' +
         '</div>' +
-        '<video id="qrVideo" playsinline muted style="display:none;width:100%;max-height:240px;border-radius:12px;margin-top:.6rem;background:#000"></video>' +
-        '<div id="qrResults" style="margin-top:.8rem"></div>' +
+        '<video id="qrVideo" playsinline muted class="u-display-none-width-100-max-height-240px-border-radius-12px-m"></video>' +
+        '<div id="qrResults" class="u-margin-top-8rem"></div>' +
         '<div class="modal-actions"><button class="btn" type="button" data-close>إغلاق</button></div>',
     );
 

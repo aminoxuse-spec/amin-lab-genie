@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>استيراد التقرير الأسبوعي — Amin-Lab -Pro🔬</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/x-icon" href="/assets/icons/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar"></aside>
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <h1>استيراد التقرير الأسبوعي</h1>
+            <p>الصق جدول التقرير (CSV من Excel أو نص مفصول بفاصلة/فاصلة منقوطة/جدولة) ليُحوَّل إلى جلسات إعارة</p>
+          </div>
+          <div class="row-actions">
+            <a class="btn" href="/reports/index.html">↩️ التقارير</a>
+            <a class="btn" href="/borrowing/borrowing.html">📋 الإعارات</a>
+          </div>
+        </header>
+
+        <section class="card">
+          <div class="card-head"><h2>📥 جدول التقرير</h2><span class="badge info">للأعمدة: التاريخ · البداية · النهاية · الأستاذ · الوسائل</span></div>
+          <div class="grid cols-2 u-align-items-start">
+            <div class="field">
+              <label for="reportNo">رقم التقرير (اختياري)</label>
+              <input id="reportNo" type="text" placeholder="مثال: 07" />
+            </div>
+            <div class="field">
+              <label for="teacherHint">الأعمدة الاختيارية</label>
+              <input id="teacherHint" type="text" value="القسم · المادة · القاعة" disabled />
+            </div>
+          </div>
+          <div class="field">
+            <label for="reportText">نص الجدول</label>
+            <textarea id="reportText" rows="12" class="u-width-100-font-family-inherit" placeholder="التاريخ;البداية;النهاية;الأستاذ;الوسائل
+2026-11-18;08:00;10:00;عمارة;بطارية – مصباح – انابيب اختبار
+2026-11-18;10:00;12:00;منصوري;كاشف كهربائي – نواس"></textarea>
+          </div>
+          <div class="row-actions u-margin-top-6rem">
+            <button class="btn" type="button" id="checkBtn">🔍 تحقق فقط (بدون حفظ)</button>
+            <button class="btn btn-primary" type="button" id="importBtn">✅ استيراد</button>
+            <button class="btn" type="button" id="clearBtn">🧹 تفريغ</button>
+          </div>
+          <p class="muted u-margin-top-5rem">
+            الاستيراد آمن عند التكرار: تُتجاهل الجلسات الموجودة بنفس الأستاذ والتاريخ وساعة البداية. القسم والمستوى يُستخرجان من استعمال الزمن إن لم يُذكرا.
+          </p>
+        </section>
+
+        <section class="card" id="resultCard" class="u-margin-top-1rem" hidden>
+          <div class="card-head"><h2>نتيجة الاستيراد</h2><span class="badge info" id="resultBadge">—</span></div>
+          <div id="resultBody"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/i18n.js"></script>
+    <script src="/app.js"></script>
+    <script src="/import/index.js"></script>
+  </body>
+</html>

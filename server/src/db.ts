@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
   username TEXT NOT NULL UNIQUE,
   full_name TEXT NOT NULL,
   role TEXT NOT NULL CHECK (role IN ('admin','teacher')),
+  phone TEXT,
   password_hash TEXT NOT NULL,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -55,6 +56,7 @@ CREATE TABLE IF NOT EXISTS borrowing_sessions (
   due_date TEXT,
   status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open','partial','returned')),
   notes TEXT,
+  report_no TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
@@ -70,6 +72,33 @@ CREATE TABLE IF NOT EXISTS borrowing_items (
   notes TEXT
 );
 
+CREATE TABLE IF NOT EXISTS material_requests (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  teacher_id INTEGER NOT NULL REFERENCES users(id),
+  session_date TEXT NOT NULL,
+  start_time TEXT NOT NULL,
+  end_time TEXT NOT NULL,
+  class_name TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  notes TEXT,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','approved','rejected','cancelled')),
+  admin_note TEXT,
+  session_id INTEGER REFERENCES borrowing_sessions(id) ON DELETE SET NULL,
+  decided_by INTEGER REFERENCES users(id),
+  decided_at TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS material_request_items (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  request_id INTEGER NOT NULL REFERENCES material_requests(id) ON DELETE CASCADE,
+  inventory_id INTEGER NOT NULL REFERENCES inventory(id),
+  quantity INTEGER NOT NULL CHECK (quantity > 0)
+);
+
+CREATE INDEX IF NOT EXISTS idx_material_requests_teacher ON material_requests(teacher_id, status);
+CREATE INDEX IF NOT EXISTS idx_material_request_items_request ON material_request_items(request_id);
+
 CREATE TABLE IF NOT EXISTS schedules (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   teacher_id INTEGER NOT NULL REFERENCES users(id),
@@ -79,6 +108,7 @@ CREATE TABLE IF NOT EXISTS schedules (
   day_of_week INTEGER NOT NULL CHECK (day_of_week BETWEEN 0 AND 6),
   start_time TEXT NOT NULL,
   end_time TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'scheduled' CHECK (status IN ('scheduled','done','cancelled')),
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
@@ -110,6 +140,33 @@ CREATE TABLE IF NOT EXISTS experiments (
 );
 
 CREATE INDEX IF NOT EXISTS idx_experiments_stage ON experiments(stage);
+
+CREATE TABLE IF NOT EXISTS stock_movements (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  item_id INTEGER NOT NULL REFERENCES inventory(id) ON DELETE CASCADE,
+  type TEXT NOT NULL CHECK (type IN ('in','consume','damage','adjust')),
+  quantity INTEGER NOT NULL,
+  balance_after INTEGER NOT NULL,
+  reason TEXT,
+  movement_date TEXT NOT NULL DEFAULT (date('now')),
+  user_id INTEGER,
+  username TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_movements_date ON stock_movements(movement_date);
+CREATE INDEX IF NOT EXISTS idx_movements_item ON stock_movements(item_id);
+
+CREATE TABLE IF NOT EXISTS activity_log (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER,
+  username TEXT,
+  action TEXT NOT NULL,
+  details TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_activity_created ON activity_log(created_at);
 `;
 
 db.exec(SCHEMA);
@@ -130,6 +187,18 @@ function ensureColumn(table: string, column: string, definition: string): void {
   }
 }
 
+// بنك مرادفات الوسائل: أسماء كما ترد في تقارير الإعارة → صنف الجرد
+db.exec(`
+  CREATE TABLE IF NOT EXISTS item_aliases (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    inventory_id INTEGER NOT NULL REFERENCES inventory(id) ON DELETE CASCADE,
+    alias TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (inventory_id, alias)
+  );
+`);
+db.exec('CREATE INDEX IF NOT EXISTS idx_aliases_item ON item_aliases(inventory_id)');
+
 // إعدادات التطبيق (مؤسسة، شعار، توقيعات)
 db.exec(`
   CREATE TABLE IF NOT EXISTS app_settings (
@@ -141,7 +210,55 @@ db.exec(`
 
 ensureColumn('borrowing_sessions', 'level', 'TEXT');
 ensureColumn('borrowing_sessions', 'due_date', 'TEXT');
+ensureColumn('borrowing_sessions', 'report_no', 'TEXT');
 ensureColumn('borrowing_items', 'notes', 'TEXT');
+
+// ترقية: الحقول الكيميائية وبيانات الشراء داخل بطاقة الصنف
+ensureColumn('inventory', 'formula', 'TEXT');
+ensureColumn('inventory', 'danger_level', 'TEXT');
+ensureColumn('inventory', 'supplier', 'TEXT');
+ensureColumn('inventory', 'invoice_no', 'TEXT');
+ensureColumn('inventory', 'owner_no', 'TEXT');
+ensureColumn('inventory', 'purchase_date', 'TEXT');
+ensureColumn('inventory', 'cost', 'REAL');
+ensureColumn('inventory', 'name_ar', 'TEXT');
+
+// ترقية: هاتف الأستاذ/المستخدم
+ensureColumn('users', 'phone', 'TEXT');
+
+// ترقية: تخصص الأستاذ (علوم فيزيائية / علوم الطبيعة والحياة)
+ensureColumn('users', 'specialty', 'TEXT');
+
+// رصيد افتتاحي لسجل الحركات: يُسجّل مرة واحدة للأصناف الموجودة قبل إنشاء السجل.
+try {
+  db.exec(`
+    INSERT INTO stock_movements (item_id, type, quantity, balance_after, reason, movement_date, username)
+    SELECT id, 'in', quantity, quantity, 'رصيد افتتاحي', date(created_at), 'النظام'
+    FROM inventory
+    WHERE deleted_at IS NULL AND quantity > 0
+      AND NOT EXISTS (SELECT 1 FROM stock_movements)
+  `);
+} catch {
+  // لا تُفشل بدء التشغيل إن كانت قاعدة البيانات قديمة أو مقفلة
+}
+
+// ترقية: حالة الحصة (مبرمجة / منجزة / ملغاة)
+ensureColumn('schedules', 'status', "TEXT NOT NULL DEFAULT 'scheduled'");
+
+// فهارس الاستعلامات الساخنة: البحث بالرمز/الاسم، تصفية الفئة، الحصص، والإعارات
+function ensureIndex(sql: string): void {
+  try {
+    db.exec(sql);
+  } catch {
+    // لا تُفشل بدء التشغيل إن كانت قاعدة البيانات قديمة أو مقفلة
+  }
+}
+ensureIndex('CREATE INDEX IF NOT EXISTS idx_inventory_code ON inventory(code)');
+ensureIndex('CREATE INDEX IF NOT EXISTS idx_inventory_category ON inventory(category, deleted_at)');
+ensureIndex('CREATE INDEX IF NOT EXISTS idx_inventory_name ON inventory(name)');
+ensureIndex('CREATE INDEX IF NOT EXISTS idx_schedules_slot ON schedules(day_of_week, start_time)');
+ensureIndex('CREATE INDEX IF NOT EXISTS idx_borrowing_items_inventory ON borrowing_items(inventory_id)');
+ensureIndex('CREATE INDEX IF NOT EXISTS idx_material_requests_status ON material_requests(status)');
 
 logger.debug('قاعدة البيانات جاهزة', { path: DB_PATH });
 

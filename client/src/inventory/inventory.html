@@ -6,7 +6,9 @@
     <title>الجرد — Amin-Lab -Pro🔬</title>
     <link rel="stylesheet" href="/style.css" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" href="/assets/icons/favicon.png" />
+    <link rel="icon" type="image/x-icon" href="/assets/icons/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
   </head>
   <body>
     <div class="app-shell">
@@ -18,8 +20,10 @@
             <p id="pageSubtitle">الأجهزة والزجاجيات والمواد الكيميائية المتوفرة في المختبر</p>
           </div>
           <div class="row-actions">
+            <button class="btn" type="button" id="exportCsvBtn">⬇️ تصدير CSV</button>
             <a class="btn" href="/labels.html">🏷️ ملصقات QR</a>
             <button class="btn" type="button" id="trashBtn" hidden>🗑️ سلة المحذوفات <span class="badge" id="trashCount">0</span></button>
+            <button class="btn" type="button" id="downloadTemplateBtn" hidden>📄 تحميل نموذج</button>
             <div id="pageActions"></div>
           </div>
         </header>
@@ -27,15 +31,11 @@
         <nav class="section-tabs no-print" id="sectionTabs"></nav>
 
         <section class="card">
-          <div class="toolbar no-print" style="margin-bottom: 1rem">
-            <div class="field" style="flex: 1 1 220px">
-              <label for="search">بحث</label>
-              <input id="search" type="search" placeholder="اسم الصنف، الرمز أو المكان" />
-            </div>
+          <div class="toolbar no-print u-margin-bottom-1rem">
             <div class="field">
-              <label for="category">الفئة</label>
+              <label for="category">الصنف</label>
               <select id="category">
-                <option value="">كل الفئات</option>
+                <option value="">كل الأصناف</option>
                 <option value="apparatus">أجهزة</option>
                 <option value="glassware">زجاجيات</option>
                 <option value="chemical">مواد كيميائية</option>
@@ -49,17 +49,28 @@
                 <option value="out">نافد</option>
               </select>
             </div>
-            <div class="field" style="flex: 0 0 auto; align-items: flex-start">
+            <div class="field u-flex-1-1-240px">
+              <label for="search">بحث</label>
+              <input id="search" type="search" placeholder="ابحث بالاسم، الرمز أو مكان التخزين…" />
+            </div>
+            <div class="field u-flex-0-0-auto-align-items-flex-start">
               <label>النتائج</label>
               <span class="badge info" id="resultCount">0 عنصر</span>
             </div>
           </div>
 
-          <div class="grid cols-4" id="summary" style="margin-bottom: 1rem"></div>
+          <div class="grid cols-4" id="summary" class="u-margin-bottom-1rem"></div>
 
-          <div class="inv-grid" id="rows"><div class="empty">جارٍ التحميل…</div></div>
-          <p class="muted" style="margin-top:.6rem">
-            اختر بطاقة صنف ثم اضغط «تعديل» لفتح نموذج تعديله.
+          <div class="bulk-bar no-print" id="bulkBar" hidden>
+            <span class="badge info"><span id="bulkCount">0</span> محدد</span>
+            <button class="btn btn-sm" type="button" id="bulkLabels">🏷️ ملصقات QR</button>
+            <button class="btn btn-sm danger" type="button" id="bulkDelete">🗑️ حذف</button>
+            <button class="btn btn-sm" type="button" id="bulkClear">إلغاء التحديد</button>
+          </div>
+          <div class="table-wrap inv-scroll"><div id="rows"><div class="empty">جارٍ التحميل…</div></div></div>
+          <div id="rowsFoot"></div>
+          <p class="muted no-print u-margin-top-6rem">
+            اختر صفاً من الجدول ثم اضغط «تعديل»، أو استعمل أيقونات الصف.
           </p>
         </section>
       </main>
@@ -83,7 +94,9 @@
           <input type="hidden" id="itemId" />
           <div class="form-grid">
             <div class="field"><label for="code">الرمز</label><input id="code" required maxlength="40" placeholder="APP-010" /></div>
-            <div class="field"><label for="name">اسم الصنف</label><input id="name" required maxlength="120" /></div>
+            <div class="field"><label for="ownerNo">رقم الجرد الخاص</label><input id="ownerNo" maxlength="60" placeholder="pho*2030" /></div>
+            <div class="field"><label for="name">اسم الصنف (الاسم الأصلي)</label><input id="name" required maxlength="120" /></div>
+          <div class="field"><label for="nameAr">الاسم بالعربية</label><input id="nameAr" maxlength="120" placeholder="يُملأ تلقائياً للمواد الكيميائية" /></div>
             <div class="field">
               <label for="itemCategory">الفئة</label>
               <select id="itemCategory" required>
@@ -95,8 +108,23 @@
             <div class="field"><label for="quantity">الكمية الإجمالية</label><input id="quantity" type="number" min="0" step="1" required /></div>
             <div class="field"><label for="unit">الوحدة</label><input id="unit" maxlength="20" placeholder="قطعة" /></div>
             <div class="field"><label for="minQuantity">الحد الأدنى</label><input id="minQuantity" type="number" min="0" step="1" /></div>
+            <div class="field"><label for="itemAliases">مرادفات (أسماء التقارير)</label><input id="itemAliases" placeholder="مكبر ألصورة، كرة أرضية" /></div>
             <div class="field"><label for="location">المكان</label><input id="location" maxlength="80" placeholder="خزانة A" /></div>
             <div class="field"><label for="expiry">تاريخ الصلاحية</label><input id="expiry" type="date" /></div>
+            <div class="field"><label for="formula">الصيغة الكيميائية</label><input id="formula" maxlength="60" placeholder="H2O" /></div>
+            <div class="field">
+              <label for="danger">مستوى الخطورة</label>
+              <select id="danger">
+                <option value="">غير محدد</option>
+                <option value="low">منخفض</option>
+                <option value="medium">متوسط</option>
+                <option value="high">خطر</option>
+              </select>
+            </div>
+            <div class="field"><label for="supplier">المورد</label><input id="supplier" maxlength="120" /></div>
+            <div class="field"><label for="invoice">رقم الفاتورة</label><input id="invoice" maxlength="60" /></div>
+            <div class="field"><label for="purchaseDate">تاريخ الشراء</label><input id="purchaseDate" type="date" /></div>
+            <div class="field"><label for="cost">إجمالي التكلفة</label><input id="cost" type="number" min="0" step="0.01" /></div>
           </div>
           <div class="modal-actions">
             <button class="btn" type="button" data-close="itemModal">إلغاء</button>

@@ -1,6 +1,7 @@
 import { copyFileSync, existsSync, mkdirSync, readdirSync, statSync, unlinkSync } from 'node:fs';
 import { join } from 'node:path';
 import { BACKUP_DIR, BACKUP_RETENTION, DB_PATH } from '../config.ts';
+import { db } from '../db.ts';
 import { logger } from './logger.ts';
 
 export type BackupInfo = { file: string; size: number; createdAt: string };
@@ -12,6 +13,8 @@ function stamp(): string {
 /** نسخة احتياطية من قاعدة البيانات في data/backups */
 export function createBackup(): BackupInfo {
   if (!existsSync(DB_PATH)) throw new Error(`قاعدة البيانات غير موجودة: ${DB_PATH}`);
+  // تفريغ WAL إلى الملف الرئيسي قبل النسخ (وإلا تُفقد البيانات غير المُRSaved)
+  try { db.exec('PRAGMA wal_checkpoint(TRUNCATE)'); } catch { /* ignore */ }
   mkdirSync(BACKUP_DIR, { recursive: true });
   const target = join(BACKUP_DIR, `amin-lab-genie-${stamp()}.sqlite`);
   copyFileSync(DB_PATH, target);

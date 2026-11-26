@@ -6,7 +6,10 @@ import { join } from 'node:path';
 import type { AddressInfo } from 'node:net';
 
 const dataDir = mkdtempSync(join(tmpdir(), 'amin-lab-genie-test-'));
+// خزنة ربط الجهاز مؤقتة: لا يجوز أن يكتب الاختبار في ProgramData الحقيقي
+const vaultDir = mkdtempSync(join(tmpdir(), 'amin-lab-genie-vault-test-'));
 process.env.DATA_DIR = dataDir;
+process.env.AMIN_LAB_VAULT_DIR = vaultDir;
 process.env.BACKUP_DIR = join(dataDir, 'backups');
 process.env.DB_PATH = join(dataDir, 'test.sqlite');
 process.env.APP_SECRET = 'test-secret';
@@ -15,6 +18,7 @@ process.env.TEACHER_PASSWORD = 'test-teacher-pass';
 
 const { createApp } = await import('../../server/src/app.ts');
 const { seed } = await import('../../server/src/seed.ts');
+const { db } = await import('../../server/src/db.ts');
 seed();
 
 const server = createApp().listen(0, '127.0.0.1');
@@ -23,7 +27,10 @@ const base = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
 
 test.after(() => {
   server.close();
+  // Close SQLite first: on Windows an open handle blocks removing the folder.
+  db.close();
   rmSync(dataDir, { recursive: true, force: true });
+  rmSync(vaultDir, { recursive: true, force: true });
 });
 
 let token = '';

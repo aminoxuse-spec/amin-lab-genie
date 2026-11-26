@@ -6,9 +6,13 @@
   var state = { sessions: [] };
   var activeSession = null;
   var rooms = [];
+  var teachers = [];
   var getSelected = null;
+  var importState = { valid: [], invalid: [] };
 
   Actions.bar(document.getElementById('pageActions'), {
+    // الإعارة متاحة للمدير والأستاذ (الخادم يسمح للمستخدم المُسجَّل)
+    allow: { import: true, add: true, edit: true, print: true },
     onAdd: function () { location.href = '/borrowing/create-session.html'; },
     onPrint: function () { window.print(); },
     onEdit: function () {
@@ -19,7 +23,7 @@
       }
       openEdit(id);
     },
-    onImport: function (file) { importSessions(file); }
+    onImportClick: openImportModal
   });
 
   getSelected = Actions.selection(rows, null);
@@ -36,6 +40,14 @@
       });
     })
     .catch(function () {});
+
+  if (App.isAdmin()) {
+    App.api('/auth/users')
+      .then(function (data) { teachers = data.users || []; })
+      .catch(function () { teachers = []; });
+  } else {
+    teachers = App.user ? [App.user] : [];
+  }
 
   function openEdit(id) {
     App.api('/borrowing/' + id)
@@ -55,60 +67,220 @@
       .catch(function (error) { App.toast(error.message, 'error'); });
   }
 
-  /**
-   * استيراد إعارات من CSV: صف لكل عنصر مع تكرار حقول الجلسة.
-   * الأعمدة: date,start,end,level,class,subject,room,code,quantity,condition,notes
-   */
-  function importSessions(file) {
-    App.api('/inventory')
-      .then(function (data) {
-        var byCode = {};
-        data.items.forEach(function (item) { byCode[item.code] = item; });
+  function openImportModal() {
+    importState = { valid: [], invalid: [] };
+    var preview = document.getElementById('importPreview');
+    if (preview) {
+      preview.hidden = true;
+      preview.innerHTML = '';
+    }
+    var input = document.getElementById('importFile');
+    if (input) input.value = '';
+    var submit = document.getElementById('importSubmitBtn');
+    if (submit) {
+      submit.disabled = true;
+      submit.textContent = 'استيراد';
+    }
+    App.openModal('importModal');
+  }
 
-        Actions.importRows({
-          file: file,
-          transform: function (row) {
-            var code = (row.code || row['الرمز'] || '').trim();
-            var item = byCode[code];
-            if (!item) throw new Error('رمز غير موجود في الجرد: ' + code);
-            var quantity = Number(row.quantity || row['الكمية'] || 0);
-            if (!quantity || quantity < 1) throw new Error('كمية غير صالحة للصنف ' + code);
-            var condition = (row.condition || row['الحالة'] || 'good').trim();
-            var conditionMap = { 'صالح': 'good', 'مستهلك': 'consumed', 'تالف': 'damaged', good: 'good', consumed: 'consumed', damaged: 'damaged' };
-            return {
-              date: (row.date || row['التاريخ'] || App.today()).trim(),
-              start: (row.start || row['من'] || '08:00').trim(),
-              end: (row.end || row['إلى'] || '').trim(),
-              level: (row.level || row['المستوى'] || '').trim(),
-              className: (row['class'] || row.class_name || row['القسم'] || '').trim(),
-              subject: (row.subject || row['المادة'] || '').trim(),
-              room: (row.room || row['القاعة'] || '').trim(),
-              item: item,
-              quantity: quantity,
-              condition: conditionMap[condition] || 'good',
-              notes: (row.notes || row['ملاحظات'] || '').trim()
-            };
-          },
-          submit: function (line) {
-            if (!line.className || !line.subject) throw new Error('القسم والمادة مطلوبان');
-            var room = rooms.find(function (entry) { return entry.name === line.room; });
-            var body = {
-              class_name: line.className,
-              subject: line.subject,
-              session_date: line.date,
-              start_time: line.start,
-              level: line.level || undefined,
-              notes: line.notes || undefined,
-              items: [{ inventory_id: line.item.id, quantity: line.quantity, condition_out: line.condition, notes: line.notes || undefined }]
-            };
-            if (line.end) body.end_time = line.end;
-            if (room) body.room_id = room.id;
-            return App.api('/borrowing', { method: 'POST', body: body });
-          },
-          done: function () { load(); }
+  function csvCell(value) {
+    var text = String(value == null ? '' : value);
+    return /[",\n]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
+  }
+
+  function downloadTemplate() {
+    var today = App.today();
+    var due = new Date();
+    due.setDate(due.getDate() + 7);
+    var dueText = due.toISOString().slice(0, 10);
+    var headers = ['الوسيلة', 'الأستاذ', 'تاريخ الإرجاع المتوقع', 'تاريخ الإعارة', 'الكمية', 'ملاحظات'];
+    var sample = ['APP-001', (App.user && App.user.full_name) || 'الأستاذ', dueText, today, '1', 'استعمال في الحصة'];
+    var csv = '\ufeff' + [headers, sample].map(function (row) { return row.map(csvCell).join(','); }).join('\r\n') + '\r\n';
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    var link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'نموذج-استيراد-الإعارة.csv';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(function () { URL.revokeObjectURL(link.href); }, 1000);
+  }
+
+  function normalizeDate(value) {
+    var text = String(value || '').trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
+    var match = text.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})$/);
+    if (!match) return '';
+    var year = Number(match[3]);
+    if (year < 100) year += 2000;
+    return year + '-' + String(match[2]).padStart(2, '0') + '-' + String(match[1]).padStart(2, '0');
+  }
+
+  function findItem(value, items) {
+    var text = String(value || '').trim().toLowerCase();
+    if (!text) return null;
+    return items.find(function (item) {
+      if (String(item.code || '').toLowerCase() === text) return true;
+      if (String(item.name || '').toLowerCase() === text) return true;
+      if (String(item.name_ar || '').toLowerCase() === text) return true;
+      return String(item.aliases_text || '')
+        .toLowerCase()
+        .split('|')
+        .some(function (alias) { return alias && alias === text; });
+    }) || null;
+  }
+
+  function findTeacher(value) {
+    var text = String(value || '').trim().toLowerCase();
+    if (!text) return null;
+    return teachers.find(function (teacher) {
+      return String(teacher.full_name || '').toLowerCase() === text || String(teacher.username || '').toLowerCase() === text;
+    }) || null;
+  }
+
+  function buildImportRows(rows, items) {
+    var valid = [];
+    var invalid = [];
+    rows.forEach(function (row, index) {
+      var line = index + 2;
+      try {
+        var itemText = row['الوسيلة'] || row.item || row.code || row['الرمز'];
+        var item = findItem(itemText, items);
+        if (!item) throw new Error('الوسيلة غير موجودة: ' + (itemText || '—'));
+
+        var teacherText = row['الأستاذ'] || row.teacher || '';
+        var teacher = findTeacher(teacherText);
+        if (!teacher && App.isAdmin()) throw new Error('الأستاذ غير موجود: ' + (teacherText || '—'));
+        if (teacher && !App.isAdmin() && teacher.id !== (App.user || {}).id) throw new Error('لا يمكنك الاستيراد باسم أستاذ آخر');
+        if (!teacher) teacher = App.user || null;
+
+        var due = normalizeDate(row['تاريخ الإرجاع المتوقع'] || row.due_date || row['تاريخ الإرجاع']);
+        if (!due) throw new Error('تاريخ الإرجاع المتوقع مطلوب (YYYY-MM-DD)');
+
+        var date = normalizeDate(row['تاريخ الإعارة'] || row.date || App.today()) || App.today();
+        var quantity = Number(row['الكمية'] || row.quantity || 1);
+        if (!quantity || quantity < 1) throw new Error('كمية غير صالحة');
+
+        var roomName = String(row['القاعة'] || row.room || '').trim();
+        var room = roomName ? rooms.find(function (entry) { return entry.name === roomName; }) : null;
+        var start = String(row['من'] || row.start || '08:00').trim().slice(0, 5);
+        var end = String(row['إلى'] || row.end || '').trim().slice(0, 5);
+
+        valid.push({
+          item: item,
+          teacher: teacher,
+          due: due,
+          date: date,
+          quantity: quantity,
+          notes: String(row['ملاحظات'] || row.notes || '').trim(),
+          className: String(row['القسم'] || row.class || row.class_name || 'استيراد Excel').trim(),
+          subject: String(row['المادة'] || row.subject || 'إعارة مستوردة').trim(),
+          room: room,
+          start: start,
+          end: end
         });
+      } catch (error) {
+        invalid.push('السطر ' + line + ': ' + error.message);
+      }
+    });
+    return { valid: valid, invalid: invalid };
+  }
+
+  function renderImportPreview() {
+    var preview = document.getElementById('importPreview');
+    var submit = document.getElementById('importSubmitBtn');
+    if (!preview || !submit) return;
+    var valid = importState.valid;
+    var invalid = importState.invalid;
+    preview.hidden = false;
+    if (!valid.length && !invalid.length) {
+      preview.innerHTML = '<span class="muted">لم يتم العثور على صفوف صالحة.</span>';
+      submit.disabled = true;
+      return;
+    }
+
+    var rows = valid.slice(0, 5).map(function (row) {
+      return '<tr><td>' + App.escape(row.item.name_ar || row.item.name) + '</td><td>' + App.escape((row.teacher && row.teacher.full_name) || '—') + '</td><td dir="ltr">' + App.escape(row.date) + '</td><td>' + row.quantity + '</td></tr>';
+    }).join('');
+
+    preview.innerHTML =
+      '<strong>' + valid.length + ' صف صالح' + (invalid.length ? ' · ' + invalid.length + ' صف فيه خطأ' : '') + '</strong>' +
+      (rows ? '<table><thead><tr><th>الوسيلة</th><th>الأستاذ</th><th>التاريخ</th><th>الكمية</th></tr></thead><tbody>' + rows + '</tbody></table>' : '') +
+      (invalid.length ? '<ul class="import-errors">' + invalid.slice(0, 5).map(function (message) { return '<li>' + App.escape(message) + '</li>'; }).join('') + '</ul>' : '');
+    submit.disabled = valid.length === 0;
+  }
+
+  function inspectImportFile(file) {
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      App.toast('حجم الملف كبير جداً (الحد 5 ميغابايت)', 'error');
+      return;
+    }
+    App.toast('جارٍ فحص الملف…', 'ok');
+    Promise.all([Actions.readFile(file), App.api('/inventory')])
+      .then(function (results) {
+        var parsed = Actions.parseCsv(results[0]);
+        if (!parsed.rows.length) throw new Error('الملف فارغ أو بلا صفوف صالحة');
+        var items = (results[1] && results[1].items) || [];
+        importState = buildImportRows(parsed.rows, items);
+        renderImportPreview();
+        if (importState.valid.length) App.toast('تم فحص الملف — راجع النتيجة ثم اضغط «استيراد»', 'ok');
       })
-      .catch(function (error) { App.toast(error.message, 'error'); });
+      .catch(function (error) {
+        importState = { valid: [], invalid: [] };
+        var preview = document.getElementById('importPreview');
+        if (preview) {
+          preview.hidden = false;
+          preview.innerHTML = '<span class="muted">' + App.escape(error.message) + '</span>';
+        }
+        var submit = document.getElementById('importSubmitBtn');
+        if (submit) submit.disabled = true;
+        App.toast(error.message, 'error');
+      });
+  }
+
+  function runImport() {
+    var valid = importState.valid;
+    if (!valid.length) return;
+    var button = document.getElementById('importSubmitBtn');
+    button.disabled = true;
+    button.textContent = 'جارٍ الاستيراد…';
+    var stats = { ok: 0, failed: 0, errors: [] };
+
+    valid.reduce(function (chain, line) {
+      return chain.then(function () {
+        var body = {
+          teacher_id: App.isAdmin() && line.teacher ? line.teacher.id : undefined,
+          class_name: line.className,
+          subject: line.subject,
+          session_date: line.date,
+          start_time: line.start,
+          due_date: line.due,
+          notes: line.notes || undefined,
+          items: [{ inventory_id: line.item.id, quantity: line.quantity, condition_out: 'good' }]
+        };
+        if (line.end) body.end_time = line.end;
+        if (line.room) body.room_id = line.room.id;
+        return App.api('/borrowing', { method: 'POST', body: body }).then(
+          function () { stats.ok += 1; },
+          function (error) {
+            stats.failed += 1;
+            if (stats.errors.length < 3) stats.errors.push(error.message);
+          }
+        );
+      });
+    }, Promise.resolve()).then(function () {
+      App.toast('استيراد: ' + stats.ok + ' ناجح · ' + stats.failed + ' فاشل', stats.failed ? 'error' : 'ok');
+      if (stats.errors.length) App.toast(stats.errors.join(' · '), 'error');
+      if (stats.ok) {
+        App.closeModal('importModal');
+        load();
+      } else {
+        button.disabled = false;
+        button.textContent = 'استيراد';
+      }
+    });
   }
 
   document.querySelectorAll('[data-close]').forEach(function (button) {
@@ -157,6 +329,7 @@
           (session.status !== 'returned'
             ? '<button class="btn btn-sm btn-primary" data-return="' + session.id + '">إرجاع</button>'
             : '') +
+          '<button class="btn btn-sm btn-danger" data-delete="' + session.id + '" title="حذف">' + App.icon('trash') + '</button>' +
           '</td></tr>'
         );
       })
@@ -167,6 +340,17 @@
     });
     rows.querySelectorAll('[data-return]').forEach(function (button) {
       button.addEventListener('click', function () { openReturn(Number(button.dataset.return)); });
+    });
+    rows.querySelectorAll('[data-delete]').forEach(function (button) {
+      button.addEventListener('click', function () {
+                 if (!confirm(App.t('حذف جلسة الإعارة نهائياً؟ سيتم إرجاع الكميات غير المُرجعة إلى المخزون.') || 'حذف جلسة الإعارة نهائياً؟ سيتم إرجاع الكميات غير المُرجعة إلى المخزون.')) return;
+        App.api('/borrowing/' + button.dataset.delete, { method: 'DELETE' })
+          .then(function () {
+            App.toast('تم حذف جلسة الإعارة', 'ok');
+            load();
+          })
+          .catch(function (error) { App.toast(error.message, 'error'); });
+      });
     });
   }
 
@@ -190,7 +374,9 @@
           session.items
             .map(function (item) {
               return (
-                '<tr><td>' + App.escape(item.name) + (item.notes ? '<br><small class="muted">' + App.escape(item.notes) + '</small>' : '') + '</td><td>' + App.escape(item.code) + '</td>' +
+                '<tr><td>' + App.escape(item.name_ar || item.name) + (item.notes ? '<br><small class="muted">' + App.escape(item.notes) + '</small>' : '') + '</td><td>' + App.escape(item.code) +
+                (item.owner_no ? '<br><small class="muted">جرد خاص ' + App.escape(item.owner_no) + '</small>' : '') +
+                '</td>' +
                 '<td>' + item.quantity_out + ' ' + App.escape(item.unit) + '</td>' +
                 '<td>' + (item.condition_out === 'consumed' ? '—' : item.quantity_returned) + '</td>' +
                 '<td>' + (item.condition_out === 'consumed' ? '<span class="badge warn">مستهلك</span>' : item.damaged === 1 ? '<span class="badge danger">تالف/مفقود</span>' : item.quantity_returned >= item.quantity_out ? '<span class="badge ok">سليم</span>' : '<span class="badge warn">معلّق</span>') + '</td></tr>'
@@ -226,7 +412,7 @@
             var remaining = item.quantity_out - item.quantity_returned;
             return (
               '<div class="return-line" data-item="' + item.id + '">' +
-              '<div class="line-name">' + App.escape(item.name) +
+              '<div class="line-name">' + App.escape(item.name_ar || item.name) +
               '<small>معار ' + item.quantity_out + ' — متبقٍ ' + remaining + ' ' + App.escape(item.unit) + '</small></div>' +
               '<input type="number" min="0" max="' + remaining + '" value="' + remaining + '" aria-label="الكمية المرجعة" />' +
               '<select aria-label="حالة الصنف">' +
@@ -291,12 +477,52 @@
       .catch(function (error) { App.toast(error.message, 'error'); });
   });
 
+  document.getElementById('deleteSessionBtn').addEventListener('click', function () {
+    var id = document.getElementById('sessionId').value;
+    if (!id) return;
+             if (!confirm(App.t('حذف جلسة الإعارة نهائياً؟ سيتم إرجاع الكميات غير المُرجعة إلى المخزون.') || 'حذف جلسة الإعارة نهائياً؟ سيتم إرجاع الكميات غير المُرجعة إلى المخزون.')) return;
+    App.api('/borrowing/' + id, { method: 'DELETE' })
+      .then(function () {
+        App.closeModal('sessionModal');
+        App.toast('تم حذف جلسة الإعارة', 'ok');
+        load();
+      })
+      .catch(function (error) { App.toast(error.message, 'error'); });
+  });
+
   document.getElementById('fillAllBtn').addEventListener('click', function () {
     document.querySelectorAll('#returnRows input').forEach(function (input) {
       input.value = input.max;
     });
     App.toast('تم تعبئة الكميات المتبقية — اضغط «تأكيد الإرجاع»', 'ok');
   });
+
+  document.getElementById('downloadTemplateBtn').addEventListener('click', downloadTemplate);
+
+  document.getElementById('importFile').addEventListener('change', function (event) {
+    var file = event.target.files && event.target.files[0];
+    inspectImportFile(file);
+  });
+
+  var dropZone = document.getElementById('importDrop');
+  ['dragenter', 'dragover'].forEach(function (name) {
+    dropZone.addEventListener(name, function (event) {
+      event.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+  });
+  ['dragleave', 'drop'].forEach(function (name) {
+    dropZone.addEventListener(name, function (event) {
+      event.preventDefault();
+      dropZone.classList.remove('dragover');
+    });
+  });
+  dropZone.addEventListener('drop', function (event) {
+    var file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+    inspectImportFile(file);
+  });
+
+  document.getElementById('importSubmitBtn').addEventListener('click', runImport);
 
   document.getElementById('status').addEventListener('change', load);
   document.getElementById('date').addEventListener('change', load);

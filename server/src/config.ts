@@ -19,6 +19,12 @@ export const DB_PATH = resolve(process.env.DB_PATH ?? `${DATA_DIR}/amin-lab-geni
 export const BACKUP_DIR = resolve(process.env.BACKUP_DIR ?? `${DATA_DIR}/backups`);
 export const CLIENT_DIR = resolve(process.env.CLIENT_DIR ?? 'client/src');
 
+/**
+ * طبقة تحديث الواجهة: مجلد داخل بيانات التطبيق (قابل للكتابة بدون صلاحيات مدير).
+ * إن وُجدت ملفات فيه فإنها تُقدَّم قبل النسخة المثبّتة، ما يسمح بتحديث الواجهة دون إعادة تثبيت.
+ */
+export const CLIENT_OVERLAY_DIR = resolve(process.env.CLIENT_OVERLAY_DIR ?? `${DATA_DIR}/client`);
+
 /** مدة صلاحية جلسة الدخول (ثوانٍ) */
 export const SESSION_TTL_SECONDS = Number(process.env.SESSION_TTL ?? 8 * 60 * 60);
 
@@ -26,6 +32,15 @@ export const DEFAULT_SECRET = 'amin-lab-genie-dev-secret-change-me';
 export const SECRET = process.env.APP_SECRET ?? DEFAULT_SECRET;
 
 export const BACKUP_RETENTION = Number(process.env.BACKUP_RETENTION ?? 14);
+
+/** ساعة النسخ الاحتياطي التلقائي (0-23)، الافتراضي 02:00. */
+export const BACKUP_HOUR = Math.min(23, Math.max(0, Number(process.env.BACKUP_HOUR ?? 2)));
+
+/**
+ * السماح باستيراد تراخيص без توقيع Ed25519 (للتطوير/التوافق). الافتراضي false (production-safe):
+ * رفض unsigned إلا إذا LICENSE_ALLOW_UNSIGNED=true.
+ */
+export const LICENSE_ALLOW_UNSIGNED = process.env.LICENSE_ALLOW_UNSIGNED === 'true';
 
 /** مدة الفترة التجريبية بالأيام (تبدأ عند أول تشغيل). */
 export const TRIAL_DAYS = Number(process.env.TRIAL_DAYS ?? 30);

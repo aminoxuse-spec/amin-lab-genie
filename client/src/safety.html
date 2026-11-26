@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>دليل السلامة — Amin-Lab -Pro🔬</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/x-icon" href="/assets/icons/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar"></aside>
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <h1>دليل السلامة في المخبر</h1>
+            <p>قواعد الوقاية، معاني رموز الخطر الدولية، والإسعافات الأولية. يُنصح بتعليقه عند مدخل المخبر.</p>
+          </div>
+          <div id="pageActions"></div>
+        </header>
+
+        <section class="safety-contacts">
+          <a class="emergency-card" href="tel:14">
+            <span class="emergency-phone">📞</span>
+            <div><strong>14</strong><span>الحماية المدنية</span><small>إسعاف وإطفاء — أيضاً 1021</small></div>
+          </a>
+          <a class="emergency-card" href="tel:17">
+            <span class="emergency-phone">📞</span>
+            <div><strong>17</strong><span>الأمن الوطني</span><small>النجدة — أيضاً 1548</small></div>
+          </a>
+          <a class="emergency-card" href="tel:1055">
+            <span class="emergency-phone">📞</span>
+            <div><strong>1055</strong><span>الدرك الوطني</span><small>خارج المناطق الحضرية</small></div>
+          </a>
+        </section>
+
+        <section class="card">
+          <div class="card-head"><h2><span class="card-ico">🛡️</span> القواعد الأساسية</h2><span class="badge danger">إلزامية</span></div>
+          <div class="safety-rules">
+            <div class="safety-rule">
+              <span class="rule-ico">🥽</span>
+              <div><strong>النظارات الواقية إلزامية</strong><p>عند التعامل مع المواد الكيميائية أو التسخين أو الزجاجيات.</p></div>
+            </div>
+            <div class="safety-rule">
+              <span class="rule-ico">🧥</span>
+              <div><strong>المئزر القطني مغلق</strong><p>وربط الشعر الطويل وإبعاد الأوشحة عن مصادر الحرارة.</p></div>
+            </div>
+            <div class="safety-rule">
+              <span class="rule-ico">🚫</span>
+              <div><strong>لا أكل ولا شرب</strong><p>يُمنع منعاً باتاً تذوّق أي مادة أو إدخال الطعام إلى المخبر.</p></div>
+            </div>
+            <div class="safety-rule">
+              <span class="rule-ico">🧪</span>
+              <div><strong>قراءة الملصق قبل الاستعمال</strong><p>التحقق من اسم المادة ورموز الخطر وتاريخ الصلاحية.</p></div>
+            </div>
+            <div class="safety-rule">
+              <span class="rule-ico">💨</span>
+              <div><strong>التهوية الجيدة</strong><p>فتح النوافذ عند استعمال الكحول أو المواد ذات الأبخرة.</p></div>
+            </div>
+            <div class="safety-rule">
+              <span class="rule-ico">⚡</span>
+              <div><strong>السلامة الكهربائية</strong><p>توترات منخفضة فقط (≤ 12V) للتلاميذ، وفصل المولد قبل تعديل الدارة.</p></div>
+            </div>
+            <div class="safety-rule">
+              <span class="rule-ico">🖐️</span>
+              <div><strong>عدم العمل دون إشراف</strong><p>لا يدخل التلاميذ المخبر إلا بحضور الأستاذ أو المسؤول.</p></div>
+            </div>
+            <div class="safety-rule">
+              <span class="rule-ico">🗑️</span>
+              <div><strong>التخلص السليم من النفايات</strong><p>عدم سكب المواد الخطرة على البيئة في المغسلة، وجمعها في أوعية مخصصة.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card u-margin-top-1rem">
+          <div class="card-head"><h2><span class="card-ico">☣️</span> رموز الخطر الدولية GHS</h2></div>
+          <div class="ghs-grid">
+            <div class="ghs-item"><span class="ghs-diamond"><i>💥</i></span><div><strong>GHS01 متفرّج</strong><small>تجنّب الصدمات والحرارة.</small></div></div>
+            <div class="ghs-item"><span class="ghs-diamond"><i>🔥</i></span><div><strong>GHS02 قابل للاشتعال</strong><small>بعيداً عن اللهب ومصادر الحرارة.</small></div></div>
+            <div class="ghs-item"><span class="ghs-diamond"><i>🔥</i></span><div><strong>GHS03 مؤكسد</strong><small>يزيد من شدة الحريق، يُحفظ بعيداً عن المواد القابلة للاشتعال.</small></div></div>
+            <div class="ghs-item"><span class="ghs-diamond"><i>🛢️</i></span><div><strong>GHS04 غاز تحت الضغط</strong><small>يُحفظ في مكان بارد ومهوّى.</small></div></div>
+            <div class="ghs-item"><span class="ghs-diamond"><i>⚗️</i></span><div><strong>GHS05 أكّال</strong><small>نظارات وقفازات إلزامية، يتلف الجلد والعينين.</small></div></div>
+            <div class="ghs-item"><span class="ghs-diamond"><i>☠️</i></span><div><strong>GHS06 سام</strong><small>يمنع على التلاميذ استعماله.</small></div></div>
+            <div class="ghs-item"><span class="ghs-diamond"><i>❗</i></span><div><strong>GHS07 مهيّج / ضار</strong><small>تجنّب الاستنشاق والملامسة.</small></div></div>
+            <div class="ghs-item"><span class="ghs-diamond"><i>🫁</i></span><div><strong>GHS08 خطر على الصحة</strong><small>قد يسبب حساسية أو تلفاً للأعضاء.</small></div></div>
+            <div class="ghs-item"><span class="ghs-diamond"><i>🐟</i></span><div><strong>GHS09 خطر على البيئة</strong><small>لا يُسكب في المغسلة.</small></div></div>
+          </div>
+        </section>
+
+        <section class="card u-margin-top-1rem">
+          <div class="card-head"><h2><span class="card-ico">🧰</span> الإسعافات الأولية</h2></div>
+
+          <div class="first-aid-grid">
+            <article class="first-aid">
+              <h3><span>👁️</span> تطاير مادة في العين</h3>
+              <ol><li>غسل العين بماء جارٍ فاتر لمدة 15 دقيقة على الأقل مع إبقائها مفتوحة.</li><li>عدم فرك العين.</li><li>نقل المصاب للطبيب مع اسم المادة.</li></ol>
+            </article>
+            <article class="first-aid">
+              <h3><span>🩸</span> انسكاب مادة أكّالة على الجلد</h3>
+              <ol><li>نزع الملابس الملوثة فوراً.</li><li>الغسل بالماء الغزير لمدة 15 دقيقة.</li><li>عدم محاولة التعديل بمادة أخرى.</li></ol>
+            </article>
+            <article class="first-aid">
+              <h3><span>🔥</span> حرق حراري</h3>
+              <ol><li>تبريد المنطقة بماء جارٍ (غير مثلج) 10 دقائق.</li><li>عدم وضع معجون أو زيت.</li><li>تغطية الحرق بضمادة نظيفة غير لاصقة.</li></ol>
+            </article>
+            <article class="first-aid">
+              <h3><span>🖐️</span> جرح بالزجاج</h3>
+              <ol><li>ارتداء قفازات قبل الإسعاف.</li><li>تنظيف الجرح بالماء وإزالة الشظايا الظاهرة فقط.</li><li>الضغط بضمادة معقمة لإيقاف النزيف.</li></ol>
+            </article>
+            <article class="first-aid">
+              <h3><span>🧯</span> اندلاع حريق صغير</h3>
+              <ol><li>قطع مصدر الغاز أو الكهرباء.</li><li>إخماد اللهب بغطاء مقاوم أو الرمل أو مطفأة CO₂.</li><li>إخلاء التلاميذ بهدوء إن لزم الأمر.</li></ol>
+            </article>
+            <article class="first-aid">
+              <h3><span>🧪</span> ابتلاع أو استنشاق مادة</h3>
+              <ol><li>إخراج المصاب إلى الهواء الطلق.</li><li>عدم محاولة التقيؤ.</li><li>الاتصال بالحماية المدنية 14 مع ذكر اسم المادة.</li></ol>
+            </article>
+          </div>
+
+          <p class="muted safety-footnote">هذه الإرشادات للتوجيه العام ولا تغني عن تدخل المختصين. تحقّق دورياً من صلاحية مطفأة الحريق وعلبة الإسعافات.</p>
+        </section>
+      </main>
+    </div>
+    <script src="/i18n.js"></script>
+    <script src="/app.js"></script>
+    <script src="/safety.js"></script>
+  </body>
+</html>

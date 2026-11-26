@@ -7,7 +7,9 @@
     <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="/qc/qc-styles.css" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" href="/assets/icons/favicon.png" />
+    <link rel="icon" type="image/x-icon" href="/assets/icons/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
   </head>
   <body>
     <div class="app-shell">
@@ -19,18 +21,19 @@
             <p>تسجيل نتائج الفحص الدوري للمخزون ومتابعة الحالة</p>
           </div>
           <div class="row-actions">
+            <button class="btn" type="button" id="qcCsvBtn">⬇️ تصدير CSV</button>
             <a class="btn" href="/qc/qc-analysis.html">📈 التحليل الكامل</a>
             <div id="pageActions"></div>
           </div>
         </header>
 
-        <section class="grid cols-4" id="stats" style="margin-bottom: 1rem"></section>
+        <section class="grid cols-4" id="stats" class="u-margin-bottom-1rem"></section>
 
         <div class="grid cols-2">
           <section class="card">
             <div class="card-head"><h2>تسجيل فحص جديد</h2></div>
             <form id="checkForm">
-              <div class="field" style="margin-bottom: 0.7rem">
+              <div class="field u-margin-bottom-0-7rem">
                 <label for="inventoryId">الصنف</label>
                 <select id="inventoryId" required></select>
               </div>
@@ -47,11 +50,11 @@
                 <div class="field"><label for="quantityFound">الكمية الموجودة</label><input id="quantityFound" type="number" min="0" step="1" required value="0" /></div>
                 <div class="field"><label for="checkDate">تاريخ الفحص</label><input id="checkDate" type="date" required /></div>
               </div>
-              <div class="field" style="margin-top: 0.7rem">
+              <div class="field u-margin-top-0-7rem">
                 <label for="notes">ملاحظات</label>
                 <textarea id="notes" maxlength="500" placeholder="ملاحظات حول حالة الصنف…"></textarea>
               </div>
-              <div style="display:flex;justify-content:flex-end;margin-top:.8rem">
+              <div class="u-display-flex-justify-content-flex-end-margin-top-8rem">
                 <button class="btn btn-primary" type="submit">حفظ الفحص</button>
               </div>
             </form>
@@ -63,14 +66,30 @@
           </section>
         </div>
 
-        <section class="card" style="margin-top: 1rem">
+        <section class="card u-margin-top-1rem">
           <div class="card-head">
             <h2>آخر الفحوصات</h2>
             <span class="badge info" id="checksCount">0</span>
           </div>
+          <div class="toolbar no-print u-margin-bottom-8rem">
+            <div class="field u-flex-1-1-220px">
+              <label for="checkSearch">بحث</label>
+              <input id="checkSearch" type="search" placeholder="ابحث بالصنف أو الرمز…" />
+            </div>
+            <div class="field">
+              <label for="checkStatus">النتيجة</label>
+              <select id="checkStatus">
+                <option value="">كل النتائج</option>
+                <option value="ok">سليم</option>
+                <option value="low">كمية منخفضة</option>
+                <option value="damaged">تالف</option>
+                <option value="expired">منتهي الصلاحية</option>
+              </select>
+            </div>
+          </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>التاريخ</th><th>الصنف</th><th>الرمز</th><th>النتيجة</th><th>الكمية</th><th>ملاحظات</th></tr></thead>
+              <thead><tr id="checksHeadRow"></tr></thead>
               <tbody id="checksBody"><tr><td colspan="6" class="empty">جارٍ التحميل…</td></tr></tbody>
             </table>
           </div>
@@ -97,7 +116,7 @@
             <div class="field"><label for="editQuantity">الكمية الموجودة</label><input id="editQuantity" type="number" min="0" step="1" required /></div>
             <div class="field"><label for="editCheckDate">تاريخ الفحص</label><input id="editCheckDate" type="date" required /></div>
           </div>
-          <div class="field" style="margin-top:.7rem"><label for="editCheckNotes">ملاحظات</label><textarea id="editCheckNotes" maxlength="500"></textarea></div>
+          <div class="field u-margin-top-7rem"><label for="editCheckNotes">ملاحظات</label><textarea id="editCheckNotes" maxlength="500"></textarea></div>
           <div class="modal-actions">
             <button class="btn" type="button" data-close="checkModal">إلغاء</button>
             <button class="btn btn-primary" type="submit">حفظ التعديل</button>

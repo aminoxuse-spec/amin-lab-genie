@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { requireAdmin, requireAuth } from '../middleware/auth.ts';
 import { validateBody } from '../middleware/validation.ts';
+import { loginRateLimit } from '../middleware/rateLimit.ts';
 import * as controller from '../controllers/authController.ts';
 
 const router = Router();
@@ -11,6 +12,7 @@ router.post(
     username: { type: 'string', required: true, minLength: 3, maxLength: 40 },
     password: { type: 'string', required: true, minLength: 6, maxLength: 120 },
   }),
+  loginRateLimit(),
   controller.login,
 );
 
@@ -35,6 +37,8 @@ router.put(
   validateBody({
     full_name: { type: 'string', required: true, minLength: 3, maxLength: 80 },
     role: { type: 'enum', required: true, enum: ['admin', 'teacher'] },
+    phone: { type: 'string', maxLength: 30, allowEmpty: true },
+    specialty: { type: 'enum', enum: ['physics', 'natural'] },
     password: { type: 'string', minLength: 6, maxLength: 120 },
   }),
   controller.update,
@@ -50,6 +54,8 @@ router.post(
     username: { type: 'string', required: true, minLength: 3, maxLength: 40 },
     full_name: { type: 'string', required: true, minLength: 3, maxLength: 80 },
     role: { type: 'enum', required: true, enum: ['admin', 'teacher'] },
+    phone: { type: 'string', maxLength: 30, allowEmpty: true },
+    specialty: { type: 'enum', enum: ['physics', 'natural'] },
     password: { type: 'string', required: true, minLength: 6, maxLength: 120 },
   }),
   controller.create,

@@ -7,7 +7,9 @@
     <title>الرئيسية — Amin-Lab -Pro🔬</title>
     <link rel="stylesheet" href="/style.css" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" href="/assets/icons/favicon.png" />
+    <link rel="icon" type="image/x-icon" href="/assets/icons/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
   </head>
   <body>
     <div class="app-shell">
@@ -37,7 +39,7 @@
           </div>
         </section>
 
-        <section class="grid cols-4" id="stats" style="margin-bottom: 1rem"></section>
+        <section class="grid cols-4" id="stats" class="u-margin-bottom-1rem"></section>
 
         <div class="grid cols-2">
           <section class="card">
@@ -64,17 +66,17 @@
           </section>
         </div>
 
-        <section class="card" style="margin-top: 1rem">
+        <section class="card u-margin-top-1rem">
           <div class="card-head"><h2>روابط سريعة</h2></div>
           <div class="dash-grid">
-            <a class="dash-card blue" href="/inventory/inventory.html?category=glassware"><span class="dash-icon">🧪</span><div><strong>جرد الزجاجيات</strong><small>Inventaire Verrerie</small></div><span class="dash-arrow">→</span></a>
-            <a class="dash-card green" href="/inventory/inventory.html?category=apparatus"><span class="dash-icon">📦</span><div><strong>تسيير العتاد</strong><small>Matériel</small></div><span class="dash-arrow">→</span></a>
-            <a class="dash-card orange" href="/inventory/inventory.html?category=chemical"><span class="dash-icon">⚗️</span><div><strong>المواد الكيميائية</strong><small>Produits Chimiques</small></div><span class="dash-arrow">→</span></a>
-            <a class="dash-card purple" href="/borrowing/borrowing.html"><span class="dash-icon">🔄</span><div><strong>الإعارة والإرجاع</strong><small>Prêt & Retour</small></div><span class="dash-arrow">→</span></a>
-            <a class="dash-card cyan" href="/reports/index.html"><span class="dash-icon">📊</span><div><strong>التقارير والإحصائيات</strong><small>Rapports</small></div><span class="dash-arrow">→</span></a>
-            <a class="dash-card blue" href="/settings.html"><span class="dash-icon">⚙️</span><div><strong>الإعدادات</strong><small>Paramètres</small></div><span class="dash-arrow">→</span></a>
-            <a class="dash-card green" href="/labels.html"><span class="dash-icon">📘</span><div><strong>الدليل والمساعدة</strong><small>Aide</small></div><span class="dash-arrow">→</span></a>
-            <a class="dash-card red" href="#" onclick="App.logout(); return false;"><span class="dash-icon">🚪</span><div><strong>خروج</strong><small>Quitter</small></div><span class="dash-arrow">→</span></a>
+            <a class="dash-card blue" href="/inventory/inventory.html?category=glassware"><span class="dash-icon">🧪</span><div><strong>جرد الزجاجيات</strong></div><span class="dash-arrow">→</span></a>
+            <a class="dash-card green" href="/inventory/inventory.html?category=apparatus"><span class="dash-icon">📦</span><div><strong>تسيير العتاد</strong></div><span class="dash-arrow">→</span></a>
+            <a class="dash-card orange" href="/inventory/inventory.html?category=chemical"><span class="dash-icon">⚗️</span><div><strong>المواد الكيميائية</strong></div><span class="dash-arrow">→</span></a>
+            <a class="dash-card purple" href="/borrowing/borrowing.html"><span class="dash-icon">🔄</span><div><strong>الإعارة والإرجاع</strong></div><span class="dash-arrow">→</span></a>
+            <a class="dash-card cyan" href="/reports/index.html"><span class="dash-icon">📊</span><div><strong>التقارير والإحصائيات</strong></div><span class="dash-arrow">→</span></a>
+            <a class="dash-card blue" href="/settings.html"><span class="dash-icon">⚙️</span><div><strong>الإعدادات</strong></div><span class="dash-arrow">→</span></a>
+            <a class="dash-card green" href="/labels.html"><span class="dash-icon">📘</span><div><strong>الدليل والمساعدة</strong></div><span class="dash-arrow">→</span></a>
+            <a class="dash-card red" href="#" data-action="logout"><span class="dash-icon">🚪</span><div><strong>خروج</strong></div><span class="dash-arrow">→</span></a>
           </div>
         </section>
 
@@ -91,193 +93,6 @@
     <script src="/i18n.js"></script>
     <script src="/app.js"></script>
     <script src="/actions.js"></script>
-    <script>
-      (function () {
-        if (!App.mount('dashboard')) return;
-
-        Actions.bar(document.getElementById('pageActions'), {
-          onPrint: function () { window.print(); },
-          onAdd: function () { location.href = '/borrowing/create-session.html'; },
-          onEdit: function () { location.href = '/settings.html'; },
-          onImport: function (file) {
-            Actions.importRows({
-              file: file,
-              transform: function (row) {
-                var code = (row.code || row['الرمز'] || '').trim();
-                var name = (row.name || row['الصنف'] || '').trim();
-                var category = (row.category || row['الفئة'] || '').trim();
-                if (!code || !name) throw new Error('الرمز والاسم مطلوبان');
-                if (['apparatus', 'glassware', 'chemical'].indexOf(category) === -1) throw new Error('فئة غير معروفة: ' + category);
-                return {
-                  code: code,
-                  name: name,
-                  category: category,
-                  quantity: Number(row.quantity || row['الكمية'] || 0),
-                  unit: row.unit || row['الوحدة'] || 'قطعة',
-                  min_quantity: Number(row.min_quantity || 1),
-                  location: row.location || row['المكان'] || '',
-                  expiry_date: row.expiry_date || row['الصلاحية'] || undefined
-                };
-              },
-              submit: function (payload) { return App.api('/inventory', { method: 'POST', body: payload }); },
-              done: function () { location.reload(); }
-            });
-          }
-        });
-
-        var user = App.user || {};
-        document.getElementById('todayLine').textContent =
-          new Date().toLocaleDateString('ar-MA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) +
-          ' · نظرة شاملة على حالة هذا المختبر';
-
-        App.loadInstitution().then(function (inst) {
-          var name = (inst && inst.name) || 'مختبر العلوم';
-          document.getElementById('welcomeLine').textContent = 'مرحباً بك في ' + name;
-        });
-
-        function statCard(options) {
-          return (
-            '<a class="stat ' + (options.tone || '') + '" href="' + options.href + '">' +
-            '<div class="stat-head"><div>' +
-            '<span>' + options.label + '</span>' +
-            '<strong' + (options.key ? ' data-stat-key="' + options.key + '"' : '') + '>' + options.value + '</strong>' +
-            '<small' + (options.key ? ' data-stat-hint="' + options.key + '"' : '') + '>' + (options.hint || '') + '</small>' +
-            '</div><span class="stat-ico">' + App.icon(options.icon) + '</span></div></a>'
-          );
-        }
-
-        function setStat(key, value, hint) {
-          var node = document.querySelector('[data-stat-key="' + key + '"]');
-          if (node) node.textContent = value;
-          if (hint !== undefined) {
-            var hintNode = document.querySelector('[data-stat-hint="' + key + '"]');
-            if (hintNode) hintNode.textContent = hint;
-          }
-        }
-
-        var counts = { apparatus: 0, glassware: 0, chemical: 0 };
-
-        Promise.all([
-          App.api('/reports/daily'),
-          App.api('/borrowing?status=open')
-        ])
-          .then(function (results) {
-            var report = results[0];
-            var open = results[1];
-
-            document.getElementById('stats').innerHTML =
-              statCard({ key: 'apparatus', label: 'العتاد', value: counts.apparatus, hint: 'صنف', icon: 'boxes', href: '/inventory/inventory.html?category=apparatus' }) +
-              statCard({ key: 'glassware', label: 'الزجاجيات', value: counts.glassware, hint: 'صنف', icon: 'beaker', href: '/inventory/inventory.html?category=glassware' }) +
-              statCard({ key: 'chemical', label: 'المواد الكيميائية', value: counts.chemical, hint: 'مادة', icon: 'chemical', href: '/inventory/inventory.html?category=chemical' }) +
-              statCard({ key: 'qc', label: 'فحوصات الجودة', value: 0, hint: 'سجل فحص', icon: 'flask', href: '/experiments/experiments.html' }) +
-              statCard({ key: 'teachers', label: 'الأساتذة', value: 0, hint: 'أستاذ مسجل', icon: 'users', href: '/schedule/calendar.html' }) +
-              statCard({ key: 'schedule', label: 'استعمال الزمن', value: 0, hint: 'حصة أسبوعية', icon: 'calendar', href: '/schedule/calendar.html' }) +
-              statCard({
-                label: 'الإعارة',
-                value: open.sessions.length,
-                hint: report.totals.outstanding + ' وحدة لم تُرجع',
-                icon: 'repeat',
-                tone: open.sessions.length ? 'warn' : 'ok',
-                href: '/borrowing/borrowing.html'
-              }) +
-              statCard({
-                label: 'تحت الحد الأدنى',
-                value: report.inventory.lowStock,
-                hint: 'أصناف تحتاج تعبئة',
-                icon: 'chart',
-                tone: report.inventory.lowStock ? 'warn' : 'ok',
-                href: '/inventory/inventory.html?category='
-              }) +
-              statCard({
-                key: 'items',
-                label: 'عناصر الجرد',
-                value: report.inventory.total,
-                hint: report.inventory.units + ' وحدة إجمالاً',
-                icon: 'boxes',
-                href: '/inventory/inventory.html'
-              });
-
-            loadExtraStats();
-
-            document.getElementById('dashDate').textContent = new Date().toLocaleDateString('ar-MA');
-            App.loadInstitution();
-            var currentUser = App.user || {};
-            document.getElementById('dashUser').textContent = currentUser.full_name || currentUser.username || 'حجاج اول محمد الامين';
-            document.getElementById('dashUserRole').textContent =
-              currentUser.role === 'admin' ? 'ملحق رئيس بالمخبر' : 'أستاذ';
-
-            document.getElementById('sessionCount').textContent = report.sessions.length + ' حصة';
-            var body = document.getElementById('sessionsBody');
-            if (report.sessions.length === 0) {
-              body.innerHTML = '<tr><td colspan="5" class="empty">لا توجد حصص مسجلة اليوم</td></tr>';
-            } else {
-              body.innerHTML = report.sessions
-                .map(function (session) {
-                  return (
-                    '<tr><td>' + App.escape(session.class_name) + '</td>' +
-                    '<td>' + App.escape(session.subject) + '</td>' +
-                    '<td>' + session.start_time + ' - ' + session.end_time + '</td>' +
-                    '<td>' + session.item_count + '</td>' +
-                    '<td>' + App.statusBadge(session.status) + '</td></tr>'
-                  );
-                })
-                .join('');
-            }
-
-            var alerts = [];
-            report.alerts.lowStock.slice(0, 5).forEach(function (item) {
-              alerts.push(
-                '<div style="display:flex;justify-content:space-between;gap:.5rem;padding:.5rem 0;border-bottom:1px solid var(--line)">' +
-                '<span>' + App.escape(item.name) + '</span>' +
-                '<span class="badge warn">' + item.available_quantity + ' / ' + item.min_quantity + '</span></div>'
-              );
-            });
-            report.alerts.expiring.slice(0, 3).forEach(function (item) {
-              alerts.push(
-                '<div style="display:flex;justify-content:space-between;gap:.5rem;padding:.5rem 0;border-bottom:1px solid var(--line)">' +
-                '<span>' + App.escape(item.name) + '</span>' +
-                '<span class="badge danger">ينتهي ' + App.fmtDate(item.expiry_date) + '</span></div>'
-              );
-            });
-            var alertsNode = document.getElementById('alerts');
-            alertsNode.className = '';
-            alertsNode.innerHTML = alerts.length ? alerts.join('') : '<div class="empty">لا توجد تنبيهات</div>';
-          })
-          .catch(function (error) {
-            App.toast(error.message, 'error');
-          });
-
-        // عدّادات إضافية: الفئات، فحوصات الجودة، الأساتذة، استعمال الزمن
-        function loadExtraStats() {
-          ['apparatus', 'glassware', 'chemical'].forEach(function (category) {
-            App.api('/inventory?category=' + category)
-              .then(function (data) {
-                counts[category] = (data && data.items ? data.items.length : 0) || 0;
-                setStat(category, counts[category]);
-              })
-              .catch(function () {});
-          });
-
-          App.api('/qc/analysis')
-            .then(function (data) {
-              setStat('qc', (data.summary && data.summary.totalChecks) || 0);
-            })
-            .catch(function () {});
-
-          App.api('/settings')
-            .then(function (data) {
-              var teachers = (data.users || []).filter(function (user) { return user.role !== 'admin'; });
-              setStat('teachers', teachers.length);
-            })
-            .catch(function () {});
-
-          App.api('/schedule')
-            .then(function (data) {
-              setStat('schedule', (data.schedule || []).length);
-            })
-            .catch(function () {});
-        }
-      })();
-    </script>
+    <script src="/dashboard.js"></script>
   </body>
 </html>

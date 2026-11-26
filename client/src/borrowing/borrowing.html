@@ -7,7 +7,9 @@
     <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="/borrowing/borrowing.css" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" href="/assets/icons/favicon.png" />
+    <link rel="icon" type="image/x-icon" href="/assets/icons/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
   </head>
   <body>
     <div class="app-shell">
@@ -22,7 +24,7 @@
         </header>
 
         <section class="card">
-          <div class="toolbar" style="margin-bottom: 1rem">
+          <div class="toolbar u-margin-bottom-1rem">
             <div class="field">
               <label for="status">الحالة</label>
               <select id="status">
@@ -59,7 +61,7 @@
         <h2>إرجاع الأصناف</h2>
         <p id="returnInfo" class="muted"></p>
         <form id="returnForm">
-          <div class="row-actions" style="justify-content:flex-end;margin-bottom:.5rem">
+          <div class="row-actions u-justify-content-flex-end-margin-bottom-5rem">
             <button class="btn btn-sm" type="button" id="fillAllBtn">إرجاع الكل</button>
           </div>
           <div id="returnRows"></div>
@@ -85,9 +87,10 @@
             <div class="field"><label for="editEnd">إلى</label><input id="editEnd" type="time" required /></div>
             <div class="field"><label for="editRoom">القاعة</label><select id="editRoom"><option value="">بدون قاعة</option></select></div>
           </div>
-          <div class="field" style="margin-top:.7rem"><label for="editNotes">ملاحظات</label><textarea id="editNotes" maxlength="500"></textarea></div>
-          <p class="muted" style="margin-top:.5rem">الكميات تُعدّل عبر الإرجاع أو بإعارة جديدة.</p>
+          <div class="field u-margin-top-7rem"><label for="editNotes">ملاحظات</label><textarea id="editNotes" maxlength="500"></textarea></div>
+          <p class="muted u-margin-top-5rem">الكميات تُعدّل عبر الإرجاع أو بإعارة جديدة.</p>
           <div class="modal-actions">
+            <button class="btn danger" type="button" id="deleteSessionBtn">حذف</button>
             <button class="btn" type="button" data-close="sessionModal">إلغاء</button>
             <button class="btn btn-primary" type="submit">حفظ التعديل</button>
           </div>
@@ -101,6 +104,45 @@
         <div id="detailBody"></div>
         <div class="modal-actions">
           <button class="btn" type="button" data-close="detailModal">إغلاق</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="importModal">
+      <div class="modal-box import-modal-box">
+        <button class="modal-x" type="button" data-close="importModal" aria-label="إغلاق">×</button>
+        <h2>استيراد الإعارة من ملف Excel</h2>
+        <p class="muted">يتم فحص الملف أولاً وعرض النتيجة قبل أي حفظ. لن يُضاف شيء إلا بعد تأكيدك.</p>
+
+        <div class="import-step">
+          <h3>1. حمّل النموذج الجاهز واملأه</h3>
+          <p class="muted">يمكنك أيضاً استعمال ملفك الخاص بشرط أن يحتوي السطر الأول على أسماء الأعمدة.</p>
+          <button class="btn" type="button" id="downloadTemplateBtn">📄 تحميل النموذج</button>
+        </div>
+
+        <div class="import-columns">
+          <span>الأعمدة:</span>
+          <span class="import-col required">الوسيلة *</span>
+          <span class="import-col required">الأستاذ *</span>
+          <span class="import-col required">تاريخ الإرجاع المتوقع *</span>
+          <span class="import-col">تاريخ الإعارة</span>
+          <span class="import-col">الكمية</span>
+          <span class="import-col">ملاحظات</span>
+        </div>
+
+        <h3 class="import-pick-title">2. اختر الملف</h3>
+        <label class="import-drop" id="importDrop">
+          <input id="importFile" type="file" accept=".csv,text/csv" hidden />
+          <span class="import-drop-ico">📄</span>
+          <strong>اضغط لاختيار ملف أو اسحبه إلى هنا</strong>
+          <small>CSV (يُفتح في Excel)</small>
+        </label>
+
+        <div id="importPreview" class="import-preview" hidden></div>
+
+        <div class="modal-actions import-actions">
+          <button class="btn" type="button" data-close="importModal">إلغاء</button>
+          <button class="btn btn-primary" type="button" id="importSubmitBtn" disabled>استيراد</button>
         </div>
       </div>
     </div>

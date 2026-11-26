@@ -33,7 +33,13 @@
     return state.items.filter(function (item) {
       if (state.onlyIds.length && state.onlyIds.indexOf(item.id) === -1) return false;
       if (category && item.category !== category) return false;
-      if (query && item.code.toLowerCase().indexOf(query) === -1 && item.name.toLowerCase().indexOf(query) === -1) return false;
+      if (
+        query &&
+        item.code.toLowerCase().indexOf(query) === -1 &&
+        item.name.toLowerCase().indexOf(query) === -1 &&
+        String(item.owner_no || '').toLowerCase().indexOf(query) === -1
+      )
+        return false;
       return true;
     });
   }
@@ -45,7 +51,8 @@
       '<img src="' + dataUrl + '" alt="QR ' + App.escape(item.code) + '" />' +
       '<div class="label-text">' +
       '<strong>' + App.escape(item.code) + '</strong>' +
-      '<span>' + App.escape(item.name) + '</span>' +
+      (item.owner_no ? '<b class="owner-no">' + App.escape(item.owner_no) + '</b>' : '') +
+      '<span>' + App.escape(item.name_ar || item.name) + '</span>' +
       '<small>' + App.escape(name) + '</small>' +
       '</div>' +
       (state.trial ? '<span class="trial">نسخة تجريبية</span>' : '') +

@@ -24,7 +24,7 @@
       .map(function (item) {
         return (
           '<option value="' + item.id + '"' + (item.available_quantity <= 0 ? ' disabled' : '') + '>' +
-          App.escape(item.code + ' — ' + item.name + ' (' + item.available_quantity + ' ' + item.unit + ')') +
+          App.escape(item.code + ' — ' + (item.name_ar || item.name) + ' (' + item.available_quantity + ' ' + item.unit + ')') +
           '</option>'
         );
       })

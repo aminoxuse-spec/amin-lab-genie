@@ -37,6 +37,7 @@
 .label-text strong { font-size: 3.2mm; letter-spacing: 0.02em; }
 .label-text span { font-size: 2.9mm; color: #0f766e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .label-text small { font-size: 2.3mm; color: #64748b; }
+.label-text .owner-no { font-size: 2.6mm; font-weight: 700; color: #0f172a; letter-spacing: 0.02em; }
 
 .size-10 .label img { width: 26mm; height: 26mm; }
 .size-10 .label-text strong { font-size: 3.6mm; }
@@ -46,6 +47,7 @@
 .size-40 .label-text strong { font-size: 2.6mm; }
 .size-40 .label-text span { font-size: 2.3mm; }
 .size-40 .label-text small { font-size: 1.9mm; }
+.size-40 .label-text .owner-no { font-size: 2.1mm; }
 
 .label .trial {
   position: absolute;

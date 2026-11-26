@@ -4,34 +4,45 @@
 
   var Actions = {
     /**
-     * يبني شريط الأدوات داخل العنصر المحدد.
-     * config: { onImport, onPrint, onAdd, onEdit, importLabel, printLabel, addLabel, editLabel }
+     * يبني شريط الأدوات داخل العنصر المحدد مع صلاحيات مستقلة لكل زر ولكل صفحة.
+     * config: {
+     *   onImport, onPrint, onAdd, onEdit,
+     *   importLabel, printLabel, addLabel, editLabel,
+     *   allow: { import: boolean, print: boolean, add: boolean, edit: boolean }
+     * }
+     * كل زر غير مصرّح به يُخفى تماماً، والزر بلا معالج لا يُعرض (عدا الطباعة التي
+     * تعود إلى window.print). غياب المفتاح في allow يعني السماح.
      */
     bar: function (host, config) {
       if (!host) return;
       config = config || {};
 
-      var labels = {
-        import: config.importLabel || App.t('act.import'),
-        print: config.printLabel || App.t('act.print'),
-        add: config.addLabel || App.t('act.add'),
-        edit: config.editLabel || App.t('act.edit')
-      };
-      var icons = {
-        import: 'import',
-        print: 'print',
-        add: 'plus',
-        edit: 'pencil'
-      };
+      var allow = config.allow || {};
+      var definitions = [
+        { key: 'import', icon: 'import', label: config.importLabel || App.t('act.import'), handler: config.onImport || config.onImportClick },
+        { key: 'print', icon: 'print', label: config.printLabel || App.t('act.print'), handler: config.onPrint },
+        { key: 'add', icon: 'plus', label: config.addLabel || App.t('act.add'), handler: config.onAdd },
+        { key: 'edit', icon: 'pencil', label: config.editLabel || App.t('act.edit'), handler: config.onEdit }
+      ];
+      var actions = definitions.filter(function (action) {
+        if (allow[action.key] === false) return false;
+        if (action.key === 'print') return true;
+        return typeof action.handler === 'function';
+      });
+
+      if (actions.length === 0) {
+        host.innerHTML = '';
+        return;
+      }
 
       host.innerHTML =
         '<div class="actions-bar">' +
-        ['import', 'print', 'add', 'edit']
+        actions
           .map(function (action) {
             return (
-              '<button class="btn' + (action === 'add' ? ' btn-primary' : '') + '" type="button" data-act="' + action + '">' +
-              '<span class="ico">' + App.icon(icons[action]) + '</span>' +
-              '<span>' + App.escape(labels[action]) + '</span></button>'
+              '<button class="btn' + (action.key === 'add' ? ' btn-primary' : '') + '" type="button" data-act="' + action.key + '">' +
+              '<span class="ico">' + App.icon(action.icon) + '</span>' +
+              '<span>' + App.escape(action.label) + '</span></button>'
             );
           })
           .join('') +
@@ -40,33 +51,34 @@
 
       var fileInput = host.querySelector('input[type="file"]');
 
-      host.querySelector('[data-act="print"]').addEventListener('click', function () {
-        if (config.onPrint) config.onPrint();
-        else window.print();
-      });
-
-      host.querySelector('[data-act="add"]').addEventListener('click', function () {
-        if (config.onAdd) config.onAdd();
-        else App.toast('الإضافة غير متاحة في هذه الصفحة', 'error');
-      });
-
-      host.querySelector('[data-act="edit"]').addEventListener('click', function () {
-        if (config.onEdit) config.onEdit();
-        else App.toast('التعديل غير متاح في هذه الصفحة', 'error');
-      });
-
-      host.querySelector('[data-act="import"]').addEventListener('click', function () {
-        if (!config.onImport) {
-          App.toast('الاستيراد غير متاح في هذه الصفحة', 'error');
-          return;
-        }
-        fileInput.click();
+      actions.forEach(function (action) {
+        var button = host.querySelector('[data-act="' + action.key + '"]');
+        if (!button) return;
+        button.addEventListener('click', function () {
+          if (action.key === 'import') {
+            if (typeof config.onImportClick === 'function') {
+              config.onImportClick();
+              return;
+            }
+            fileInput.click();
+            return;
+          }
+          if (typeof action.handler === 'function') {
+            action.handler();
+            return;
+          }
+          if (action.key === 'print') {
+            window.print();
+            return;
+          }
+          App.toast(action.key === 'add' ? 'الإضافة غير متاحة في هذه الصفحة' : 'التعديل غير متاح في هذه الصفحة', 'error');
+        });
       });
 
       fileInput.addEventListener('change', function () {
         var file = fileInput.files && fileInput.files[0];
         fileInput.value = '';
-        if (file && config.onImport) config.onImport(file);
+        if (file && typeof config.onImport === 'function') config.onImport(file);
       });
     },
 
@@ -82,6 +94,36 @@
     /** محلّل CSV بسيط يدعم علامات التنصيص والأسطر الجديدة داخل الخلايا. */
     parseCsv: function (text) {
       var content = String(text || '').replace(/^\uFEFF/, '');
+
+      // جداول Markdown: | عمود | عمود | — تُقرأ بفواصل | ويُهمل سطر الفصل | --- |
+      var lines = content.split(/\r?\n/).filter(function (line) { return line.trim() !== ''; });
+      if (/^\s*\|/.test(lines[0] || '')) {
+        var tableRows = lines
+          .map(function (line) {
+            return line
+              .trim()
+              .replace(/^\|/, '')
+              .replace(/\|$/, '')
+              .split('|')
+              .map(function (cell) { return cell.trim().replace(/\\\|/g, '|'); });
+          })
+          .filter(function (cells) {
+            return !cells.every(function (cell) { return /^:?-{2,}:?$/.test(cell); });
+          });
+        if (tableRows.length < 2) return { headers: [], rows: [] };
+        var tableHeaders = tableRows[0].map(function (header) { return header.toLowerCase(); });
+        return {
+          headers: tableHeaders,
+          rows: tableRows.slice(1).map(function (cells) {
+            var tableRecord = {};
+            tableHeaders.forEach(function (header, position) {
+              tableRecord[header] = cells[position] === undefined ? '' : cells[position];
+            });
+            return tableRecord;
+          })
+        };
+      }
+
       var rows = [];
       var field = '';
       var row = [];

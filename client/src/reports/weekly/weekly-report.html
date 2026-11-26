@@ -7,9 +7,11 @@
     <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="/reports/shared/report-styles.css" />
     <link rel="stylesheet" href="/reports/shared/print-styles.css" />
-    <link rel="stylesheet" href="/reports/weekly/weekly-report.css" />
+    <link rel="stylesheet" href="/reports/weekly/weekly-report.css?v=2" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" href="/assets/icons/favicon.png" />
+    <link rel="icon" type="image/x-icon" href="/assets/icons/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
   </head>
   <body>
     <div class="app-shell">
@@ -18,12 +20,16 @@
         <header class="topbar no-print">
           <div>
             <h1>التقرير الأسبوعي</h1>
-            <p>تحليل نشاط المختبر على مدى سبعة أيام</p>
+            <p>نسخة رسمية للمخبر — جاهزة للطباعة</p>
           </div>
           <div class="row-actions">
-            <div class="field" style="min-width: 160px">
+            <div class="field u-min-width-160px">
               <label for="start">بداية الأسبوع</label>
               <input id="start" type="date" />
+            </div>
+            <div class="field u-min-width-160px">
+              <label for="end">نهاية الأسبوع</label>
+              <input id="end" type="date" />
             </div>
             <button class="btn" type="button" id="csvBtn">⬇️ CSV</button>
             <button class="btn" type="button" id="xlsBtn">📊 Excel</button>
@@ -31,15 +37,31 @@
           </div>
         </header>
 
+        <section class="weekly-head-fields no-print">
+          <div class="field">
+            <label for="hdrDirectorate">المديرية (تظهر في ترويسة التقرير)</label>
+            <input id="hdrDirectorate" type="text" autocomplete="off" placeholder="مديرية التربية لولاية …" />
+          </div>
+          <div class="field">
+            <label for="hdrSchool">المؤسسة</label>
+            <input id="hdrSchool" type="text" autocomplete="off" placeholder="اسم المؤسسة" />
+          </div>
+        </section>
+        <p class="weekly-hint no-print" id="weeklyHint">
+          املأ المديرية واسم المؤسسة لتظهرا في الترويسة. تُحفظ في هذا المتصفح ولا تُطبع هذه الحقول.
+        </p>
+
         <article class="report-sheet" id="report">
           <div class="empty">جارٍ تحميل التقرير…</div>
         </article>
+
+        <section class="weekly-analytics no-print" id="weeklyAnalytics" hidden></section>
       </main>
     </div>
 
     <script src="/i18n.js"></script>
     <script src="/app.js"></script>
     <script src="/reports/shared/report-templates.js"></script>
-    <script src="/reports/weekly/weekly-report.js"></script>
+    <script src="/reports/weekly/weekly-report.js?v=3"></script>
   </body>
 </html>

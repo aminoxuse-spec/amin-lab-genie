@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { requireAuth } from '../middleware/auth.ts';
 import {
   TABLE_REPORTS,
+  coverage,
   daily,
   dailyCsv,
   dailyXls,
@@ -14,6 +15,9 @@ import {
 } from '../controllers/report-controller.ts';
 
 const router = Router();
+
+// تغطية التقارير الأسبوعية والأسابيع الناقصة
+router.get('/coverage', requireAuth, coverage);
 
 // تقارير اليوم والأسبوع
 router.get('/daily', requireAuth, daily);

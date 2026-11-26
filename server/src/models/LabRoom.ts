@@ -1,4 +1,4 @@
-import { allRows, oneRow, run } from '../db.ts';
+import { allRows, oneRow, run, transaction } from '../db.ts';
 
 export type LabRoom = {
   id: number;
@@ -23,6 +23,29 @@ export function createRoom(data: { name: string; capacity?: number; location?: s
     data.location ?? null,
   );
   return getRoom(lastInsertRowid) as LabRoom;
+}
+
+export function updateRoom(
+  id: number,
+  data: { name: string; capacity?: number; location?: string | null },
+): LabRoom | undefined {
+  const { changes } = run(
+    'UPDATE lab_rooms SET name = ?, capacity = ?, location = ? WHERE id = ?',
+    data.name.trim(),
+    data.capacity ?? 24,
+    data.location ?? null,
+    id,
+  );
+  return changes > 0 ? getRoom(id) : undefined;
+}
+
+export function deleteRoom(id: number): boolean {
+  return transaction(() => {
+    // القاعة قد تكون مستعملة في حصص أو إعارات: نفصل المراجع ثم نحذف القاعة.
+    run('UPDATE schedules SET room_id = NULL WHERE room_id = ?', id);
+    run('UPDATE borrowing_sessions SET room_id = NULL WHERE room_id = ?', id);
+    return run('DELETE FROM lab_rooms WHERE id = ?', id).changes > 0;
+  });
 }
 
 export function countRooms(): number {

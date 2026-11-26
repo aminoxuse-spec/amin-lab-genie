@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0f766e" />
+    <title>الأساتذة — Amin-Lab</title>
+    <link rel="manifest" href="/mobile/manifest.webmanifest" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+    
+  </head>
+  <body>
+    <header class="appbar">
+      <div class="u-flex-1">
+        <h1>تطبيق الأساتذة <small id="userLine">طلب الوسائل والإعارة</small></h1>
+      </div>
+      <button class="iconbtn" type="button" id="refreshBtn" title="تحديث">⟳</button>
+      <button class="iconbtn" type="button" id="logoutBtn" title="خروج">⎋</button>
+    </header>
+
+    <main>
+      <!-- تسجيل الدخول -->
+      <section id="loginView" class="card">
+        <h2>تسجيل الدخول</h2>
+        <label for="serverUrl">عنوان الخادم</label>
+        <input id="serverUrl" type="url" inputmode="url" placeholder="http://192.168.1.10:3000" />
+        <label for="username">اسم المستخدم</label>
+        <input id="username" type="text" autocomplete="username" />
+        <label for="password">كلمة المرور</label>
+        <input id="password" type="password" autocomplete="current-password" />
+        <div class="u-margin-top-9rem">
+          <button class="btn btn-primary btn-block" type="button" id="loginBtn">دخول</button>
+        </div>
+        <p class="muted u-margin-top-7rem">
+          استخدم نفس حساب تطبيق المكتب. لا تُحفظ كلمة المرور على الهاتف.
+        </p>
+      </section>
+
+      <!-- طلباتي -->
+      <section id="listView" class="hidden">
+        <div class="chips" id="statusChips">
+          <button class="chip active" type="button" data-status="">الكل</button>
+          <button class="chip" type="button" data-status="pending">بانتظار الموافقة</button>
+          <button class="chip" type="button" data-status="approved">مقبولة</button>
+          <button class="chip" type="button" data-status="rejected">مرفوضة</button>
+        </div>
+        <div id="requestsBody"><div class="empty">جارٍ التحميل…</div></div>
+      </section>
+
+      <!-- طلب جديد -->
+      <section id="newView" class="hidden">
+        <div class="card">
+          <h2>طلب جديد</h2>
+          <div class="row">
+            <div>
+              <label for="reqDate">التاريخ</label>
+              <input id="reqDate" type="date" />
+            </div>
+            <div>
+              <label for="reqClass">القسم</label>
+              <input id="reqClass" type="text" placeholder="3م4" />
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label for="reqStart">من</label>
+              <input id="reqStart" type="time" value="08:00" />
+            </div>
+            <div>
+              <label for="reqEnd">إلى</label>
+              <input id="reqEnd" type="time" value="10:00" />
+            </div>
+          </div>
+          <label for="reqSubject">المادة</label>
+          <select id="reqSubject">
+            <option value="علوم فيزيائية">علوم فيزيائية</option>
+            <option value="علوم طبيعية">علوم طبيعية</option>
+          </select>
+          <label for="reqNotes">ملاحظات</label>
+          <textarea id="reqNotes" placeholder="تجربة، عدد الفوج…"></textarea>
+        </div>
+
+        <div class="card">
+          <h2>الوسائل المطلوبة</h2>
+          <input class="search" id="itemSearch" type="search" placeholder="ابحث باسم الوسيلة…" />
+          <div id="itemsBody"><div class="empty">جارٍ تحميل الجرد…</div></div>
+          <p class="muted" id="selectedSummary" class="u-margin-top-6rem">لم تُحدّد وسائل بعد.</p>
+          <button class="btn btn-primary btn-block" type="button" id="submitBtn">إرسال الطلب</button>
+        </div>
+      </section>
+
+      <!-- الجرد (للمدير) -->
+      <section id="stockView" class="hidden">
+        <div class="card">
+          <h2>تعديل الجرد</h2>
+          <p class="muted u-margin-top-0">
+            عدّل الكمية الإجمالية للوسيلة ثم اضغط «حفظ». تُسجَّل كل عملية في حركات المخزون باسمك.
+          </p>
+          <input class="search" id="stockSearch" type="search" placeholder="ابحث باسم الوسيلة أو رمزها…" />
+          <div id="stockBody"><div class="empty">جارٍ تحميل الجرد…</div></div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="tabs hidden" id="tabs">
+      <button type="button" class="active" data-view="list"><span>📋</span>طلباتي</button>
+      <button type="button" data-view="new"><span>➕</span>طلب جديد</button>
+      <button type="button" data-view="stock" id="stockTab" hidden><span>🧰</span>الجرد</button>
+    </nav>
+
+    <div class="toast" id="toast"></div>
+    <script src="/mobile/mobile.js"></script>
+  </body>
+</html>

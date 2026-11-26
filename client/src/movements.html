@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>سجل الحركات — Amin-Lab -Pro🔬</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/x-icon" href="/assets/icons/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar"></aside>
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <h1>سجل الحركات</h1>
+            <p>تتبّع كل إدخال، استهلاك، كسر أو تسوية جرد مع الرصيد بعد كل عملية.</p>
+          </div>
+          <div id="pageActions"></div>
+        </header>
+
+        <div class="movement-top">
+          <button class="btn btn-primary" type="button" id="newMovementBtn">＋ حركة جديدة</button>
+          <div class="movement-filters" id="movementFilters">
+            <button class="movement-filter active" type="button" data-type="">الكل</button>
+            <button class="movement-filter" type="button" data-type="in">إدخال</button>
+            <button class="movement-filter" type="button" data-type="consume">استهلاك</button>
+            <button class="movement-filter" type="button" data-type="damage">كسر / تلف</button>
+            <button class="movement-filter adjust" type="button" id="adjustBtn">تسوية جرد</button>
+          </div>
+        </div>
+
+        <section class="movement-list" id="movementList">
+          <div class="empty">جارٍ التحميل…</div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal" id="movementModal">
+      <div class="modal-box">
+        <h2 id="movementModalTitle">حركة جديدة</h2>
+        <form id="movementForm">
+          <input type="hidden" id="movementType" value="in" />
+          <div class="form-grid">
+            <div class="field">
+              <label for="movementItem">الصنف</label>
+              <select id="movementItem" required></select>
+            </div>
+            <div class="field">
+              <label for="movementQuantity" id="movementQuantityLabel">الكمية</label>
+              <input id="movementQuantity" type="number" min="1" step="1" required />
+            </div>
+            <div class="field">
+              <label for="movementDate">التاريخ</label>
+              <input id="movementDate" type="date" required />
+            </div>
+            <div class="field">
+              <label for="movementReason">السبب / ملاحظات</label>
+              <input id="movementReason" maxlength="200" placeholder="اقتناء جديد، استهلاك في حصة…" />
+            </div>
+          </div>
+          <p class="muted" id="movementHint" class="u-margin-top-5rem"></p>
+          <div class="modal-actions">
+            <button class="btn" type="button" data-close="movementModal">إلغاء</button>
+            <button class="btn btn-primary" type="submit" id="movementSubmitBtn">حفظ الحركة</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="/i18n.js"></script>
+    <script src="/app.js"></script>
+    <script src="/movements.js"></script>
+  </body>
+</html>

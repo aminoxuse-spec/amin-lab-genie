@@ -6,12 +6,14 @@ export type User = {
   username: string;
   full_name: string;
   role: UserRole;
+  phone: string | null;
+  specialty: string | null;
   created_at: string;
 };
 
 export type UserWithSecret = User & { password_hash: string };
 
-const PUBLIC_COLUMNS = 'id, username, full_name, role, created_at';
+const PUBLIC_COLUMNS = 'id, username, full_name, role, phone, specialty, created_at';
 
 export function findByUsername(username: string): UserWithSecret | undefined {
   return oneRow<UserWithSecret>(
@@ -37,20 +39,34 @@ export function createUser(data: {
   username: string;
   full_name: string;
   role: UserRole;
+  phone?: string | null;
+  specialty?: string | null;
   password_hash: string;
 }): User {
   const { lastInsertRowid } = run(
-    'INSERT INTO users (username, full_name, role, password_hash) VALUES (?, ?, ?, ?)',
+    'INSERT INTO users (username, full_name, role, phone, specialty, password_hash) VALUES (?, ?, ?, ?, ?, ?)',
     data.username.trim(),
     data.full_name.trim(),
     data.role,
+    data.phone?.trim() || null,
+    data.specialty || null,
     data.password_hash,
   );
   return findById(lastInsertRowid) as User;
 }
 
-export function updateUser(id: number, data: { full_name: string; role: UserRole }): User | undefined {
-  run('UPDATE users SET full_name = ?, role = ? WHERE id = ?', data.full_name.trim(), data.role, id);
+export function updateUser(
+  id: number,
+  data: { full_name: string; role: UserRole; phone?: string | null; specialty?: string | null },
+): User | undefined {
+  run(
+    'UPDATE users SET full_name = ?, role = ?, phone = ?, specialty = ? WHERE id = ?',
+    data.full_name.trim(),
+    data.role,
+    data.phone?.trim() || null,
+    data.specialty || null,
+    id,
+  );
   return findById(id);
 }
 

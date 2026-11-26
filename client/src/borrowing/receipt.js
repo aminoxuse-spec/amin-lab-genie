@@ -33,7 +33,8 @@
                 return [
                   index + 1,
                   App.escape(item.name),
-                  App.escape(item.code),
+                  App.escape(item.code) +
+                    (item.owner_no ? '<br><small>جرد خاص ' + App.escape(item.owner_no) + '</small>' : ''),
                   item.quantity_out + ' ' + App.escape(item.unit),
                   condition,
                   item.quantity_returned,

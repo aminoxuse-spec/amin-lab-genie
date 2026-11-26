@@ -7,7 +7,9 @@
     <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="/reports/shared/report-styles.css" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" href="/assets/icons/favicon.png" />
+    <link rel="icon" type="image/x-icon" href="/assets/icons/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
   </head>
   <body>
     <div class="app-shell">
@@ -21,10 +23,11 @@
           <div class="row-actions">
             <a class="btn" href="/reports/daily/daily-report.html">📄 التفصيل اليومي</a>
             <a class="btn" href="/reports/weekly/weekly-report.html">📈 التفصيل الأسبوعي</a>
+            <a class="btn" href="/import/index.html">⬆️ استيراد التقرير الأسبوعي</a>
           </div>
         </header>
 
-        <section class="grid cols-4" id="stats" style="margin-bottom: 1rem"></section>
+        <section class="grid cols-4" id="stats" class="u-margin-bottom-1rem"></section>
 
         <section class="grid cols-2">
           <a class="card report-card" href="/reports/daily/daily-report.html">
@@ -59,9 +62,15 @@
           </a>
         </section>
 
-        <section class="card" style="margin-top: 1rem">
+        <section class="card" id="coverageCard" class="u-margin-top-1rem">
+          <div class="card-head"><h2>🗓️ تغطية التقارير الأسبوعية</h2><span class="badge info" id="coverageBadge">…</span></div>
+          <p class="muted">آخر ثمانية أسابيع: الأسابيع بلا إعارات مسجّلة تظهر كناقصة، والأسابيع المغطاة تُظهر رقم التقرير إن سُجّل.</p>
+          <div id="coverageBody"><div class="empty">جارٍ التحميل…</div></div>
+        </section>
+
+        <section class="card u-margin-top-1rem">
           <div class="card-head"><h2>ملاحظات</h2></div>
-          <ul class="muted" style="line-height: 1.9; padding-inline-start: 1.2rem">
+          <ul class="muted u-line-height-1-9-padding-inline-start-1-2rem">
             <li>الطباعة PDF: من نافذة الطباعة اختر «حفظ كـ PDF».</li>
             <li>تصدير Excel ينتج ملف <code>.xls</code> (SpreadsheetML) يفتح مباشرة في Excel.</li>
             <li>التقرير الأسبوعي يبدأ من التاريخ الذي تختاره ويغطي 7 أيام.</li>
@@ -72,23 +81,6 @@
 
     <script src="/i18n.js"></script>
     <script src="/app.js"></script>
-    <script>
-      (function () {
-        if (!App.mount('reports')) return;
-
-        Promise.all([App.api('/inventory/summary'), App.api('/reports/late'), App.api('/reports/daily')])
-          .then(function (results) {
-            var summary = results[0].summary;
-            var late = results[1];
-            var today = results[2];
-            document.getElementById('stats').innerHTML =
-              '<div class="stat"><span>أصناف الجرد</span><strong>' + summary.total + '</strong></div>' +
-              '<div class="stat ' + (today.totals.openSessions ? 'warn' : 'ok') + '"><span>إعارات غير مكتملة</span><strong>' + today.totals.openSessions + '</strong></div>' +
-              '<div class="stat ' + (late.rows.length ? 'danger' : 'ok') + '"><span>إعارات متأخرة</span><strong>' + late.rows.length + '</strong></div>' +
-              '<div class="stat"><span>وحدات لم تُرجع</span><strong>' + late.summary[1].value + '</strong></div>';
-          })
-          .catch(function (error) { App.toast(error.message, 'error'); });
-      })();
-    </script>
+    <script src="/reports/index.js"></script>
   </body>
 </html>

@@ -11,7 +11,7 @@
     "node": ">=22.18"
   },
   "scripts": {
-    "start": "node server/src/index.ts",
+    "start": "node server/dist/index.js",
     "dev": "node --watch server/src/index.ts",
     "build": "tsc -p server/tsconfig.json",
     "serve:dist": "node server/dist/index.js",
@@ -21,6 +21,8 @@
     "icons": "node scripts/make-icons.mjs",
     "license": "node scripts/make-license.mjs",
     "package": "node scripts/create-package.mjs",
+    "deliveries": "node scripts/make-deliveries.mjs",
+    "deb": "node linux/build-deb.mjs",
     "set-password": "node scripts/set-password.mjs"
   },
   "devDependencies": {

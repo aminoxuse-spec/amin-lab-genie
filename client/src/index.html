@@ -6,69 +6,37 @@
     <title>تسجيل الدخول — Amin-Lab -Pro🔬</title>
     <link rel="stylesheet" href="/style.css" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" href="/assets/icons/favicon.png" />
+    <link rel="icon" type="image/x-icon" href="/assets/icons/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
     <meta name="theme-color" content="#0f766e" />
   </head>
   <body class="login-page">
     <main class="login-card">
       <div class="brand-mark login-logo" data-brand>AL</div>
-      <h1>Amin-Lab -Pro🔬</h1>
+      <h1 data-app-name>Amin-Lab -Pro🔬</h1>
       <p>نظام إدارة مختبر العلوم: الجرد، الإعارة، استعمال الزمن، فحص الجودة والتقارير.</p>
 
       <form id="loginForm">
-        <div class="field" style="margin-bottom: 0.8rem">
+        <div class="field u-margin-bottom-0-8rem">
           <label for="username">اسم المستخدم</label>
           <input id="username" name="username" autocomplete="username" required minlength="3" placeholder="admin" />
         </div>
-        <div class="field" style="margin-bottom: 1rem">
+        <div class="field u-margin-bottom-1rem">
           <label for="password">كلمة المرور</label>
           <input id="password" name="password" type="password" autocomplete="current-password" required minlength="6" placeholder="••••••••" />
         </div>
-        <button class="btn btn-primary" type="submit" id="submitBtn" style="width: 100%; justify-content: center">دخول</button>
+        <button class="btn btn-primary" type="submit" id="submitBtn" class="u-width-100-justify-content-center">دخول</button>
       </form>
 
       <div class="login-hint">
-        بيانات الدخول الأولى في ملف <code>data/first-run-credentials.txt</code> على الخادم.<br />
+        بيانات الدخول الحالية في ملف <code>data/credentials.txt</code> على الخادم (آخر سطر لكل حساب هو الأحدث).<br />
         غيّر كلمة المرور بعد أول دخول: <code>npm run set-password -- admin</code>
       </div>
     </main>
 
     <script src="/i18n.js"></script>
     <script src="/app.js"></script>
-    <script>
-      (function () {
-        App.applyLogo();
-        if (App.token) location.replace('/dashboard.html');
-
-        var form = document.getElementById('loginForm');
-        var button = document.getElementById('submitBtn');
-
-        form.addEventListener('submit', function (event) {
-          event.preventDefault();
-          button.disabled = true;
-          button.textContent = 'جارٍ الدخول…';
-          App.api('/auth/login', {
-            method: 'POST',
-            body: {
-              username: document.getElementById('username').value.trim(),
-              password: document.getElementById('password').value
-            }
-          })
-            .then(function (data) {
-              App.saveSession(data.token, data.user);
-              location.replace('/dashboard.html');
-            })
-            .catch(function (error) {
-              App.toast(error.message, 'error');
-              button.disabled = false;
-              button.textContent = 'دخول';
-            });
-        });
-
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.register('/sw.js').catch(function () {});
-        }
-      })();
-    </script>
+    <script src="/index.js"></script>
   </body>
 </html>

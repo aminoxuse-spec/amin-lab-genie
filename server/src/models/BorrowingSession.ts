@@ -15,6 +15,7 @@ export type BorrowingSession = {
   due_date: string | null;
   status: SessionStatus;
   notes: string | null;
+  report_no: string | null;
   created_at: string;
 };
 
@@ -28,7 +29,7 @@ export type BorrowingSessionRow = BorrowingSession & {
 
 const SELECT_WITH_JOINS = `
   SELECT s.id, s.teacher_id, s.room_id, s.level, s.class_name, s.subject, s.session_date, s.start_time,
-         s.end_time, s.due_date, s.status, s.notes, s.created_at,
+         s.end_time, s.due_date, s.status, s.notes, s.report_no, s.created_at,
          u.full_name AS teacher_name, r.name AS room_name,
          (SELECT COUNT(*) FROM borrowing_items i WHERE i.session_id = s.id) AS item_count,
          (SELECT COALESCE(SUM(quantity_out), 0) FROM borrowing_items i WHERE i.session_id = s.id) AS units_out,
@@ -64,6 +65,23 @@ export function createSession(data: {
     data.notes ?? null,
   );
   return lastInsertRowid;
+}
+
+/** سطور مختصرة لحساب تغطية التقارير الأسبوعية (جلسة واحدة لكل سطر). */
+export function coverageRows(
+  from: string,
+  to: string,
+): { session_date: string; teacher_id: number; teacher_name: string; report_no: string | null; units_out: number; consumed: number }[] {
+  return allRows(
+    `SELECT s.session_date, s.teacher_id, u.full_name AS teacher_name, s.report_no,
+            COALESCE((SELECT SUM(quantity_out) FROM borrowing_items i WHERE i.session_id = s.id), 0) AS units_out,
+            COALESCE((SELECT SUM(quantity_out) FROM borrowing_items i WHERE i.session_id = s.id AND i.condition_out = 'consumed'), 0) AS consumed
+     FROM borrowing_sessions s JOIN users u ON u.id = s.teacher_id
+     WHERE s.session_date BETWEEN ? AND ?
+     ORDER BY s.session_date, s.start_time`,
+    from,
+    to,
+  );
 }
 
 export function getSession(id: number): BorrowingSessionRow | undefined {

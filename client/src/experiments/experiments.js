@@ -110,7 +110,7 @@
 
     body.querySelectorAll('[data-delete]').forEach(function (button) {
       button.addEventListener('click', function () {
-        if (!confirm('حذف هذه التجربة نهائياً؟')) return;
+        if (!confirm(App.t('حذف هذه التجربة نهائياً؟') || 'حذف هذه التجربة نهائياً؟')) return;
         App.api('/experiments/' + button.dataset.delete, { method: 'DELETE' })
           .then(function () {
             App.toast('تم حذف التجربة', 'ok');
@@ -191,6 +191,8 @@
     section.getter = Actions.selection(document.getElementById(stage + 'Body'), null);
 
     Actions.bar(document.getElementById(stage + 'Actions'), {
+      // برنامج التجارب متاح لكل مستخدم مُسجَّل
+      allow: { import: true, add: true, edit: true, print: true },
       onPrint: function () { printSection(stage); },
       onAdd: function () { openForm(null, stage); },
       onEdit: function () {
