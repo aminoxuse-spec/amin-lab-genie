@@ -273,7 +273,7 @@ def make_cover():
     d.text((W // 2, 1185), "Setup & getting-started guide", font=lat_font(38), fill=(148, 163, 184),
            anchor="mm")
 
-    chips = [("Windows 10 / 11", "64-bit"), ("Node.js 22 LTS", "nodejs.org"), ("v1.5.2", "2026")]
+    chips = [("Windows 10 / 11", "64-bit"), ("Node.js 22 LTS", "nodejs.org"), ("v1.5.3", "2026")]
     cw, ch = 400, 150
     gap = (CW - 3 * cw) // 2
     y0 = 1320
@@ -300,7 +300,7 @@ def make_cover():
 
 # ---------------- content ----------------
 def build_ar():
-    g = Guide(True, "Amin-Lab -Pro🔬 · دليل التثبيت", "v1.5.2")
+    g = Guide(True, "Amin-Lab -Pro🔬 · دليل التثبيت", "v1.5.3")
 
     g.h("قبل البدء", first=True)
     g.bullets([
@@ -332,7 +332,7 @@ def build_ar():
         ("ابنِ المثبت",
          "انقر مزدوجاً على installer\\build-setup.cmd. السكربت يثبّت التبعيات، يبني TypeScript، ثم ينشئ الملف."),
         ("وزّع الملف",
-         "ستجد المثبت في installer\\output\\Amin-Lab-Genie-Setup-1.5.2.exe. انقله إلى أي جهاز Windows 10/11 وشغّله."),
+         "ستجد المثبت في installer\\output\\Amin-Lab-Genie-Setup-1.5.3.exe. انقله إلى أي جهاز Windows 10/11 وشغّله."),
     ])
     g.note("المثبت يطلب صلاحيات المدير، ويستبقي مجلد data عند إلغاء التثبيت حتى لا تفقد سجلاتك. الجهاز الهدف لا يحتاج Node.js — فهو مضمّن.")
 
@@ -392,12 +392,12 @@ def build_ar():
 
     g.h("الدعم")
     g.p("البريد: aminhadjadj13@gmail.com   ·   الهاتف وواتساب: +213 558 128 160")
-    g.p("الإصدار 1.5.2 · شروط الترخيص في LICENSE.txt · سجل التغييرات في docs/CHANGELOG.md", color=MUTED, size=26)
+    g.p("الإصدار 1.5.3 · شروط الترخيص في LICENSE.txt · سجل التغييرات في docs/CHANGELOG.md", color=MUTED, size=26)
     return g.pages
 
 
 def build_fr():
-    g = Guide(False, "Amin-Lab -Pro🔬 · Guide d'installation", "v1.5.2")
+    g = Guide(False, "Amin-Lab -Pro🔬 · Guide d'installation", "v1.5.3")
 
     g.h("Avant de commencer", first=True)
     g.bullets([
@@ -429,7 +429,7 @@ def build_fr():
         ("Compiler l'installateur",
          "Double-cliquez sur installer\\build-setup.cmd : le script installe les dépendances, compile TypeScript puis génère le fichier."),
         ("Distribuer",
-         "Le fichier apparaît dans installer\\output\\Amin-Lab-Genie-Setup-1.5.2.exe. Copiez-le sur tout poste Windows 10/11 et exécutez-le."),
+         "Le fichier apparaît dans installer\\output\\Amin-Lab-Genie-Setup-1.5.3.exe. Copiez-le sur tout poste Windows 10/11 et exécutez-le."),
     ])
     g.note("L'installateur demande les droits administrateur et conserve le dossier data lors d'une désinstallation. Le poste cible n'a pas besoin de Node.js : il est fourni.")
 
@@ -489,12 +489,12 @@ def build_fr():
 
     g.h("Support")
     g.p("E-mail : aminhadjadj13@gmail.com   ·   Téléphone et WhatsApp : +213 558 128 160")
-    g.p("Version 1.5.2 · Licence dans LICENSE.txt · Journal des modifications dans docs/CHANGELOG.md", color=MUTED, size=26)
+    g.p("Version 1.5.3 · Licence dans LICENSE.txt · Journal des modifications dans docs/CHANGELOG.md", color=MUTED, size=26)
     return g.pages
 
 
 def build_en():
-    g = Guide(False, "Amin-Lab -Pro🔬 · Setup guide", "v1.5.2")
+    g = Guide(False, "Amin-Lab -Pro🔬 · Setup guide", "v1.5.3")
 
     g.h("Before you start", first=True)
     g.bullets([
@@ -526,7 +526,7 @@ def build_en():
         ("Build the installer",
          "Double-click installer\\build-setup.cmd. The script installs dependencies, compiles TypeScript and produces the installer."),
         ("Ship it",
-         "The file appears in installer\\output\\Amin-Lab-Genie-Setup-1.5.2.exe. Copy it to any Windows 10/11 machine and run it."),
+         "The file appears in installer\\output\\Amin-Lab-Genie-Setup-1.5.3.exe. Copy it to any Windows 10/11 machine and run it."),
     ])
     g.note("The installer requires administrator rights and keeps the data folder on uninstall. The target machine does not need Node.js — it is bundled.")
 
@@ -586,7 +586,7 @@ def build_en():
 
     g.h("Support")
     g.p("Email: aminhadjadj13@gmail.com   ·   Phone and WhatsApp: +213 558 128 160")
-    g.p("Version 1.5.2 · Licence in LICENSE.txt · Changelog in docs/CHANGELOG.md", color=MUTED, size=26)
+    g.p("Version 1.5.3 · Licence in LICENSE.txt · Changelog in docs/CHANGELOG.md", color=MUTED, size=26)
     return g.pages
 
 

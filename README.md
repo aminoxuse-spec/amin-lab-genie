@@ -2,7 +2,7 @@
 
 نظام متكامل لإدارة مختبر العلوم في المدرسة: الجرد، الإعارة المتعددة الأصناف، استعمال الزمن، فحص الجودة (QC)، والتقارير اليومية والأسبوعية مع طباعة احترافية.
 
-> **الحالة:** v1.5.2 — يعمل محلياً على Node.js 22+ (تم اختباره على Node 26) بقاعدة بيانات SQLite مدمجة (`node:sqlite`) بدون أي تبعيات أصلية.
+> **الحالة:** v1.5.3 — يعمل محلياً على Node.js 22+ (تم اختباره على Node 26) بقاعدة بيانات SQLite مدمجة (`node:sqlite`) بدون أي تبعيات أصلية.
 
 ---
 
@@ -181,9 +181,9 @@ client/src/assets/icons/logo.png
 
 ## 📦 التوزيع والتثبيت على Windows
 
-1. **حزمة ZIP:** `npm run package` → `release/Amin-Lab-Genie-v1.5.2.zip` (+ ملف `.sha256`).
+1. **حزمة ZIP:** `npm run package` → `release/Amin-Lab-Genie-v1.5.3.zip` (+ ملف `.sha256`).
 2. **فك الضغط** ثم `npm install && npm start` (أو `installer\check-environment.cmd` للتحقق).
-3. **بناء مثبت Windows:** `installer\build-setup.cmd` (يتطلب [Inno Setup 6](https://jrsoftware.org/isdl.php) وNode.js 22+) → `installer\output\Amin-Lab-Genie-Setup-1.5.2.exe`.
+3. **بناء مثبت Windows:** `installer\build-setup.cmd` (يتطلب [Inno Setup 6](https://jrsoftware.org/isdl.php) وNode.js 22+) → `installer\output\Amin-Lab-Genie-Setup-1.5.3.exe`.
 4. بديل على Windows: `.\create-complete-package.ps1 -IncludeTests`.
 
 > سكربتات `.cmd` و`.iss` و`.ps1` خاصة بـ Windows ولا يمكن تشغيلها على Linux؛ الحزم تُنشأ على أي نظام عبر `npm run package`.

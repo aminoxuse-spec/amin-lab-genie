@@ -21,15 +21,15 @@
 
 مشروع أندرويد كامل داخل `android/`، ونواتج البناء:
 `android/app/build/outputs/apk/release/app-release.apk` (موقّعة) و`android/app/build/outputs/apk/debug/app-debug.apk` (تجريبية)
-(نسخ جاهزة في `dist/`: **`Amin-Lab-Teachers-1.5.2-release.apk`** الموقّعة للتوزيع،
-و`Amin-Lab-Teachers-1.5.2.apk` نسخة debug للتجربة فقط).
+(نسخ جاهزة في `dist/`: **`Amin-Lab-Teachers-1.5.3-release.apk`** الموقّعة للتوزيع،
+و`Amin-Lab-Teachers-1.5.3.apk` نسخة debug للتجربة فقط).
 
 التطبيق غلاف WebView واحد يحمّل `/mobile/index.html` من خادم المكتب، فلا توجد واجهة مكرّرة داخل الأندرويد:
 أي تحديث ترفعه إلى الخادم يظهر على الهاتف مباشرة.
 
 ### التثبيت على هاتف الأستاذ
 
-1. انقل ملف `Amin-Lab-Teachers-1.5.2-release.apk` إلى الهاتف (كابل USB أو Google Drive أو واتساب).
+1. انقل ملف `Amin-Lab-Teachers-1.5.3-release.apk` إلى الهاتف (كابل USB أو Google Drive أو واتساب).
    > إذا كانت النسخة التجريبية السابقة (debug) مثبّتة على الهاتف، ألغِ تثبيتها أولاً: النسختان موقّعتان
    > بمفتاحين مختلفين، لذا يرفض أندرويد التحديث فوقها.
 2. افتح الملف، وعند السؤال اسمح بـ«تثبيت تطبيقات غير معروفة» لهذا المصدر فقط.

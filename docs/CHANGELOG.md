@@ -3,6 +3,32 @@
 كل التغييرات المهمة تُوثَّق هنا. التنسيق مبني على [Keep a Changelog](https://keepachangelog.com/ar/1.1.0/)
 والنظام يتبع [Semantic Versioning](https://semver.org/lang/ar/).
 
+## [1.5.3] — 2026-11-26
+
+### أُضيف
+- **بوّابة جودة في بناء المثبت:** `installer\build-setup.cmd` يشغّل `npm run typecheck`
+  ثم `npm test` قبل Inno Setup، فلا يُبنى مثبت من كود مكسور (صار البناء 7 خطوات).
+- **توقيع Authenticode اختياري:** عند وجود شهادة في `keys\code-signing.pfx`
+  (أو المتغير `AMIN_SIGN_PFX`) و`signtool.exe`، يُوقَّع المثبتان بطابع زمني
+  (`/fd SHA256` + RFC 3161)؛ وإلا يُتخطّى التوقيع برسالة واضحة.
+- **`.gitattributes`:** تخزين LF في المستودع وCRLF لسكربتات Windows
+  (`.cmd`/`.bat`/`.ps1`/`.iss`)، وإنهاء تحذيرات LF/CRLF المتكررة أثناء `git add`.
+- **`.githooks/pre-commit`:** يرفض إيداع `keys/` و`.env` و`keystore` والمفاتيح الخاصة.
+
+### تغيّر
+- رفع الإصدار إلى **1.5.3** في `package.json` و`package-lock.json` و`installer/*.iss`
+  وأسماء ملفات المثبت، وترويسة الإصدار في صفحة الإعدادات.
+- **حجم المثبت أصغر:** أُسقط `npm`/`npx` وحزمهما (~16 ميغابايت) من `installer\runtime`؛
+  الخادم يحتاج `node.exe` وحده (`scripts/stage-runtime.mjs`).
+
+### أُصلح
+- `installer\build-setup.cmd` كان ينتهي دائماً بالرمز 1 بعد أول ISCC بسبب قوس `)`
+  غير مُهرَّب داخل `echo` — صار يستخدم تسميات `goto` وينتهي بـ `exit /b 0`.
+
+### تحقّق
+- تثبيت فعلي صامت للمثبت ثم `installer\verify-install.cmd` على النسخة المثبتة:
+  runtime و`node_modules` و`server\dist` موجودة، والخادم يقلع والصفحات ترجع 200.
+
 ## [1.5.2] — 2026-11-14
 
 ### أُضيف

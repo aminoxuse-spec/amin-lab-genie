@@ -9,7 +9,7 @@ try {
 
 /** اسم التطبيق النهائي */
 export const APP_NAME = 'Amin-Lab -Pro🔬';
-export const APP_VERSION = '1.5.2';
+export const APP_VERSION = '1.5.3';
 
 export const PORT = Number(process.env.PORT ?? 3000);
 export const HOST = process.env.HOST ?? '0.0.0.0';

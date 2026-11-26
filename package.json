@@ -1,6 +1,6 @@
 {
   "name": "amin-lab-genie",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "private": true,
   "description": "Amin-Lab -Pro🔬 — نظام إدارة مختبر العلوم (جرد، إعارة، جدول زمني، QC، تقارير)",
   "type": "module",

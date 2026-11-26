@@ -1,9 +1,9 @@
 #!/bin/sh
 # Amin-Lab -Pro .deb self-test - run on Ubuntu 22.04+ / Debian 12+.
-#   sudo sh linux/selftest.sh [path/to/amin-lab-pro_1.5.2_amd64.deb]
+#   sudo sh linux/selftest.sh [path/to/amin-lab-pro_1.5.3_amd64.deb]
 set -u
 
-DEB="${1:-release/amin-lab-pro_1.5.2_amd64.deb}"
+DEB="${1:-release/amin-lab-pro_1.5.3_amd64.deb}"
 PORT=3000
 FAIL=0
 

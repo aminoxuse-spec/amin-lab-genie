@@ -3,7 +3,7 @@ Amin-Lab -Pro — حزمة البيع | Pack de vente | Sale pack
 
 1) ابدأ من هنا / Commencez ici / Start here
    - Windows 10/11 (64-bit) فقط — لا حاجة لتثبيت Node.js (مضمّن)
-   - الأفضل: شغّل installer\output\Amin-Lab-Genie-Setup-1.5.2.exe
+   - الأفضل: شغّل installer\output\Amin-Lab-Genie-Setup-1.5.3.exe
      (يثبّت كل شيء ويعمل بدون إنترنت)
    - بديل بدون تثبيت: انقر مزدوجاً على:  installer\launch.cmd
      (يشغّل التطبيق ثم يفتح http://localhost:3000)
@@ -15,8 +15,8 @@ Amin-Lab -Pro — حزمة البيع | Pack de vente | Sale pack
 2) إنشاء مثبت Setup.exe (للمطوّر فقط)
    - ثبّت Inno Setup 6 (jrsoftware.org/isdl.php)
    - شغّل:  installer\build-setup.cmd
-   - الناتج: installer\output\Amin-Lab-Genie-Setup-1.5.2.exe
-             installer\output\Amin-Lab-Genie-Sale-Setup-1.5.2.exe
+   - الناتج: installer\output\Amin-Lab-Genie-Setup-1.5.3.exe
+             installer\output\Amin-Lab-Genie-Sale-Setup-1.5.3.exe
    - بعد البناء شغّل:  installer\verify-install.cmd  قبل التوزيع
 
 3) محتوى الحزمة / Contenu / Contents
