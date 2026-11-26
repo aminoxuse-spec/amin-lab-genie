@@ -1,5 +1,9 @@
 #define MyAppName "Amin-Lab -Pro🔬 (Sale)"
-#define MyAppVersion "1.5.3"
+; رقم الإصدار مصدره الوحيد package.json — يمرّره build-setup.cmd
+; عبر /DMyAppVersion=…؛ لا تكتبه هنا حتى لا ينحرف عن الحقيقة.
+#ifndef MyAppVersion
+  #error "مرّر رقم الإصدار: ISCC /DMyAppVersion=x.y.z Amin-Lab-Sale.iss — أو استخدم installer\build-setup.cmd"
+#endif
 #define MyAppPublisher "Amin-Lab"
 ; صفحة الدعم الرسمية — استبدلها بالموقع الرسمي عند توفره
 #define MyAppURL "https://wa.me/213558128160"
@@ -88,4 +92,4 @@ Filename: "{sys}\schtasks.exe"; Parameters: "/delete /tn ""Amin-Lab Genie Daily 
 Type: filesandordirs; Name: "{app}\server"
 Type: filesandordirs; Name: "{app}\client"
 Type: filesandordirs; Name: "{app}\node_modules"
-Type: filesandordirs; Name: "{app}\runtime"
+Type: filesandordirs; Name: "{app}\runtime"

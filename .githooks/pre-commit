@@ -1,23 +1,31 @@
 #!/bin/sh
 # يمنع إدراج الأسرار ومواد التوقيع في Git.
-# التفعيل (مرة واحدة لكل نسخة): git config core.hooksPath .githooks
+# المفاتيح العامة (public.key/public.pem) مسموحة — ليست أسراراً.
+# التفعيل التلقائي: npm install (سكربت prepare → scripts/setup-hooks.mjs)
+# التفعيل اليدوي (مرة واحدة لكل نسخة): git config core.hooksPath .githooks
 
 staged=$(git diff --cached --name-only --diff-filter=ACMR)
 [ -z "$staged" ] && exit 0
 
 blocked=$(printf '%s\n' "$staged" | grep -Ei \
   -e '(^|/)keys/' \
-  -e '(^|/)\.env\.production$' \
   -e '(^|/)\.env$' \
-  -e '(^|/)\.env\.(local|development|test|prod|production)$' \
-  -e 'keystore\.properties$' \
-  -e '\.(jks|keystore|p12|pfx)$' \
-  -e 'private[._-]?key|id_rsa|id_ed25519' \
-  -e 'first-run-credentials\.txt$')
+  -e '(^|/)\.env\.(local|development|dev|test|prod|production|staging|preview)$' \
+  -e '(^|/)\.npmrc$' \
+  -e '(^|/)\.pypirc$' \
+  -e '(^|/)\.git-credentials$' \
+  -e '(^|/)keystore\.properties$' \
+  -e '\.(jks|keystore|p12|pfx|p8|key|pem|kdbx|ovpn)$' \
+  -e '(^|/)(id_rsa|id_dsa|id_ecdsa|id_ed25519)$' \
+  -e 'private[._-]?key' \
+  -e '(^|/)first-run-credentials\.txt$' \
+  -e '(^|/)credentials\.txt$' \
+  -e '(^|/)(service[-_]?account|gcp[-_]?key)[^/]*\.json$' | \
+  grep -Eiv '(^|/)[^/]*public[^/]*\.(key|pem)$')
 
 if [ -n "$blocked" ]; then
   echo "✗ رُفض الإيداع: ملفات أسرار/توقيع لا يجوز إضافتها إلى المستودع:" >&2
-  printf '  - %s\n' $blocked >&2
+  printf '%s\n' "$blocked" | sed 's/^/  - /' >&2
   echo "" >&2
   echo "أخرجها من التجهيز:  git restore --staged <file>" >&2
   echo "أو أضِفها إلى .gitignore إن كانت مولّدة." >&2

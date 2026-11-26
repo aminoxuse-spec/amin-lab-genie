@@ -4,7 +4,11 @@
 ; ============================================================
 
 #define MyAppName "Amin-Lab -Pro🔬"
-#define MyAppVersion "1.5.3"
+; رقم الإصدار مصدره الوحيد package.json — يمرّره build-setup.cmd
+; عبر /DMyAppVersion=…؛ لا تكتبه هنا حتى لا ينحرف عن الحقيقة.
+#ifndef MyAppVersion
+  #error "مرّر رقم الإصدار: ISCC /DMyAppVersion=x.y.z Amin-Lab.iss — أو استخدم installer\build-setup.cmd"
+#endif
 #define MyAppPublisher "Amin-Lab"
 ; صفحة الدعم الرسمية — استبدلها بالموقع الرسمي عند توفره
 #define MyAppURL "https://wa.me/213558128160"

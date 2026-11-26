@@ -63,7 +63,10 @@ npm start
 
 > ⚠️ لا توجد كلمات مرور افتراضية معروفة. راجع `docs/SECURITY.md` و`docs/DEPLOYMENT.md` قبل النشر على الإنترنت.
 
-**حماية الأسرار قبل الإيداع (`pre-commit`) — مرة واحدة لكل نسخة:**
+**حماية الأسرار قبل الإيداع (`pre-commit`) — تلقائية بعد `npm install`:**
+
+`npm install` يشغّل `prepare` → `scripts/setup-hooks.mjs` فيضبط `core.hooksPath`
+تلقائياً. للتفعيل أو التحقق يدوياً:
 
 ```bash
 # التفعيل: يجعل Git يستخدم hooks المستودع بدل .git/hooks
@@ -73,13 +76,15 @@ git config core.hooksPath .githooks
 git config --get core.hooksPath   # يجب أن يطبع: .githooks
 ```
 
-بعد التفعيل يرفض `.githooks/pre-commit` أي إيداع يضم `keys/` أو `.env`
-أو `keystore.properties` أو ملفات `*.pfx`/`*.jks`/`*.p12` أو مفاتيح خاصة،
-ويشرح كيف تُخرجها من التجهيز (`git restore --staged <file>`).
+يرفض الـ hook الإيداع إذا ضمّ: `keys/`، `.env` وأي `.env.local|production|staging|…`،
+`.npmrc`، `.git-credentials`، `keystore.properties`، `credentials.txt`، أو ملفات
+`*.pfx`/`*.p12`/`*.jks`/`*.p8`/`*.key`/`*.pem`/`*.kdbx`/`*.ovpn`، أو `id_rsa`.
+المفاتيح **العامة** (`*-public.key`) وملفات القوالب (`.env.example`) مسموحة.
 
-> `core.hooksPath` إعداد **محلي** لا يُدفع مع الفرع؛ كرّر الأمر بعد كل `git clone`.
-> الاختبار السريع: جهّز `installer/.env.production` ثم `git commit` — يجب أن ينتهي
-> بالرمز 1 ورسالة «رُفض الإيداع»، وبعدها `git restore --staged installer/.env.production`.
+> `core.hooksPath` إعداد محلي لا يُدفع مع الفرع، ولهذا يفعّله `npm install` في كل نسخة
+> (ولن يُفشل التثبيت إن لم يوجد Git). الاختبار السريع: `git add installer/.env.production`
+> ثم `git commit` — يجب أن ينتهي بالرمز 1 ورسالة «رُفض الإيداع»، وبعدها
+> `git restore --staged installer/.env.production`.
 
 ---
 
@@ -204,6 +209,14 @@ client/src/assets/icons/logo.png
 3. **بناء مثبت Windows:** `installer\build-setup.cmd` (يتطلب [Inno Setup 6](https://jrsoftware.org/isdl.php) وNode.js 22+) → `installer\output\Amin-Lab-Genie-Setup-1.5.3.exe`.
 4. بديل على Windows: `.\create-complete-package.ps1 -IncludeTests`.
 
+**رقم الإصدار والتوقيع:** `build-setup.cmd` يقرأ الإصدار من `package.json` ويمرّره إلى ISCC
+بـ `/DMyAppVersion=…` (لا تكرار له في `.iss`، وبناؤهما مباشرة بدون `/D` يفشل برسالة صريحة).
+لتوقيع المثبتين ضع الشهادة في `keys\code-signing.pfx` واضبط `AMIN_SIGN_PASSWORD`
+(أو `AMIN_SIGN_PASSWORD_FILE` بملف أول سطره كلمة المرور)، ويمكن تغيير المسار بـ `AMIN_SIGN_PFX`
+وأداة التوقيع بـ `AMIN_SIGNTOOL`. السكربت يوقّع مثبتَي الإصدار الحالي فقط ثم يتحقق منهما
+بـ `signtool verify /pa`. بدون شهادة يتخطّى التوقيع برسالة، ومع `AMIN_REQUIRE_SIGN=1`
+يفشل البناء بدل التخطي (ومسار خاطئ في `AMIN_SIGN_PFX` يفشل دائماً).
+
 > سكربتات `.cmd` و`.iss` و`.ps1` خاصة بـ Windows ولا يمكن تشغيلها على Linux؛ الحزم تُنشأ على أي نظام عبر `npm run package`.
 
 ---
@@ -212,7 +225,7 @@ client/src/assets/icons/logo.png
 
 ```bash
 npm run typecheck   # ✅ 0 أخطاء
-npm test            # ✅ 19/19
+npm test            # ✅ 50/50
 npm run build       # ✅ server/dist
 ```
 
