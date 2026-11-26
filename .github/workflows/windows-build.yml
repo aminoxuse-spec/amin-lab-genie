@@ -61,6 +61,9 @@ jobs:
     needs: build
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: windows-latest
+    # The default GITHUB_TOKEN needs write access to create/upload releases.
+    permissions:
+      contents: write
 
     steps:
       - name: Download installers
