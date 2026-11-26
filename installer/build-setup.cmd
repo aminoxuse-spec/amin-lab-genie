@@ -49,16 +49,10 @@ if not exist "%ISCC%" (
 echo استخدام: %ISCC%
 
 "%ISCC%" "%~dp0Amin-Lab.iss"
-if errorlevel 1 (
-  echo [خطأ] فشل إنشاء ملف التثبيت (Amin-Lab.iss)
-  exit /b 1
-)
+if errorlevel 1 goto :fail_main
 
 "%ISCC%" "%~dp0Amin-Lab-Sale.iss"
-if errorlevel 1 (
-  echo [خطأ] فشل إنشاء ملف التثبيت (Amin-Lab-Sale.iss)
-  exit /b 1
-)
+if errorlevel 1 goto :fail_sale
 
 set "OK=1"
 if not exist "%~dp0output\Amin-Lab-Genie-Setup-1.5.2.exe" (
@@ -77,4 +71,13 @@ echo ✅ تم إنشاء المثبتات:
 dir /b "%~dp0output\*.exe"
 echo.
 echo للتأكد من أن التطبيق يعمل قبل التوزيع: installer\verify-install.cmd
-endlocal
+
+exit /b 0
+
+:fail_main
+echo [خطأ] فشل إنشاء ملف التثبيت (Amin-Lab.iss)
+exit /b 1
+
+:fail_sale
+echo [خطأ] فشل إنشاء ملف التثبيت (Amin-Lab-Sale.iss)
+exit /b 1
