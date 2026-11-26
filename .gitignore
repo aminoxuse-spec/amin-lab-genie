@@ -5,9 +5,52 @@ data/
 *.sqlite
 *.sqlite-wal
 *.sqlite-shm
+dist/
 release/*.zip
+release/*.deb
+release/*.deb.sha256
+linux/build/
+linux/.cache/
+installer/runtime/
+installer/vendor/
+installer/.cache/
+installer/output/
+installer/.env.production
+
+# مفتاح التوقيع الخاص (لا يُودَع — يبقى على حاسوب البائع)
+keys/
+.tmpdeb/
 .DS_Store
 .env
 
 .server.pid
 release/Amin-Lab-Genie-Sale/
+
+# نسخ احتياطية لقاعدة البيانات (بيانات مستخدم)
+backups/
+
+# حزم التسليم المولّدة (كبيرة وتحتوي مفتاح ترخيص خاص)
+deliveries/
+.tmp/
+
+# مواد ترويجية ولقطات تحقق (مولّدة، ليست جزءاً من التطبيق)
+artifacts/
+
+# أدوات البناء فقط: JDK + Android SDK (≈1.1 GB)
+tools/
+
+# مخرجات بناء تطبيق الأساتذة (أندرويد)
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+
+# مفتاح توقيع أندرويد (لا يُودَع إطلاقاً)
+android/keystore.properties
+android/keystore/
+*.jks
+*.keystore
+
+# ملفات تولَّد من سكربتات البناء
+release/*.sha256
+release/client-bundle.json
