@@ -1,0 +1,35 @@
+#!/bin/sh
+set -e
+
+if ! getent group aminlab >/dev/null 2>&1; then
+  addgroup --system aminlab >/dev/null 2>&1 || true
+fi
+if ! getent passwd aminlab >/dev/null 2>&1; then
+  adduser --system --ingroup aminlab --home /var/lib/amin-lab-pro \
+    --no-create-home --shell /usr/sbin/nologin aminlab >/dev/null 2>&1 || true
+fi
+
+mkdir -p /var/lib/amin-lab-pro
+chown aminlab:aminlab /var/lib/amin-lab-pro
+chmod 750 /var/lib/amin-lab-pro
+
+if [ ! -f /etc/default/amin-lab-pro ]; then
+  SECRET=$(head -c 48 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | cut -c1-64)
+  cat > /etc/default/amin-lab-pro <<EOF
+PORT=3000
+HOST=127.0.0.1
+DATA_DIR=/var/lib/amin-lab-pro
+CLIENT_DIR=/opt/amin-lab-pro/client/src
+APP_SECRET=$SECRET
+EOF
+  chown root:aminlab /etc/default/amin-lab-pro
+  chmod 640 /etc/default/amin-lab-pro
+fi
+
+if [ -d /run/systemd/system ]; then
+  systemctl daemon-reload >/dev/null 2>&1 || true
+  systemctl enable amin-lab-pro.service >/dev/null 2>&1 || true
+  systemctl restart amin-lab-pro.service >/dev/null 2>&1 || true
+fi
+
+exit 0

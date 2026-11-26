@@ -1,0 +1,7 @@
+﻿name,category,quantity,unit,min_quantity,location,expiry_date,formula,danger_level,supplier,invoice_no,purchase_date,cost,code,inv_general,name_fr,category_original,state,notes
+DLP progecteur (1),equipment,1,قطعة,1,قاعة C11 سمعي بصري,,,low,,,,,150,1095,DLP progecteur (1),سمعی بصري,جيد,
+DLP progecteur (2),equipment,1,قطعة,1,قاعة C11 سمعي بصري,,,low,,,,,151,1096,DLP progecteur (2),سمعی بصري,جيد,
+PC portable ACER (1),equipment,1,قطعة,1,قاعة C11 سمعي بصري,,,low,,,,,152,1098,PC portable ACER (1),سمعی بصري,جيد,
+PC portable lenovo noir (2),equipment,1,قطعة,1,قاعة C11 سمعي بصري,,,low,,,,,153,1099,PC portable lenovo noir (2),سمعی بصري,جيد,تم تحويله إلى المدير
+PC portable lenovo (3),equipment,1,قطعة,1,قاعة C11 سمعي بصري,,,low,,,,,154,1100,PC portable lenovo (3),سمعی بصري,جيد,تم تحويله إلى المدير
+مكبر الصوت,equipment,1,قطعة,1,قاعة C11 سمعي بصري,,,low,,,,,155,1963,,سمعی بصري,جيد,تم تحويله إلى ساحة العلم

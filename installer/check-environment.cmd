@@ -12,7 +12,13 @@ if errorlevel 1 (
   set "FAILED=1"
 ) else (
   for /f "delims=" %%v in ('node -v') do set "NODE_VERSION=%%v"
-  echo [✓] Node.js !NODE_VERSION!
+  for /f "tokens=1 delims=v." %%a in ("!NODE_VERSION!") do set "NODE_MAJOR=%%a"
+  if !NODE_MAJOR! LSS 22 (
+    echo [✗] Node.js !NODE_VERSION! - الإصدار 22 أو أحدث مطلوب
+    set "FAILED=1"
+  ) else (
+    echo [✓] Node.js !NODE_VERSION!
+  )
 )
 
 echo --- npm ---
@@ -28,6 +34,7 @@ if errorlevel 1 (
 echo --- Inno Setup 6 ---
 set "ISCC=%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe"
 if not exist "%ISCC%" set "ISCC=%ProgramFiles%\Inno Setup 6\ISCC.exe"
+if not exist "%ISCC%" set "ISCC=%LOCALAPPDATA%\Programs\Inno Setup 6\ISCC.exe"
 if exist "%ISCC%" (
   echo [✓] !ISCC!
 ) else (

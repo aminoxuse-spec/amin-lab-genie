@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+if [ -d /run/systemd/system ]; then
+  systemctl daemon-reload >/dev/null 2>&1 || true
+fi
+
+if [ "$1" = "purge" ]; then
+  rm -rf /var/lib/amin-lab-pro
+  rm -f /etc/default/amin-lab-pro
+  if getent passwd aminlab >/dev/null 2>&1 && command -v deluser >/dev/null 2>&1; then
+    deluser --system aminlab >/dev/null 2>&1 || true
+  fi
+  if getent group aminlab >/dev/null 2>&1 && command -v delgroup >/dev/null 2>&1; then
+    delgroup --system aminlab >/dev/null 2>&1 || true
+  fi
+fi
+
+exit 0

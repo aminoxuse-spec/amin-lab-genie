@@ -93,7 +93,8 @@ for (const [index, row] of rows.entries()) {
   const line = index + 2;
   let code = String(row.code ?? '').trim();
   const name = String(row.name ?? '').trim();
-  const category = String(row.category ?? 'apparatus').trim();
+  let category = String(row.category ?? 'apparatus').trim();
+  if (category === 'equipment' || category === 'matériel') category = 'apparatus';
 
   if (!code || !name) {
     stats.failed += 1;
@@ -125,7 +126,11 @@ for (const [index, row] of rows.entries()) {
     quantity: Number(row.quantity || 1),
     unit: row.unit || 'قطعة',
     min_quantity: Number(row.min_quantity || 1),
-    location: row.location || '',
+    location: (function () {
+      var base = row.location || '';
+      var notes = row.notes || row.state || '';
+      return notes ? (base ? base + ' — ' + notes : notes) : base;
+    })(),
   };
   if (row.expiry_date) payload.expiry_date = row.expiry_date;
 

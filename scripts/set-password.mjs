@@ -8,7 +8,7 @@
  * الكلمة الجديدة لا تُطبع في الطرفية ولا في السجل؛ تُضاف إلى data/credentials.txt (صلاحيات 600).
  */
 import { randomBytes, scryptSync } from 'node:crypto';
-import { appendFileSync, chmodSync, existsSync, mkdirSync } from 'node:fs';
+import { appendFileSync, chmodSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 
@@ -52,6 +52,17 @@ try {
   chmodSync(file, 0o600);
 } catch {
   /* Windows */
+}
+
+// حذف كلمة المرور الأولى لهذا الحساب من ملف أول تشغيل: تغييرها يجعله مضلّلاً.
+const firstRunFile = join(DATA_DIR, 'first-run-credentials.txt');
+if (existsSync(firstRunFile)) {
+  const kept = readFileSync(firstRunFile, 'utf8')
+    .split(/\r?\n/)
+    .filter((line) => line.trim() && (line.startsWith('#') || line.split('\t')[0].trim() !== username));
+  const entries = kept.filter((line) => !line.startsWith('#'));
+  if (entries.length === 0) rmSync(firstRunFile, { force: true });
+  else writeFileSync(firstRunFile, `${kept.join('\n')}\n`, { mode: 0o600 });
 }
 
 console.log(`✔ تم تغيير كلمة مرور «${username}».`);

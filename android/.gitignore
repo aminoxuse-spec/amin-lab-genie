@@ -1,0 +1,11 @@
+# Gradle / Android build artifacts
+.gradle/
+build/
+app/build/
+local.properties
+
+# Signing material — never commit
+keystore.properties
+keystore/
+*.jks
+*.keystore

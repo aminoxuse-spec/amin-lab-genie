@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Amin-Lab -Pro
+Name[ar]=أمين-مختبر -Pro
+Name[fr]=Amin-Lab -Pro
+Comment=School science lab management
+Comment[ar]=تسيير مختبر العلوم
+Comment[fr]=Gestion du laboratoire de sciences
+Exec=amin-lab-pro
+Icon=amin-lab-pro
+Terminal=false
+Categories=Education;Science;
+Keywords=laboratory;school;inventory;borrowing;
+StartupNotify=true

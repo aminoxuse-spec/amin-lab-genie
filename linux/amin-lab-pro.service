@@ -1,0 +1,23 @@
+[Unit]
+Description=Amin-Lab -Pro - School Science Lab Management
+Documentation=file:///usr/share/doc/amin-lab-pro/README.md
+After=network.target
+
+[Service]
+Type=simple
+User=aminlab
+Group=aminlab
+WorkingDirectory=/opt/amin-lab-pro
+EnvironmentFile=-/etc/default/amin-lab-pro
+Environment=NODE_ENV=production
+ExecStart=/opt/amin-lab-pro/runtime/bin/node /opt/amin-lab-pro/server/dist/index.js
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/lib/amin-lab-pro
+
+[Install]
+WantedBy=multi-user.target

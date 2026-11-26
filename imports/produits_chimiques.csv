@@ -1,0 +1,33 @@
+| name | formula | quantity | unit | min_threshold | expiry_date | danger_level | storage_location | supplier | invoice_no | purchase_date | cost |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Chlorure de sodium | NaCl | 0 | غ | 100 |  | منخفض |  |  |  |  |  |
+| Hydroxyde de sodium | NaOH | 0 | غ | 100 |  | خطر |  |  |  |  |  |
+| Chlorure de zinc | ZnCl2 | 0 | غ | 100 |  | متوسط |  |  |  |  |  |
+| Chlorure de calcium | CaCl2 | 0 | غ | 100 |  | منخفض |  |  |  |  |  |
+| Agar-agar |  | 0 | غ | 100 |  | منخفض |  |  |  |  |  |
+| Nitrate d'argent | AgNO3 | 0 | مل | 100 |  | خطر |  |  |  |  |  |
+| Chlorure d'étain II | SnCl2 | 0 | مل | 100 |  | خطر |  |  |  |  |  |
+| Eau iodée |  | 0 | مل | 100 |  | منخفض |  |  |  |  |  |
+| Éosine alcoolique |  | 0 | مل | 100 |  | منخفض |  |  |  |  |  |
+| Acide chlorhydrique | HCl | 0 | مل | 100 |  | خطر |  |  |  |  |  |
+| Éther diéthylique | (C2H5)2O | 0 | مل | 100 |  | خطر |  |  |  |  |  |
+| Acide nitrique | HNO3 | 0 | مل | 100 |  | خطر |  |  |  |  |  |
+| Liqueur de Fehling A |  | 0 | مل | 100 |  | متوسط |  |  |  |  |  |
+| Liqueur de Fehling B |  | 0 | مل | 100 |  | متوسط |  |  |  |  |  |
+| Bleu de bromothymol | C27H28Br2O5S | 0 | مل | 100 |  | منخفض |  |  |  |  |  |
+| Vert de méthyle |  | 0 | مل | 100 |  | منخفض |  |  |  |  |  |
+| Rouge neutre |  | 0 | مل | 100 |  | منخفض |  |  |  |  |  |
+| Oxalate d'ammonium (poudre) | C2O4(NH4)2 | 0 | غ | 100 |  | متوسط |  |  |  |  |  |
+| Oxalate d'ammonium (solution) | C2O4(NH4)2 | 0 | مل | 100 |  | متوسط |  |  |  |  |  |
+| Bicarbonate de sodium | NaHCO3 | 0 | غ | 100 |  | منخفض |  |  |  |  |  |
+| Carbonate de calcium | CaCO3 | 0 | غ | 100 |  | منخفض |  |  |  |  |  |
+| Chlorure de baryum | BaCl2 | 0 | مل | 100 |  | خطر |  |  |  |  |  |
+| Chlorure de fer | FeCl3 | 0 | مل | 100 |  | متوسط |  |  |  |  |  |
+| Chlorure de fer II | FeCl2 | 0 | غ | 100 |  | متوسط |  |  |  |  |  |
+| Eau de chaux |  | 0 | مل | 100 |  | منخفض |  |  |  |  |  |
+| Sulfate de cuivre | CuSO4,5H2O | 0 | غ | 100 |  | متوسط |  |  |  |  |  |
+| Permanganate de potassium | KMnO4 | 0 | غ | 100 |  | خطر |  |  |  |  |  |
+| Benzène | C6H6 | 0 | مل | 100 |  | خطر |  |  |  |  |  |
+| Zinc en poudre | Zn | 0 | غ | 100 |  | منخفض |  |  |  |  |  |
+| Bleu de Nile |  | 0 | مل | 100 |  | منخفض |  |  |  |  |  |
+| Eau distillée | H2O | 0 | ل | 1 |  | منخفض |  |  |  |  |  |

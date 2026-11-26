@@ -1,0 +1,32 @@
+| name | formula | quantity | unit | min_threshold | expiry_date | danger_level | storage_location | supplier | invoice_no | purchase_date | cost |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Liqueur de Fehling A |  | 250 | مل | 100 |  | متوسط |  | COPROCHIM | FV26/02469 | 2026-10-20 | 714.29 |
+| Liqueur de Fehling B |  | 250 | مل | 100 |  | متوسط |  | COPROCHIM | FV26/02469 | 2026-10-20 | 1428.57 |
+| Acide nitrique | HNO3 | 250 | مل | 100 |  | خطر |  | COPROCHIM | FV26/02469 | 2026-10-20 | 1092.44 |
+| Oxalate d'ammonium (solution) | C2O4(NH4)2 | 125 | مل | 100 |  | متوسط |  | COPROCHIM | FV26/02469 | 2026-10-20 | 1428.57 |
+| Nitrate d'argent | AgNO3 | 250 | مل | 100 |  | خطر |  | COPROCHIM | FV26/02469 | 2026-10-20 | 2100.84 |
+| Eau iodée |  | 250 | مل | 100 |  | منخفض |  | COPROCHIM | FV26/02469 | 2026-10-20 | 1638.66 |
+| Bleu de Nile |  | 60 | مل | 100 |  | منخفض |  | COPROCHIM | FV26/02469 | 2026-10-20 | 798.32 |
+| Carbonate de calcium | CaCO3 | 100 | غ | 100 |  | منخفض |  | COPROCHIM | FV26/02469 | 2026-10-20 | 840.34 |
+| Chlorure de fer II | FeCl2 | 25 | غ | 100 |  | متوسط |  | COPROCHIM | FV26/02469 | 2026-10-20 | 1974.79 |
+| Permanganate de potassium | KMnO4 | 25 | غ | 100 |  | خطر |  | COPROCHIM | FV26/02469 | 2026-10-20 | 1512.61 |
+| Zinc en poudre | Zn | 25 | غ | 100 |  | منخفض |  | COPROCHIM | FV26/02469 | 2026-10-20 | 1680.67 |
+| Benzène | C6H6 | 60 | مل | 100 |  | خطر |  | COPROCHIM | BL23/09921 | 2023-12-23 | 2142.86 |
+| Acide nitrique | HNO3 | 250 | مل | 100 |  | خطر |  | COPROCHIM | BL23/09921 | 2023-12-23 | 840.34 |
+| Eau iodée |  | 125 | مل | 100 |  | منخفض |  | COPROCHIM | BL23/09921 | 2023-12-23 | 1008.40 |
+| Oxalate d'ammonium (poudre) | C2O4(NH4)2 | 25 | غ | 100 |  | متوسط |  | COPROCHIM | BL23/09959 | 2023-12-23 | 1554.62 |
+| Acide chlorhydrique | HCl | 500 | مل | 100 |  | خطر |  | COPROCHIM | BL23/09959 | 2023-12-23 | 1008.40 |
+| Bicarbonate de sodium | NaHCO3 | 200 | غ | 100 |  | منخفض |  | COPROCHIM | BL23/09959 | 2023-12-23 | 672.26 |
+| Carbonate de calcium | CaCO3 | 200 | غ | 100 |  | منخفض |  | COPROCHIM | BL23/09959 | 2023-12-23 | 672.26 |
+| Chlorure de baryum | BaCl2 | 125 | مل | 100 |  | خطر |  | COPROCHIM | BL23/09959 | 2023-12-23 | 1050.42 |
+| Chlorure de fer | FeCl3 | 250 | مل | 100 |  | متوسط |  | COPROCHIM | BL23/09959 | 2023-12-23 | 1344.54 |
+| Chlorure de sodium | NaCl | 500 | غ | 100 |  | منخفض |  | COPROCHIM | BL23/09959 | 2023-12-23 | 1260.50 |
+| Chlorure de zinc | ZnCl2 | 100 | غ | 100 |  | متوسط |  | COPROCHIM | BL23/09959 | 2023-12-23 | 1134.45 |
+| Eau de chaux |  | 500 | مل | 100 |  | منخفض |  | COPROCHIM | BL23/09959 | 2023-12-23 | 504.20 |
+| Eau distillée | H2O | 5 | ل | 1 |  | منخفض |  | COPROCHIM | BL23/09959 | 2023-12-23 | 378.15 |
+| Eau iodée |  | 125 | مل | 100 |  | منخفض |  | COPROCHIM | BL23/09959 | 2023-12-23 | 1008.40 |
+| Éther diéthylique | (C2H5)2O | 125 | مل | 100 |  | خطر |  | COPROCHIM | BL23/09959 | 2023-12-23 | 1638.66 |
+| Hydroxyde de sodium | NaOH | 200 | غ | 100 |  | خطر |  | COPROCHIM | BL23/09959 | 2023-12-23 | 672.26 |
+| Nitrate d'argent | AgNO3 | 125 | مل | 100 |  | خطر |  | COPROCHIM | BL23/09959 | 2023-12-23 | 840.34 |
+| Sulfate de cuivre | CuSO4,5H2O | 100 | غ | 100 |  | متوسط |  | COPROCHIM | BL23/09959 | 2023-12-23 | 1134.45 |
+| Permanganate de potassium | KMnO4 | 25 | غ | 100 |  | خطر |  | COPROCHIM | BL23/09959 | 2023-12-23 | 1134.45 |
