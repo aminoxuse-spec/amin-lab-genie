@@ -32,7 +32,10 @@ const RUNTIME_DIR = join(INSTALLER, 'runtime');
 const VENDOR_MODULES = join(INSTALLER, 'vendor', 'node_modules');
 const CACHE_DIR = join(INSTALLER, '.cache');
 const NODE_MAJOR = '22';
-const FILES_FROM_ARCHIVE = ['node.exe', 'npm.cmd', 'npm.ps1', 'npx.cmd', 'npx.ps1'];
+// الخادم يحتاج node.exe فقط. npm/npx وحزمهما (~16 ميغابايت) تُسقط عمداً
+// لتقليم حجم المثبت — التبعيات تأتي جاهزة في installer/vendor.
+const FILES_FROM_ARCHIVE = ['node.exe'];
+const OBSOLETE_FROM_RUNTIME = ['npm.cmd', 'npm.ps1', 'npx.cmd', 'npx.ps1', 'node_modules', 'node_modules/npm', 'node_modules/corepack'];
 
 const log = (message) => console.log(message);
 const fail = (message) => {
@@ -88,6 +91,13 @@ async function stageRuntime() {
   if (existsSync(expected)) {
     const { execFileSync: run } = await import('node:child_process');
     const version = run(expected, ['-v'], { encoding: 'utf8' }).trim();
+    for (const name of OBSOLETE_FROM_RUNTIME) {
+      const stale = join(RUNTIME_DIR, name);
+      if (existsSync(stale)) {
+        rmSync(stale, { recursive: true, force: true });
+        log(`- removed obsolete runtime entry: ${name}`);
+      }
+    }
     log(`- runtime already staged (${version})`);
     return;
   }
@@ -131,14 +141,6 @@ async function stageRuntime() {
     const data = entryData(entries.get(prefix + name));
     if (!data) fail(`${name} not found in the Node.js archive`);
     writeFileSync(join(RUNTIME_DIR, name), data);
-  }
-
-  for (const [name, entry] of entries) {
-    if (!name.startsWith(`${prefix}node_modules/`)) continue;
-    if (name.endsWith('/')) continue;
-    const target = join(RUNTIME_DIR, name.slice(prefix.length));
-    mkdirSync(dirname(target), { recursive: true });
-    writeFileSync(target, entryData(entry));
   }
 
   chmodSync(join(RUNTIME_DIR, 'node.exe'), 0o755);

@@ -1,5 +1,5 @@
 #define MyAppName "Amin-Lab -Pro🔬 (Sale)"
-#define MyAppVersion "1.5.2"
+#define MyAppVersion "1.5.3"
 #define MyAppPublisher "Amin-Lab"
 ; صفحة الدعم الرسمية — استبدلها بالموقع الرسمي عند توفره
 #define MyAppURL "https://wa.me/213558128160"
@@ -61,6 +61,12 @@ Source: "..\scripts\register-backup-task.ps1"; DestDir: "{app}\scripts"; Flags: 
 
 [InstallDelete]
 Type: files; Name: "{app}\server\*.js"
+; npm/npx لم يعدا مضمّنين (الخادم يحتاج node.exe فقط) — يُحذفان عند الترقية
+Type: filesandordirs; Name: "{app}\runtime\node_modules"
+Type: files; Name: "{app}\runtime\npm.cmd"
+Type: files; Name: "{app}\runtime\npm.ps1"
+Type: files; Name: "{app}\runtime\npx.cmd"
+Type: files; Name: "{app}\runtime\npx.ps1"
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\app.ico"; IconIndex: 0
@@ -70,8 +76,8 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilen
 
 [Run]
 ; التبعيات مضمّنة في المثبت — لا حاجة لـ npm ولا لاتصال بالإنترنت
-Filename: "{app}\{#MyAppExeName}"; Description: "تشغيل {#MyAppName}"; Flags: postinstall nowait shellexec
-Filename: "http://localhost:3000"; Description: "فتح الواجهة في المتصفح"; Flags: postinstall shellexec unchecked
+Filename: "{app}\{#MyAppExeName}"; Description: "تشغيل {#MyAppName}"; Flags: postinstall nowait shellexec skipifsilent
+Filename: "http://localhost:3000"; Description: "فتح الواجهة في المتصفح"; Flags: postinstall shellexec unchecked skipifsilent
 ; تسجيل نسخة احتياطية يومية (02:00) في Task Scheduler
 Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-ExecutionPolicy Bypass -NoProfile -File ""{app}\scripts\register-backup-task.ps1"" -ProjectDir ""{app}"" -NodePath ""{app}\runtime\node.exe"""; Flags: runhidden; StatusMsg: "تسجيل نسخة احتياطية يومية..."
 
